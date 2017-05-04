@@ -31,9 +31,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.get('/', function(req, res) {
-  res.render('index', { currentTime: new Date() });
-});
+app.use('/',  require('./routes/index'));
 
 // 可以将一类的路由单独保存在一个文件中
 app.use('/todos', require('./routes/todos'));
