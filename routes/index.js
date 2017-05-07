@@ -8,7 +8,6 @@ var WxUser = AV.Object.extend('WxUser');
 
 router.get('/', function(req, res) {
     let sess=req.session;
-    console.log(sess.objid);
     if(typeof(sess.objid)=="undefined"){
         let code=req.query.code;
         let state=req.query.state;
@@ -65,7 +64,7 @@ router.get('/ask', function(req, res) {
     res.render('ask');
 });
 
-router.get('/choose', function(req, res) {
-    res.render('choose');
+router.get('/health', function(req, res) {
+    res.render('health');
 });
 module.exports = router;

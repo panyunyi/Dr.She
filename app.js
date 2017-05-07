@@ -37,7 +37,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/',  require('./routes/index'));
-
+app.use('/health',  require('./routes/health'));
 // 可以将一类的路由单独保存在一个文件中
 app.use('/todos', require('./routes/todos'));
 
