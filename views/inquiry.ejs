@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!-- saved from url=(0121)http://weixin.chunyuyisheng.com/cooperation/wap/problem_detail_page/?partner=chunyu_wap&problem_id=Pm-tsGcfmzY492icR46Q7Q -->
+<html class="no-js chunyu_wap" style="font-size: 37.5px;">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <title>问题详情</title>
+
+    <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
+
+    <link rel="stylesheet" href="../stylesheets/cy1.css">
+    <link rel="stylesheet" href="../stylesheets/inquiry.css">
+
+</head>
+
+<body class="">
+
+
+
+
+    <div class="partner-right">
+        <div id="qa-inquiry" class="qa-inquiry complete">
+            <div class="ajax-loading" style="display: none;">
+                <div class="spin-circle"></div>
+            </div>
+            <div>
+                <div class="qa-tipbar green">正在分配医生 预计6分钟内回复</div>
+                <div class="qa-doctor-wrap empty">
+                    <div class="block-left">
+                        <a href="doctor"><img src="../2acb520ace1f_w1467_h1428_.jpg" class="doctor-avatar-small"></a>
+                    </div>
+                    <div class="block-right">
+                        <h6 class="doctor-title-small">张继伟<span>甘肃省中医院</span></h6><span class="doctor-label">三甲医院</span> <span class="doctor-label">脊柱科</span><span class="doctor-label">医师</span></div>
+                </div>
+                <div class="qa-inquiry-wrap">
+                    <div class="qa-inquiry-list user">
+                        <p class="qa-first-time">2017-05-08 14:15:09</p>
+                        <!---->
+                        <!---->
+                        <div class="qa-list-wrap">
+                            <div class="qa-inquiry-content">
+                                <!---->
+                                <!----><span>用户的病情描述（女，28岁）</span></div>
+                        </div> <br>
+                        <!---->
+                        <!---->
+                    </div>
+                    <div class="qa-inquiry-list doctor" style="display:none">
+                        <div class="block-left">
+                            <a href="doctor"><img src="../2acb520ace1f_w1467_h1428_.jpg" class="doctor-avatar-small"></a>
+                        </div>
+                        <div class="block-right">
+                            <div class="qa-list-wrap">
+                                <div class="qa-inquiry-content"><span>您好，请问这种情况有多长时间了？</span> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="qa-bottom-wrap fixed center">
+                    <div class="up-img-btn"><input type="file" id="up-img-input" name="images" accept="image/*" multiple="multiple"></div>
+                    <div class="block-send-txt">点击输入文字</div>
+
+                </div>
+                <div class="qa-text-mask" style="display: none;">
+                    <div class="qa-text-send"><textarea placeholder="输入文字" id="qa-text-area" class="qa-textarea" oninput="changeVale(this.value)" onpropertychange="changeVale(this.value)"></textarea>
+                        <div class="qa-text-send-bottom"><span>Dr.She为您解答</span> <a href="javascript:void(0)" class="qa-btn disabled">发送</a></div> <span class="hide-text-send"></span></div>
+                </div>
+
+            </div>
+        </div>
+        <input type="hidden" id="doctorServiceCharge" value="">
+    </div>
+
+
+
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        $(".block-send-txt").on("click", function () {
+            $(".qa-text-mask").css("display", "block");
+            $(".qa-tipbar").css("display", "none");
+        });
+        $(".hide-text-send").on("click", function () {
+            $(".qa-text-mask").css("display", "none");
+            $(".qa-tipbar").css("display", "block");
+        });
+        function changeVale(str) {
+            if (str.length > 0) {
+                $(".qa-btn").removeClass("disabled");
+            } else {
+                $(".qa-btn").addClass("disabled");
+            }
+        }
+        $(".qa-btn").on("click", function () {
+            if ($("#qa-text-area").val().length > 0) {
+                $(".qa-text-mask").css("display", "none");
+                $(".qa-tipbar").css("display", "block");
+                $(".qa-tipbar").html("23小时后或19次对话后问题关闭");
+                $(".qa-doctor-wrap").removeClass("empty");
+                $(".qa-inquiry-list").css("display", "block");
+            }
+        });
+    </script>
+</body>
+
+</html>

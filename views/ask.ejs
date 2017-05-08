@@ -36,13 +36,33 @@
             </div>
         </div>
         <div class="toolbar">
-            <button id="ask" class="btn" data-is-paid="0">下一步</button>
+            <button id="ask" class="btn" onclick="getNum(description.value)">下一步</button>
             <p class="notice" style="float:left;margin-left:.5rem;text-decoration:underline">自检图像采集方法</p>
             <p class="notice">问诊服务由公立三甲、专科医生提供</p>
         </div>
     </div>
 
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        function getNum(str) {
+            if (str.length >= 10 && str.length <= 1000) {
+                $.ajax({
+                    type: "GET",
+                    url: "/ask/add",
+                    data: { content: $("#description").val() },
+                    dataType: "json",
+                    success: function (data) {
+                        window.location.replace("health?id="+data.id);
+                    }
+                });
+            } else {
+                weui.alert('字数限制为10~1000');
+            }
+        }
 
+    </script>
 </body>
 
 </html>

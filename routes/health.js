@@ -7,7 +7,7 @@ var secret= process.env.wx_secret;
 var WxUser = AV.Object.extend('WxUser');
 
 router.get('/', function(req, res) {
-    res.render('health');
+    res.render('health',{id:req.query.id});
 });
 
 router.get('/add', function(req, res) {
