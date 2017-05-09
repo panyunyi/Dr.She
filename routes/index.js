@@ -7,7 +7,7 @@ var secret = process.env.wx_secret;
 var partner_key = process.env.partner_key;
 var WxUser = AV.Object.extend('WxUser');
 var Problem = AV.Object.extend('Problem');
-var chunyulogin=require('../routes/chunyu');
+var chunyu=require('../routes/chunyu');
 router.get('/', function (req, res) {
     let sess = req.session;
     let time=Math.round(new Date().getTime()/1000).toString();
@@ -33,8 +33,9 @@ router.get('/', function (req, res) {
                                 wxuser.set('province', body2.province);
                                 wxuser.set('country', body2.country);
                                 wxuser.set('headimgurl', body2.headimgurl);
+                                wxuser.set('points',2);
                                 wxuser.save().then(function (data) {
-                                    chunyulogin(data.id,time);
+                                    chunyu.login(data.id,time);
                                     sess.objidid = data.id;
                                     res.render('index', { objid: data.id });
                                 }, function (err) {
@@ -42,7 +43,7 @@ router.get('/', function (req, res) {
                                 });
                             } else if (count == 1) {
                                 query.first().then(function (data) {
-                                    chunyulogin(data.id,time);
+                                    chunyu.login(data.id,time);
                                     sess.objid = data.id;
                                     res.render('index', { objid: data.id });
                                 });
@@ -61,7 +62,7 @@ router.get('/', function (req, res) {
             }
         });
     } else {
-        chunyulogin(sess.objid,time);
+        chunyu.login(sess.objid,time);
         res.render('index', { objid: sess.objid })
     }
 });
@@ -71,9 +72,13 @@ router.get('/ask', function (req, res) {
 });
 
 router.get('/ask/add', function (req, res) {
+    let sess = req.session;
+    let time=Math.round(new Date().getTime()/1000).toString();
     let problem = new Problem();
-
-    res.jsonp({ id: 1 });
+    let data={"content":req.body.content,"image":"123","audio":"321","age":"28岁"};
+    let result= chunyu.createFree(sess.objid,time,data);
+    console.log(req.body.content);
+    res.jsonp({ id: result });
 });
 
 router.get('/inquiry', function (req, res) {

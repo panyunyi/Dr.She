@@ -49,7 +49,7 @@
         function getNum(str) {
             if (str.length >= 10 && str.length <= 1000) {
                 $.ajax({
-                    type: "GET",
+                    type: "POST",
                     url: "/ask/add",
                     data: { content: $("#description").val() },
                     dataType: "json",
