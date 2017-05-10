@@ -48,14 +48,9 @@
     <script type="text/javascript">
         function getNum(str) {
             if (str.length >= 10 && str.length <= 1000) {
-                $.ajax({
-                    type: "POST",
-                    url: "/ask/add",
-                    data: { content: $("#description").val() },
-                    dataType: "json",
-                    success: function (data) {
-                        window.location.replace("health?id="+data.id);
-                    }
+                $.post("/ask/add",{ content: $("#description").val() },function(result){
+                    //weui.alert(result);
+                    window.location.replace("upgrade?id="+result.id);
                 });
             } else {
                 weui.alert('字数限制为10~1000');

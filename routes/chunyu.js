@@ -27,6 +27,7 @@ function chunyulogin(user_id, atime) {
 }
 
 function createFree(user_id, atime,ask) {
+    let result=0;
     let sign = getSign(user_id, atime);
     let content = [
         { "type": "text", "text": ask.content },
@@ -34,11 +35,10 @@ function createFree(user_id, atime,ask) {
         { "type": "audio", "file": ask.audio },
         { "type": "patient_meta", "age": ask.age, "sex": "女" }
     ];
-    console.log(content);
     let data = {
         "user_id": user_id,
         "partner": partner,
-        "content": content,
+        "content": JSON.stringify(content),
         "sign": sign,
         "atime": atime
     };
@@ -50,9 +50,11 @@ function createFree(user_id, atime,ask) {
         if (err) {
             console.error('Request failed with response code ' + res.statusCode);
         } else {
-            console.log(body);
+            result=body;
+            console.log(result);
         }
     });
+    return result;
 }
 function getSign(user_id, atime) {
     let sign = utils.md5(partner_key + atime + user_id);

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html class="no-js drshe_wap" style="font-size: 37.5px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    
+    <title>服务升级</title>
+    
+    <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
+    <link rel="stylesheet" href="../stylesheets/cy1.css">
+    <link rel="stylesheet" href="../stylesheets/upgrade.css">
+</head>
+<body class="gray-bg">
+    
+<div class="partner-right">
+	<header>
+        <h6>您也可购买<span class="red-text">升级包</span>指派位医生为您作答：</h6>
+    </header>
+    <main>
+        <section class="service-section">
+            <h3>三甲医院医生<span class="service-price">10点</span></h3>
+            <h6>升级为三位主治及以上级别医生回复</h6>
+            <span class="service-level-btn select" data-price="3" data-type="qc_doc_upgrade"></span>
+        </section>
+        
+        <section class="upgrade-btn-wrap">
+            <div class="upgrade-btn">升级(<span id="total-price">10点</span>)</div>
+        </section>
+    </main>
+    
+        <footer class="pass-btn-wrap">
+            <div class="pass-btn">跳过，直接提问</div>
+        </footer>
+    
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        $(".pass-btn").on("click", function () {
+            window.location.replace("inquiry?id=");
+        });
+
+    </script>
+</body></html>

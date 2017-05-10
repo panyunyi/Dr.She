@@ -68,17 +68,19 @@ router.get('/', function (req, res) {
 });
 
 router.get('/ask', function (req, res) {
+    let sess = req.session;
+    sess.objid="590b18d52f301e00582f024a";
+    console.log(sess.objid);
     res.render('ask');
 });
 
-router.get('/ask/add', function (req, res) {
+router.post('/ask/add', function (req, res) {
     let sess = req.session;
     let time=Math.round(new Date().getTime()/1000).toString();
     let problem = new Problem();
     let data={"content":req.body.content,"image":"123","audio":"321","age":"28岁"};
-    let result= chunyu.createFree(sess.objid,time,data);
-    console.log(req.body.content);
-    res.jsonp({ id: result });
+    console.log(chunyu.createFree(sess.objid,time,data));
+    res.jsonp({ id: 1 });
 });
 
 router.get('/inquiry', function (req, res) {
@@ -87,6 +89,30 @@ router.get('/inquiry', function (req, res) {
 
 router.get('/doctor', function (req, res) {
     res.render('doctor');
+});
+
+router.get('/all_service', function (req, res) {
+    res.render('allservice');
+});
+
+router.get('/mypoints', function (req, res) {
+    res.render('mypoints');
+});
+
+router.get('/phone', function (req, res) {
+    res.render('phone');
+});
+
+router.get('/advice', function (req, res) {
+    res.render('advice');
+});
+
+router.get('/searchdoctor', function (req, res) {
+    res.render('searchdoctor');
+});
+
+router.get('/upgrade', function (req, res) {
+    res.render('upgrade');
 });
 
 router.get('/test', function (req, res) {
