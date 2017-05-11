@@ -33,7 +33,7 @@ function createFree(user_id, atime,ask) {
         { "type": "text", "text": ask.content },
         { "type": "image", "file": ask.image },
         { "type": "audio", "file": ask.audio },
-        { "type": "patient_meta", "age": ask.age, "sex": "女" }
+        { "type": "patient_meta", "age": ask.age, "sex": ask.sex}
     ];
     let data = {
         "user_id": user_id,
@@ -54,7 +54,6 @@ function createFree(user_id, atime,ask) {
             console.log(result);
         }
     });
-    return result;
 }
 function getSign(user_id, atime) {
     let sign = utils.md5(partner_key + atime + user_id);

@@ -7,10 +7,12 @@ var secret = process.env.wx_secret;
 var partner_key = process.env.partner_key;
 var WxUser = AV.Object.extend('WxUser');
 var Problem = AV.Object.extend('Problem');
-var chunyu=require('../routes/chunyu');
+var chunyu = require('../routes/chunyu');
+var multiparty = require('multiparty');
+var fs = require('fs');
 router.get('/', function (req, res) {
     let sess = req.session;
-    let time=Math.round(new Date().getTime()/1000).toString();
+    let time = Math.round(new Date().getTime() / 1000).toString();
     if (typeof (sess.objid) == "undefined") {
         let code = req.query.code;
         let state = req.query.state;
@@ -33,9 +35,9 @@ router.get('/', function (req, res) {
                                 wxuser.set('province', body2.province);
                                 wxuser.set('country', body2.country);
                                 wxuser.set('headimgurl', body2.headimgurl);
-                                wxuser.set('points',2);
+                                wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
-                                    chunyu.login(data.id,time);
+                                    chunyu.login(data.id, time);
                                     sess.objidid = data.id;
                                     res.render('index', { objid: data.id });
                                 }, function (err) {
@@ -43,7 +45,7 @@ router.get('/', function (req, res) {
                                 });
                             } else if (count == 1) {
                                 query.first().then(function (data) {
-                                    chunyu.login(data.id,time);
+                                    chunyu.login(data.id, time);
                                     sess.objid = data.id;
                                     res.render('index', { objid: data.id });
                                 });
@@ -62,25 +64,51 @@ router.get('/', function (req, res) {
             }
         });
     } else {
-        chunyu.login(sess.objid,time);
+        chunyu.login(sess.objid, time);
         res.render('index', { objid: sess.objid })
     }
 });
 
 router.get('/ask', function (req, res) {
     let sess = req.session;
-    sess.objid="590b18d52f301e00582f024a";
+    sess.objid = "590b18d52f301e00582f024a";
     console.log(sess.objid);
     res.render('ask');
 });
 
 router.post('/ask/add', function (req, res) {
     let sess = req.session;
-    let time=Math.round(new Date().getTime()/1000).toString();
-    let problem = new Problem();
-    let data={"content":req.body.content,"image":"123","audio":"321","age":"28岁"};
-    console.log(chunyu.createFree(sess.objid,time,data));
-    res.jsonp({ id: 1 });
+    let query = new AV.Query('WxUser');
+    query.get(sess.objid).then(function (user) {
+        let time = Math.round(new Date().getTime() / 1000).toString();
+        let data = { "content": req.body.content, "image": "123", "audio": "321", "age": +"岁", "sex": user.sex };
+        console.log(chunyu.createFree(sess.objid, time, data));
+        res.jsonp({ id: 1 });
+    }, function (error) {
+        // 异常处理
+    });
+
+});
+
+router.post('/ask/upload', function (req, res) {
+    console.log(1);
+    let form = new multiparty.Form();
+    form.parse(req, function (err, fields, files) {
+        var iconFile = files.iconImage[0];
+        if (iconFile.size !== 0) {
+            fs.readFile(iconFile.path, function (err, data) {
+                if (err) {
+                    return res.send('读取文件失败');
+                }
+                var theFile = new AV.File(iconFile.originalFilename, data);
+                theFile.save().then(function (theFile) {
+                    res.send('上传成功！');
+                }).catch(console.error);
+            });
+        } else {
+            res.send('请选择一个文件。');
+        }
+    });
 });
 
 router.get('/inquiry', function (req, res) {
@@ -115,7 +143,5 @@ router.get('/upgrade', function (req, res) {
     res.render('upgrade');
 });
 
-router.get('/test', function (req, res) {
-    chunyulogin("A800130","1467098815");
-});
+
 module.exports = router;
