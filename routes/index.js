@@ -91,9 +91,9 @@ router.post('/ask/add', function (req, res) {
 });
 
 router.post('/ask/upload', function (req, res) {
-    console.log(1);
     let form = new multiparty.Form();
     form.parse(req, function (err, fields, files) {
+        console.log(files);
         var iconFile = files.iconImage[0];
         if (iconFile.size !== 0) {
             fs.readFile(iconFile.path, function (err, data) {
