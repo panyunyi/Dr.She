@@ -18,7 +18,7 @@
     
 <div class="partner-right">
 	<header>
-        <h6>您也可购买<span class="red-text">升级包</span>指派位医生为您作答：</h6>
+        <h6>您已选择<span class="red-text">3位</span>医生为您作答：</h6>
     </header>
     <main>
         <section class="service-section">
@@ -28,13 +28,11 @@
         </section>
         
         <section class="upgrade-btn-wrap">
-            <div class="upgrade-btn">升级(<span id="total-price">10点</span>)</div>
+            <div class="upgrade-btn">确认(<span id="total-price">10点</span>)</div>
         </section>
     </main>
     
-        <footer class="pass-btn-wrap">
-            <div class="pass-btn">跳过，直接提问</div>
-        </footer>
+
     
 </div>
 
@@ -42,7 +40,7 @@
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
-        $(".pass-btn").on("click", function () {
+        $(".upgrade-btn").on("click", function () {
             window.location.replace("inquiry?id=");
         });
 

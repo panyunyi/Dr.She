@@ -37,6 +37,7 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 app.use('/',  require('./routes/index'));
+app.use('/ask',  require('./routes/ask'));
 app.use('/health',  require('./routes/health'));
 app.use('/doctor',  require('./routes/doctor'));
 // 可以将一类的路由单独保存在一个文件中
