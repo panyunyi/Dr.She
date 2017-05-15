@@ -8,7 +8,7 @@ var partner = process.env.partner;
 var test_url=process.env.test_url;
 var product_url=process.env.product_url;
 var Problem = AV.Object.extend('Problem');
-var fs=reauire('fs');
+var fs=require('fs');
 var file="./public/city_list.json";
 
 function chunyulogin(user_id, atime) {
