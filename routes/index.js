@@ -11,6 +11,7 @@ var chunyu = require('../routes/chunyu');
 
 router.get('/', function (req, res) {
     let sess = req.session;
+    sess.objid='590b18d52f301e00582f024a';
     let time = Math.round(new Date().getTime() / 1000).toString();
     if (typeof (sess.objid) == "undefined") {
         let code = req.query.code;
@@ -36,16 +37,16 @@ router.get('/', function (req, res) {
                                 wxuser.set('headimgurl', body2.headimgurl);
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
-                                    chunyu.login(data.id, time);
                                     sess.objidid = data.id;
+                                    chunyu.login(data.id, time);
                                     res.render('index', { objid: data.id });
                                 }, function (err) {
                                     console.log(err);
                                 });
                             } else if (count == 1) {
                                 query.first().then(function (data) {
-                                    chunyu.login(data.id, time);
                                     sess.objid = data.id;
+                                    chunyu.login(data.id, time);
                                     res.render('index', { objid: data.id });
                                 });
                             } else {
@@ -84,8 +85,8 @@ router.get('/advice', function (req, res) {
     res.render('advice');
 });
 
-router.get('/searchdoctor', function (req, res) {
-    res.render('searchdoctor');
+router.get('/doctorlist', function (req, res) {
+    res.render('doctorlist');
 });
 
 router.get('/upgrade', function (req, res) {

@@ -7,6 +7,7 @@ var secret= process.env.wx_secret;
 var async=require('async');
 var Content = AV.Object.extend('Content');
 var Doctor = AV.Object.extend('Doctor');
+var chunyu = require('../routes/chunyu');
 
 router.post('/reply', function(req, res) {
     let result={
@@ -81,8 +82,14 @@ router.get('/doctor/:id', function (req, res) {
     res.render('doctor',{id:req.params.id});
 });
 
-router.get('/list/:id', function (req, res) {
-    
+router.get('/list/:id/:num', function (req, res) {
+    let id=req.params.id;
+    let num=req.params.num*1;
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let sess = req.session;
+    chunyu.doctorList(sess.objid,id,num,"","",time).then(function(data){
+
+    });
 });
 
 module.exports = router;

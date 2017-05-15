@@ -230,19 +230,20 @@ function problemList(user_id,atime){
         });
 }
 
-function doctorList(user_id,atime){
+function doctorList(user_id,clinic_no,num,province,city,atime){
     var city_list=JSON.parse(fs.readFileSync( file));
     let result={error:1};
     let sign = getSign(user_id, atime);
     let data = {
+        "clinic_no":clinic_no,
         "user_id": user_id,
         "partner": partner,
-        "start_num":0,
-        "count":100,
+        "start_num":num,
+        "count":10,
         "sign": sign,
         "atime": atime
     };
-    //console.log(data);
+    console.log(data);
     var options = {
         method: 'POST',
         uri: test_url+'/cooperation/server/doctor/get_clinic_doctors',
@@ -251,10 +252,10 @@ function doctorList(user_id,atime){
     };
     return rp(options)
         .then(function (body) {
-            //console.log(body);
+            console.log(body);
             result["error"]=0;
             result["content"]=body.doctors;
-            console.log(result);
+            //console.log(result);
             return result;
             // POST succeeded...
         })
