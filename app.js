@@ -38,6 +38,7 @@ app.use(cookieSession({
 }));
 app.use('/',  require('./routes/index'));
 app.use('/ask',  require('./routes/ask'));
+app.use('/inquiry',  require('./routes/inquiry'));
 app.use('/health',  require('./routes/health'));
 app.use('/doctor',  require('./routes/doctor'));
 // 可以将一类的路由单独保存在一个文件中

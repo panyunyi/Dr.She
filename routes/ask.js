@@ -13,7 +13,6 @@ var fs = require('fs');
 
 router.get('/', function (req, res) {
     let sess = req.session;
-    sess.objid = "590b18d52f301e00582f024a";
     console.log(sess.objid);
     res.render('ask');
 });
@@ -24,8 +23,7 @@ router.post('/add', function (req, res) {
     query.get(sess.objid).then(function (user) {
         let time = Math.round(new Date().getTime() / 1000).toString();
         let imglist=req.body.imglist.split(',');
-        // console.log(imglist.length)
-        let data = { "content": req.body.content, "image": imglist, "audio": "321", "age": req.body.age+"岁", "sex": user.sex };
+        let data = { "content": req.body.content, "image": imglist, "age": req.body.age+"岁", "sex": user.sex };
         chunyu.createFree(sess.objid, time, data).then(function(data){
             res.jsonp({ id: data });
         });

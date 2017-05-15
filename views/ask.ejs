@@ -34,7 +34,7 @@
 
         <section class="ask-description">
             <textarea autofocus="" id="description" placeholder="请上传妇科自检图像并详细描述您的症状疾病和身体状况，便于医生更准确的分析，星天使将确保您的隐私安全（字数限制为10~1000字）"></textarea>
-            <span class="age">请填写年龄:</span><input type="number" id="age" name="age" min="18" max="60" placeholder="年龄" />
+            <span class="age">请填写年龄:</span><input style="width: 16%;height:22px" type="number" id="age" name="age" min="18" max="60" placeholder="年龄" />
         </section>
 
         <div class="img-list">
@@ -131,7 +131,11 @@
                     imglist+=$(this).attr("src")+",";
                 });
                 $.post("/ask/add", { content: $("#description").val(),age: $("#age").val(),"imglist":imglist }, function (result) {
-                    window.location.replace("inquiry?id=" + result.id);
+                    if(result.id!=0){
+                        window.location.replace("inquiry?id=" + result.id);
+                    }else{
+                        weui.alert("创建问题失败，请联系客服。")
+                    }
                 });
             } else {
                 weui.alert('字数限制为10~1000');

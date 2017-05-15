@@ -68,16 +68,6 @@ router.get('/', function (req, res) {
     }
 });
 
-
-router.get('/inquiry', function (req, res) {
-    console.log(req.query);
-    res.render('inquiry',{id:req.query.id});
-});
-
-router.get('/doctor', function (req, res) {
-    res.render('doctor');
-});
-
 router.get('/all_service', function (req, res) {
     res.render('allservice');
 });
@@ -102,5 +92,7 @@ router.get('/upgrade', function (req, res) {
     res.render('upgrade');
 });
 
-
+router.get('/pay', function (req, res) {
+    res.render('pay');
+});
 module.exports = router;
