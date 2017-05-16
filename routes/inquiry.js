@@ -7,6 +7,7 @@ var secret = process.env.wx_secret;
 var partner_key = process.env.partner_key;
 var chunyu = require('../routes/chunyu');
 var async = require('async');
+var moment=require('moment');
 
 router.get('/', function (req, res) {
     res.render('inquiry', { id: req.query.id });
@@ -73,7 +74,37 @@ router.get('/list/', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;
     chunyu.problemList(sess.objid,time).then(function(data){
-        //console.log(data);
+        async.mapSeries(data,function(one,callback){
+            switch(one.problem.status){
+                case 'i':
+                one.problem.status="未提问";
+                break;
+                case 'n':
+                one.problem.status="待回复";
+                break;
+                case 'a':
+                one.problem.status="待回复";
+                break;
+                case 's':
+                one.problem.status="已回复";
+                break;
+                case 'c':
+                one.problem.status="已关闭";
+                break;
+                case 'v':
+                one.problem.status="已查看";
+                break;
+                case 'p':
+                one.problem.status="系统举报";
+                break;
+                case 'd':
+                one.problem.status="已评价";
+                break;
+            }
+            callback(null,one);
+        },function(err,problems){
+            res.render('allservice',{list:problems});
+        });
     });
 });
 module.exports = router;

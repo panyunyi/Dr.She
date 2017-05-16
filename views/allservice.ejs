@@ -23,56 +23,27 @@
 
     <div class="partner-right">
         <main class="all-service-list">
-
-
-            <section class="all-service-element">
-                <a href="">
-                    <div class="qa-content">
+            <% for(var i=0; i<list.length; i++) {%>
+                <section class="all-service-element">
+                    <a href="/inquiry?id=<%= list[i].problem.id%>">
+                        <div class="qa-content">
                         <p class="gray-little">
-                            <span class="qa-time">2017/05/09 15:09</span>
-                            <span class="qa-status">已关闭<span class="red-text" style="color: #999999"></span></span>
+                            <span class="qa-time"><%= list[i].problem.created_time%></span>
+                            <span class="qa-status"><%=list[i].problem.status%><% if (list[i].problem.status=="医生已回复"||list[i].problem.status=="待回复"){%>
+                        <span class="qa-status" style="color: #FF6134">
+                        <% } else{%><span class="qa-status" style="color: #999999"> <% } %></span>
                         </p>
-                        <p class="qa-text">少时诵诗书所所所所所所所所所（男，4天）</p>
-                    </div>
-                    <div class="qa-info">
-                        <img class="thumbnail" src="../abe0eaf684bb_w80_h82_.png">
-                        <span class="gray-little left">系统消息</span>
-                    </div>
-                </a>
-            </section>
-
-            <section class="all-service-element">
-                <a href="">
-                    <div class="qa-content">
-                        <p class="gray-little">
-                            <span class="qa-time">2017/05/08 14:15</span>
-                            <span class="qa-status">待评价<span class="red-text" style="color: #FF6134"></span></span>
-                        </p>
-                        <p class="qa-text">肋骨左下方腰部按压酸痛（男，28岁）</p>
-                    </div>
-                    <div class="qa-info">
-                        <img class="thumbnail" src="../2acb520ace1f_w1467_h1428_.jpg">
-                        <span class="gray-little left">张继伟</span>
-                    </div>
-                </a>
-            </section>
-
-            <section class="all-service-element">
-                <a href="">
-                    <div class="qa-content">
-                        <p class="gray-little">
-                            <span class="qa-time">2017/05/08 14:13</span>
-                            <span class="qa-status">未提问<span class="red-text" style="color: #999999"></span></span>
-                        </p>
-                        <p class="qa-text">开始问医生</p>
-                    </div>
-                    <div class="qa-info">
-                        <img class="thumbnail" src="../c4c53726d085_w1024_h1024_.jpg">
-                        <span class="gray-little left">春雨妇产会诊</span>
-                    </div>
-                </a>
-            </section>
-
+                        <p class="qa-text"><%=list[i].problem.ask%></p>
+                        </div>
+                        <div class="qa-info">
+                            <%if (typeof(list[i].doctor.image)!="undefined"){%>
+                            <img class="thumbnail" src="<%=list[i].doctor.image%>">
+                            <span class="gray-little left"><%=list[i].doctor.name%></span>
+                            <%}%>
+                        </div>
+                    </a>
+                </section>
+            <% } %>
         </main>
 
         <div class="notice" id="loading" style="display: none;">
@@ -81,12 +52,15 @@
         </div>
         <div id="more" class="more no-more" style="display: block; transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">没有更多了</div>
 
-        <div class="notice" id="no-data">
-            <img src="data:image/png;base64,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">
-            <p>没有相关内容</p>
-        </div>
     </div>
-
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        $(".feedback_btn").on("click",function(){
+            weui.toast('已提交', 3000);
+        });
+    </script>
 </body>
 
 </html>

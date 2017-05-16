@@ -13,27 +13,66 @@
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
     <link rel="stylesheet" href="../stylesheets/cy1.css">
     <link rel="stylesheet" href="../stylesheets/upgrade.css">
+    <link rel="stylesheet" href="../stylesheets/choose.css">
+    <style>
+        h4{font-size: .5rem;}
+    </style>
 </head>
 <body class="gray-bg">
     
 <div class="partner-right">
 	<header>
-        <h6>您已选择<span class="red-text">3位</span>医生为您作答：</h6>
+        <h4>您当前<span class="red-text">1</span>积分</h4>
     </header>
-    <main>
-        <section class="service-section">
-            <h3>三甲医院医生<span class="service-price">10点</span></h3>
-            <h6>升级为三位主治及以上级别医生回复</h6>
-            <span class="service-level-btn select" data-price="3" data-type="qc_doc_upgrade"></span>
-        </section>
+    <div class="container">
+      
+        <div class="doctor-list appoint">
+          <div class="doctor-list-left">
+              <div class="doctor-img">
+                  <img src="../01.PNG">
+              </div>
+          </div>
+          <div class="doctor-list-right">
+              <div class="doctor-list-top">
+                <p class="doctor-name">系统指派医生</p>
+                <p class="hospital-name">三级甲等或专科医院（限20次对话）</p>
+              </div>
+              <div class="doctor-list-bottom">
+                  <p class="price">2积分</p>
+                  <span id="auto" class="square checked money_num" ></span>
+              </div>
+          </div>
+        </div>
+      
+      
         
-        <section class="upgrade-btn-wrap">
-            <div class="upgrade-btn">确认(<span id="total-price">10点</span>)</div>
-        </section>
-    </main>
-    
+        <div class="doctor-list">
+          <div class="doctor-list-left">
+              <a class="doctor-img" href="javascript:;">
+                  <img src="../02.PNG">
+              </a>
+          </div>
+          <div class="doctor-list-right">
+              <div class="doctor-list-top">
+                <p class="doctor-name">一题多问</p>
+                <p class="hospital-name">将问题同时发送给3名医生咨询
+                </p>
+              </div>
+              <div class="doctor-list-bottom">
+                  <p class="price">5积分</p>
+                  
+                  <span id="three" class="square money_num"></span>
+                  
+              </div>
+          </div>
+        </div>
+      
 
-    
+
+  </div>
+        <section class="upgrade-btn-wrap">
+            <div class="upgrade-btn">提交</div>
+        </section>
 </div>
 
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
@@ -43,6 +82,13 @@
         $(".upgrade-btn").on("click", function () {
             window.location.replace("inquiry?id=");
         });
-
+        $("#auto").on("click", function () {
+            $("#auto").addClass("checked");
+            $('#three').removeClass("checked");
+        });
+        $("#three").on("click", function () {
+            $("#three").addClass("checked");
+            $('#auto').removeClass("checked");
+        });
     </script>
 </body></html>

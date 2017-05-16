@@ -15,7 +15,6 @@
     </title>
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
     <link rel="stylesheet" href="../stylesheets/pay.css">
-
     <style type="text/css">
         html,
         body {
@@ -134,6 +133,21 @@
                 width: 400px
             }
         }
+
+        .points {
+            padding: .5em;
+            display: inline;
+            line-height: 1.2;
+            color: #555;
+            vertical-align: middle;
+            background-color: #fff;
+            background-image: none;
+            border: 0px;
+            -webkit-appearance: none;
+            font-size: 0.15rem;
+            width: 45%;
+            margin-left: .4rem;
+        }
     </style>
     <style type="text/css">
         .dlg-confirm {
@@ -221,25 +235,23 @@
             <div class="cy-sec">
 
                 <div class="cy-sec-item block">
-                    <h6 class="cy-order-name">积分充值</h6>
-
-                    <p class="cy-order-desc"><span class="cy-payment-price">¥ 0.0/次</span>
-                    </p>
+                    <div class="cy-label" style="display:inline">积分充值</div>
+                    <div class="cy-txt cy-should-pay" style="display: inline;float: right;font-size: .2rem;width: 53%;">
+                        <input type="number" class="points" placeholder="请输入积分" emptyTips="请输入积分" oninput="changeVale(this.value)" onpropertychange="changeVale(this.value)">
+                        <span class="cy-txt cy-should-pay" style="font-size: .2rem;float:right">积分</span>
+                    </div>
 
                 </div>
 
             </div>
             <div class="cy-sec cy-no-margin">
                 <div class="cy-sec-item">
-                    <div class="cy-label">共需支付</div>
-                    <div class="cy-txt cy-should-pay">¥ 0</div>
+                    <div class="cy-label">需支付<span style="margin-left: .2rem;color:#ff6134;">(￥5=1积分)</span></div>
+                    <div id="money" class="cy-txt cy-should-pay" style="font-size: .2rem;">¥ 0</div>
                 </div>
             </div>
             <h6 class="cy-title">选择支付方式</h6>
             <div class="cy-sec">
-
-
-
 
                 <div class="cy-pay-method weixin-pay checked" data-pay-method="weixin" style="display: block;">
                     <div class="cy-label">微信支付</div>
@@ -255,7 +267,19 @@
 
 
     </div>
-
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        function changeVale(points) {
+            $('#money').text("￥ " + points * 5);
+        }
+        $('.cy-btn-pay').on("click", function () {
+            if ($('.points').val() > 0) {
+                weui.toast('支付完成', 3000);
+            }
+        });
+    </script>
 </body>
 
 </html>

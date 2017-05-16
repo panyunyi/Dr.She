@@ -21,7 +21,6 @@
 <body class="">
     <div class="partner-right">
         <header>
-            <input type="hidden" name="userid" value=<%=objid%> />
             <div class="header-top">
                 <div class="sidebar-icon">
                 </div>
@@ -44,7 +43,30 @@
 
         </header>
         <main class="service-list">
-
+            <% for(var i=0; i<list.length; i++) {%>
+                <% if (list[i].problem.status!="已关闭"&&list[i].problem.status!="系统举报"){%>
+                <a href="/inquiry?id=<%= list[i].problem.id%>">
+                    <section class="service-element">
+                        <% if (list[i].problem.status=="医生已回复"||list[i].problem.status=="待回复"){%>
+                        <span class="qa-status" style="color: #FF6134">
+                        <% } else{%><span class="qa-status" style="color: #999999"> <% } %><%=list[i].problem.status%></span>
+                        <%if (typeof(list[i].doctor.image)!="undefined"){%>
+                        <img class="thumbnail" src="<%=list[i].doctor.image%>">
+                        <%}%>
+                        <div class="service-element-right">
+                            <%if (typeof(list[i].doctor.image)!="undefined"){%>
+                            <h6 class="doctor-name"><%=list[i].doctor.name%></h6>
+                            <%}%>
+                            <p class="qa-detail">
+                                <span><%=list[i].problem.created_time%></span>
+                                <span><%=list[i].problem.clinic_name%></span>
+                            </p>
+                            <p class="qa-text"><%=list[i].problem.ask%></p>
+                        </div>
+                    </section>
+                </a>
+                <% } %>
+            <% } %>
         </main>
         <section class="mask hide">
             <div class="mask-content">
@@ -93,17 +115,17 @@
                 $(".mask").addClass("hide"), $("body").removeClass("no-scroll"),
                     $(".mask-content").removeClass("show-move")
             });
+        // showUnreadNews();
+        // function showUnreadNews() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "/inquiry/list/",
+        //         dataType: "json",
+        //         success: function (msg) {
 
-        function showUnreadNews() {
-            $.ajax({
-                type: "GET",
-                url: "/inquiry/list/",
-                dataType: "json",
-                success: function (msg) {
-                    
-                }
-            });
-        }
+        //         }
+        //     });
+        // }
         //setInterval('showUnreadNews()', 1000);
     </script>
 </body>

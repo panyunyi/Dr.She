@@ -34,7 +34,7 @@
 
         <section class="ask-description">
             <textarea autofocus="" id="description" placeholder="请上传妇科自检图像并详细描述您的症状疾病和身体状况，便于医生更准确的分析，星天使将确保您的隐私安全（字数限制为10~1000字）"></textarea>
-            <span class="age">请填写年龄:</span><input style="width: 16%;height:22px" type="number" id="age" name="age" min="18" max="60" placeholder="年龄" />
+            <span class="age">请填写年龄:</span><input style="width: 16%;height:22px;border: 0px;" type="number" id="age" name="age" min="18" max="60" placeholder="年龄" />
         </section>
 
         <div class="img-list">
@@ -46,14 +46,9 @@
             </div>
             
         </div>
-        <section class="service-section">
-            <h3>三甲医院医生<span class="service-price">10点</span></h3>
-            <h6>升级为三位主治及以上级别医生回复</h6>
-            <span class="service-level-btn select" data-price="3" data-type="qc_doc_upgrade"></span>
-        </section>
         <div class="toolbar">
             
-            <button id="ask" class="btn" onclick="getNum(description.value)">提交</button>
+            <button id="ask" class="btn" onclick="getNum(description.value)">下一步</button>
             <p class="notice" style="float:left;margin-left:.5rem;text-decoration:underline">自检图像采集方法</p>
             <p class="notice">问诊服务由公立三甲、专科医生提供</p>
         </div>

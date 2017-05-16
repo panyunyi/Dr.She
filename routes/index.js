@@ -8,6 +8,7 @@ var partner_key = process.env.partner_key;
 var WxUser = AV.Object.extend('WxUser');
 var Problem = AV.Object.extend('Problem');
 var chunyu = require('../routes/chunyu');
+var async=require('async');
 
 router.get('/', function (req, res) {
     let sess = req.session;
@@ -39,7 +40,8 @@ router.get('/', function (req, res) {
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
                                     chunyu.login(data.id, time);
-                                    res.render('index', { objid: data.id });
+                                    indexProblemList(req,res,'index');
+                                    //res.render('index', { objid: data.id });
                                 }, function (err) {
                                     console.log(err);
                                 });
@@ -47,7 +49,8 @@ router.get('/', function (req, res) {
                                 query.first().then(function (data) {
                                     sess.objid = data.id;
                                     chunyu.login(data.id, time);
-                                    res.render('index', { objid: data.id });
+                                    indexProblemList(req,res,'index');
+                                    //res.render('index', { objid: data.id});
                                 });
                             } else {
                                 res.send("用户信息有重复，为保证用户利益请及时联系客服。");
@@ -65,16 +68,59 @@ router.get('/', function (req, res) {
         });
     } else {
         chunyu.login(sess.objid, time);
-        res.render('index', { objid: sess.objid })
+        indexProblemList(req,res,'index');
+        //res.render('index', { objid: sess.objid })
     }
 });
 
+function indexProblemList(req,res,service){
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let sess = req.session;
+    chunyu.problemList(sess.objid,time).then(function(data){
+        async.mapSeries(data,function(one,callback){
+            switch(one.problem.status){
+                case 'i':
+                one.problem.status="未提问";
+                break;
+                case 'n':
+                one.problem.status="待回复";
+                break;
+                case 'a':
+                one.problem.status="待回复";
+                break;
+                case 's':
+                one.problem.status="医生已回复";
+                break;
+                case 'c':
+                one.problem.status="已关闭";
+                break;
+                case 'v':
+                one.problem.status="已查看";
+                break;
+                case 'p':
+                one.problem.status="系统举报";
+                break;
+                case 'd':
+                one.problem.status="已评价";
+                break;
+            }
+            callback(null,one);
+        },function(err,problems){
+            res.render(service,{list:problems});
+        });
+    });
+}
+
 router.get('/all_service', function (req, res) {
-    res.render('allservice');
+    indexProblemList(req,res,'allservice');
 });
 
 router.get('/mypoints', function (req, res) {
-    res.render('mypoints');
+    let sess = req.session;
+    let user = AV.Object.createWithoutData('WxUser', sess.objid);
+    user.fetch().then(function () {
+        res.render('mypoints',{points:user.get('points')});
+    });
 });
 
 router.get('/phone', function (req, res) {

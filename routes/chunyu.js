@@ -207,7 +207,6 @@ function problemList(user_id,atime){
         "sign": sign,
         "atime": atime
     };
-    //console.log(data);
     var options = {
         method: 'POST',
         uri: test_url+'/cooperation/server/problem/list/my',
@@ -216,11 +215,11 @@ function problemList(user_id,atime){
     };
     return rp(options)
         .then(function (body) {
-            //console.log(body);
-            result["error"]=0;
-            result["content"]=body.content;
+            console.log(body.length);
+            //result["error"]=0;
+            //result["content"]=body.content;
             //console.log(result);
-            return result;
+            return body;
             // POST succeeded...
         })
         .catch(function (err) {
@@ -243,7 +242,6 @@ function doctorList(user_id,clinic_no,num,province,city,atime){
         "sign": sign,
         "atime": atime
     };
-    console.log(data);
     var options = {
         method: 'POST',
         uri: test_url+'/cooperation/server/doctor/get_clinic_doctors',

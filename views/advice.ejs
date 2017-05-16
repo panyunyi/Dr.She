@@ -27,12 +27,17 @@
                 <div class="up-img-btn"><img src="./assets/i/add_img_3d8621a.png" alt="" class="img_add"> <input type="file" id="up-img-input"
                         name="images" accept="image/*" multiple="multiple"> </div>
             </div>
-            <div class="head">请留下您的手机号，以便于我们联系您</div> <input type="tel" name="tel" placeholder="请输入手机号码">
             <div class="btn feedback_btn">提交</div>
-            <div class="bottom"><span class="title">Dr.She客服</span><a href="tel:400-001-8855" class="phone">400-001-8855</a></div>
         </div>
     </div>
-
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        $(".feedback_btn").on("click",function(){
+            weui.toast('已提交', 3000);
+        });
+    </script>
 </body>
 
 </html>
