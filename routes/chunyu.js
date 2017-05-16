@@ -28,7 +28,7 @@ function chunyulogin(user_id, atime) {
         if (err) {
             console.error('Request failed with response code ' + res.statusCode);
         } else {
-            console.log(body);
+            console.log(user_id);
         }
     });
 }
@@ -215,7 +215,6 @@ function problemList(user_id,atime){
     };
     return rp(options)
         .then(function (body) {
-            console.log(body.length);
             //result["error"]=0;
             //result["content"]=body.content;
             //console.log(result);
@@ -252,9 +251,40 @@ function doctorList(user_id,clinic_no,num,province,city,atime){
         .then(function (body) {
             console.log(body);
             result["error"]=0;
-            result["content"]=body.doctors;
+            result["doctors"]=body.doctors;
             //console.log(result);
             return result;
+            // POST succeeded...
+        })
+        .catch(function (err) {
+            console.log(err);
+            return result;
+            // POST failed...
+        });
+}
+
+function deleteProblem(user_id,problem_id,atime){
+    let result={error:1};
+    let sign = getSign(user_id, atime);
+    let data = {
+        "user_id": user_id,
+        "problem_id":problem_id,
+        "partner": partner,
+        "sign": sign,
+        "atime": atime
+    };
+    var options = {
+        method: 'POST',
+        uri: test_url+'/cooperation/server/problem/delete',
+        body: data,
+        json: true // Automatically stringifies the body to JSON
+    };
+    return rp(options)
+        .then(function (body) {
+            //result["error"]=0;
+            //result["content"]=body.content;
+            //console.log(result);
+            return body;
             // POST succeeded...
         })
         .catch(function (err) {
@@ -274,3 +304,4 @@ module.exports.doctorDetail = doctorDetail;
 module.exports.problemAdd = problemAdd;
 module.exports.problemList = problemList;
 module.exports.doctorList = doctorList;
+module.exports.deleteProblem = deleteProblem;

@@ -142,4 +142,12 @@ router.get('/upgrade', function (req, res) {
 router.get('/pay', function (req, res) {
     res.render('pay');
 });
+
+router.get('/delete/:id', function (req, res) {
+    let sess = req.session;
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    chunyu.deleteProblem(sess.objid,req.params.id,time).then(function(data){
+        indexProblemList(req,res,'index');
+    });
+});
 module.exports = router;

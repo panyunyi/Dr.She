@@ -30,155 +30,21 @@
             </ul>
             <div id="list-container">
                 <ul id="list" class="doctor-list">
+                    <% for(var i=0; i<doctors.length; i++) {%>
                     <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_183c6ae479b6f24c&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8NO1">
-        <img src="../4b711d1001e2_w150_h150_.jpg">
-        <div class="detail">
-            <strong>杨力</strong>妇科 主治医师
-            <p><span class="hospital">北京大学第三医院</span><i class="top">顶级医院</i></p>
-            <p class="good">阴道炎、宫颈癌、阴道出血、宫颈糜烂、尿道炎、盆腔炎</p>
-        </div>
-        <div class="bottom">
-            <i>7点/次</i>
-            <span class="num">5225人购买</span>
-        </div>
-    </a>
+                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=<%=doctors[i].id%>&partner=chunyu_wap">
+                            <img src="<%=doctors[i].image%>">
+                            <div class="detail">
+                                <strong><%=doctors[i].name%></strong><%=doctors[i].clinic_name%> <%=doctors[i].title%>
+                                <p><span class="hospital"><%=doctors[i].hospital_name%></span></p>
+                                <p class="good"><%=doctors[i].hospital_name%></p>
+                            </div>
+                            <div class="bottom">
+                                <i><%=doctors[i].points%></i>
+                            </div>
+                        </a>
                     </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_b9a01c9136c08040&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8NO2">
-        <img src="../1e87bf4343c6_w252_h252_.jpg">
-        <div class="detail">
-            <strong>刘海防</strong>妇科 副主任医师
-            <p><span class="hospital">复旦大学附属华山医院</span><i class="top">顶级医院</i></p>
-            <p class="good">子宫肌瘤、卵巢囊肿、子宫内膜异位症、恶性肿瘤、卵巢癌、子宫内膜癌</p>
-        </div>
-        <div class="bottom">
-            <i>6点/次</i>
-            <span class="num">8208人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=6824f9074b433fae&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8NO3">
-        <img src="../43345ccb1f41.jpg">
-        <div class="detail">
-            <strong>张淞文</strong>妇科 主任医师
-            <p><span class="hospital">北京妇产医院</span><i class="top">顶级科室</i></p>
-            <p class="good">阴道炎、盆腔炎、流产、不孕症、月经不调、更年期功能性子宫出血</p>
-        </div>
-        <div class="bottom">
-            <i>15点/次</i>
-            <span class="num">2569人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_5129366588873602&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8NO4">
-        <img src="../1ec0afd82944_w529_h530_.jpg">
-        <div class="detail">
-            <strong>邢军利</strong>妇科 主治医师
-            <p><span class="hospital">第三军医大学第一附属医院/重庆市西南医院</span><i class="top">顶级医院</i></p>
-            <p class="good">流产、月经推迟、阴道炎、宫颈糜烂、子宫内膜厚、盆腔炎</p>
-        </div>
-        <div class="bottom">
-            <i>3点/次</i>
-            <span class="num">20656人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_ea48072ec7c55728&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8%E5%89%A9%E4%BD%99">
-        <img src="../2b4cef7a3973_w436_h434_.jpg">
-        <div class="detail">
-            <strong>周莉娜</strong>妇科 主治医师
-            <p><span class="hospital">上海市第一人民医院(原:上海市红十字会医院)</span><i class="top">顶级医院</i></p>
-            <p class="good">妇科病、习惯性流产、不孕不育、子宫肌瘤、卵巢囊肿、月经失调</p>
-        </div>
-        <div class="bottom">
-            <i>10点/次</i>
-            <span class="num">27560人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_8b8a1fa02da5735e&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8%E5%89%A9%E4%BD%99">
-        <img src="../3313e21d90b4_w391_h362_.jpg">
-        <div class="detail">
-            <strong>沈晓燕</strong>妇科 主治医师
-            <p><span class="hospital">北京大学人民医院</span><i class="top">顶级医院</i></p>
-            <p class="good">阴道炎、盆腔炎、子宫肌瘤、卵巢囊肿、子宫内膜异位症、子宫腺肌症</p>
-        </div>
-        <div class="bottom">
-            <i>16点/次</i>
-            <span class="num">5603人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_644cc8007e0c39dd&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8%E5%89%A9%E4%BD%99">
-        <img src="../ec1d902fa180_w598_h598_.jpg">
-        <div class="detail">
-            <strong>王丽丽</strong>妇科 医师
-            <p><span class="hospital">北京大学第三医院</span><i class="top">顶级医院</i></p>
-            <p class="good">阴道炎、盆腔炎、月经紊乱、多囊卵巢综合征、子宫出血、卵巢囊肿</p>
-        </div>
-        <div class="bottom">
-            <i>3点/次</i>
-            <span class="num">4298人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_322a802b18596d52&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8%E5%89%A9%E4%BD%99">
-        <img src="../4a10f06ef324_w481_h481_.jpg">
-        <div class="detail">
-            <strong>田小龙</strong>妇科 医师
-            <p><span class="hospital">南方医科大学南方医院</span><i class="top">顶级医院</i></p>
-            <p class="good">月经不调、多囊卵巢、卵巢功能减退、不孕不育、阴道炎、人流</p>
-        </div>
-        <div class="bottom">
-            <i>4点/次</i>
-            <span class="num">13837人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_f145da097b50065b&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8%E5%89%A9%E4%BD%99">
-        <img src="../d753ab29b2d6_w2848_h2848_.jpg">
-        <div class="detail">
-            <strong>韩肖彤</strong>妇科 医师
-            <p><span class="hospital">北京大学第三医院</span><i class="top">顶级医院</i></p>
-            <p class="good">阴道炎、盆腔炎、多囊卵巢综合征、月经紊乱、子宫出血、卵巢囊肿</p>
-        </div>
-        <div class="bottom">
-            <i>6点/次</i>
-            <span class="num">7053人购买</span>
-        </div>
-    </a>
-                    </li>
-
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_2687cbbf8f4f4956&amp;partner=chunyu_wap&amp;source_type=chunyu_weixin&amp;query=&amp;clinic_name=%E5%A6%87%E7%A7%91&amp;from_type=%E6%89%BE%E5%8C%BB%E7%94%9F%E5%88%97%E8%A1%A8%E5%89%A9%E4%BD%99">
-        <img src="../658c8065208e_w574_h574_.jpg">
-        <div class="detail">
-            <strong>丁海青</strong>妇科 副主任医师
-            <p><span class="hospital">山东省妇幼保健院/山东省妇产医院</span><i class="top">回复快</i></p>
-            <p class="good">剖腹产、不孕不育、多囊卵巢综合征、流产、腹痛、不孕</p>
-        </div>
-        <div class="bottom">
-            <i>6点/次</i>
-            <span class="num">6533人购买</span>
-        </div>
-    </a>
-                    </li>
+                    <%}%>
                 </ul>
                 <div id="more" class="more" style="display: block; transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">点击查看更多<span class="icon"></span></div>
                 <div class="notice" id="loading" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;">
@@ -196,7 +62,14 @@
         <div id="mask" style="display: none;"></div>
     </div>
 
-
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        $('#more').on("click",function(){
+            
+        });
+    </script>
 </body>
 
 </html>

@@ -23,7 +23,7 @@ router.post('/add', function (req, res) {
     query.get(sess.objid).then(function (user) {
         let time = Math.round(new Date().getTime() / 1000).toString();
         let imglist=req.body.imglist.split(',');
-        let data = { "content": req.body.content, "image": imglist, "age": req.body.age+"岁", "sex": user.sex };
+        let data = { "content": req.body.content, "image": imglist, "age": req.body.age+"岁", "sex": "女" };
         chunyu.createFree(sess.objid, time, data).then(function(data){
             res.jsonp({ id: data });
         });

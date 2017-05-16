@@ -82,14 +82,15 @@ router.get('/doctor/:id', function (req, res) {
     res.render('doctor',{id:req.params.id});
 });
 
-router.get('/list/:id/:num', function (req, res) {
-    let id=req.params.id;
-    let num=req.params.num*1;
+router.get('/list', function (req, res) {
+    let id=req.query.id;
+    let num=req.query.num*1;
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;
-    chunyu.doctorList(sess.objid,id,num,"","",time).then(function(data){
+    res.render('doctorlist');
+    // chunyu.doctorList(sess.objid,id,num,"","",time).then(function(data){
 
-    });
+    // });
 });
 
 module.exports = router;
