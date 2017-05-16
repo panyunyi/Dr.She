@@ -29,9 +29,7 @@
                         <div class="qa-content">
                         <p class="gray-little">
                             <span class="qa-time"><%= list[i].problem.created_time%></span>
-                            <span class="qa-status"><%=list[i].problem.status%><% if (list[i].problem.status=="医生已回复"||list[i].problem.status=="待回复"){%>
-                        <span class="qa-status" style="color: #FF6134">
-                        <% } else{%><span class="qa-status" style="color: #999999"> <% } %></span>
+                            <span class="qa-status"><%=list[i].problem.status%><span class="red-text" style="color: #999999"></span></span>
                         </p>
                         <p class="qa-text"><%=list[i].problem.ask%></p>
                         </div>
