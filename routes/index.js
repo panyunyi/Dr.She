@@ -12,7 +12,7 @@ var async=require('async');
 
 router.get('/', function (req, res) {
     let sess = req.session;
-    sess.objid='590b18d52f301e00582f024a';
+    //sess.objid='590b18d52f301e00582f024a';
     let time = Math.round(new Date().getTime() / 1000).toString();
     if (typeof (sess.objid) == "undefined") {
         let code = req.query.code;
@@ -117,10 +117,68 @@ router.get('/all_service', function (req, res) {
 
 router.get('/mypoints', function (req, res) {
     let sess = req.session;
-    let user = AV.Object.createWithoutData('WxUser', sess.objid);
-    user.fetch().then(function () {
-        res.render('mypoints',{points:user.get('points')});
-    });
+    //sess.objid='590b18d52f301e00582f024a';
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    if (typeof (sess.objid) == "undefined") {
+        let code = req.query.code;
+        let state = req.query.state;
+        let client = request.createClient('https://api.weixin.qq.com/sns/oauth2/');
+        client.get('access_token?appid=' + appid + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code', function (err, res1, body) {
+            if (body != "undefined" && typeof (body.openid) != "undefined") {
+                client = request.createClient('https://api.weixin.qq.com/sns/');
+                client.get('userinfo?access_token=' + body.access_token + '&openid=' + body.openid + '&lang=zh_CN', function (err2, res2, body2) {
+                    if (body2 != "undefined" && typeof (body2.openid) != "undefined") {
+                        let openid = body2.openid;
+                        let query = new AV.Query('WxUser');
+                        query.equalTo('openid', openid);
+                        query.count().then(function (count) {
+                            if (count == 0) {
+                                let wxuser = new WxUser();
+                                wxuser.set('openid', openid);
+                                wxuser.set('nickname', body2.nickname);
+                                wxuser.set('sex', body2.sex == 1 ? "男" : "女");
+                                wxuser.set('city', body2.city);
+                                wxuser.set('province', body2.province);
+                                wxuser.set('country', body2.country);
+                                wxuser.set('headimgurl', body2.headimgurl);
+                                wxuser.set('points', 2);
+                                wxuser.save().then(function (data) {
+                                    sess.objidid = data.id;
+                                    chunyu.login(data.id, time);
+                                    res.render('mypoints',{points:data.get('points')});
+                                    //res.render('index', { objid: data.id });
+                                }, function (err) {
+                                    console.log(err);
+                                });
+                            } else if (count == 1) {
+                                query.first().then(function (data) {
+                                    sess.objid = data.id;
+                                    //chunyu.login(data.id, time);
+                                    res.render('mypoints',{points:data.get('points')});
+                                    //res.render('index', { objid: data.id});
+                                });
+                            } else {
+                                res.send("用户信息有重复，为保证用户利益请及时联系客服。");
+                            }
+                        });
+                    } else {
+                        console.log(body);
+                        res.send("已超时，请退出菜单重进。");
+                    }
+                });
+            } else {
+                console.log(body);
+                res.send("已超时，请退出菜单重进。");
+            }
+        });
+    } else {
+        let user = AV.Object.createWithoutData('WxUser', sess.objid);
+        user.fetch().then(function () {
+            res.render('mypoints',{points:user.get('points')});
+        });
+        //res.render('index', { objid: sess.objid })
+    }
+    
 });
 
 router.get('/phone', function (req, res) {
@@ -132,15 +190,11 @@ router.get('/advice', function (req, res) {
 });
 
 router.get('/doctorlist', function (req, res) {
-    res.render('doctorlist');
+    res.render('doctorlist2');
 });
 
 router.get('/upgrade', function (req, res) {
     res.render('upgrade');
-});
-
-router.get('/pay', function (req, res) {
-    res.render('pay');
 });
 
 router.get('/delete/:id', function (req, res) {

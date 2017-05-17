@@ -21,6 +21,11 @@
             min-height: 100%
         }
 
+        footer {
+            margin-top: 1.6rem;
+            padding-bottom: .53333rem;
+        }
+
         .humane,
         .humane-bigbox {
             position: fixed;
@@ -135,18 +140,17 @@
         }
 
         .points {
-            padding: .5em;
             display: inline;
-            line-height: 1.2;
-            color: #555;
+            color: #999;
             vertical-align: middle;
             background-color: #fff;
             background-image: none;
             border: 0px;
             -webkit-appearance: none;
-            font-size: 0.15rem;
-            width: 45%;
-            margin-left: .4rem;
+            font-size: 2em;
+            width: 35%;
+            margin-left: .5rem;
+            margin-top: .05rem;
         }
     </style>
     <style type="text/css">
@@ -223,22 +227,17 @@
 
     <div class="cy-bd">
 
-
-
-        <header class="cy-bd-h">
-            <div class="btn-back"></div>
-            <h3>积分充值</h3>
-        </header>
-
-
         <div id="common-pay">
-            <div class="cy-sec">
+            <div class="cy-sec" style="margin-bottom: .005rem;">
 
                 <div class="cy-sec-item block">
-                    <div class="cy-label" style="display:inline">积分充值</div>
-                    <div class="cy-txt cy-should-pay" style="display: inline;float: right;font-size: .2rem;width: 53%;">
-                        <input type="number" class="points" placeholder="请输入积分" emptyTips="请输入积分" oninput="changeVale(this.value)" onpropertychange="changeVale(this.value)">
-                        <span class="cy-txt cy-should-pay" style="font-size: .2rem;float:right">积分</span>
+                    <div class="cy-label" style="display:inline;font-size:2em;">
+                        <%=title%>
+                    </div>
+                    <div class="cy-txt cy-should-pay" style="display: inline;float: right;width: 53%;">
+                        <input type="number" value=<%=points%> class="points" placeholder="" emptyTips="" oninput="changeVale(this.value)"
+                        onpropertychange="changeVale(this.value)">
+                        <div class="cy-txt cy-should-pay" style="font-size: 2em;float:right;">积分</div>
                     </div>
 
                 </div>
@@ -246,8 +245,9 @@
             </div>
             <div class="cy-sec cy-no-margin">
                 <div class="cy-sec-item">
-                    <div class="cy-label">需支付<span style="margin-left: .2rem;color:#ff6134;">(￥5=1积分)</span></div>
+                    <div class="cy-label"><strong>支付</strong><span style="margin-left: .2rem;color:#999;">(￥5.00=1积分)</span></div>
                     <div id="money" class="cy-txt cy-should-pay" style="font-size: .2rem;">¥ 0</div>
+                    <input id="money2" type="hidden">
                 </div>
             </div>
             <h6 class="cy-title">选择支付方式</h6>
@@ -263,6 +263,9 @@
             <div class="cy-btn-wrap">
                 <button class="cy-btn cy-btn-pay " type="submit">去支付</button>
             </div>
+            <footer>
+                <p class="footer-tip" style="text-align: center;">如有疑问，请联系平台客服：<a style="color:#68aafc" href="tel:400-001-8855">400-001-8855</a></p>
+            </footer>
         </div>
 
 
@@ -273,10 +276,25 @@
     <script type="text/javascript">
         function changeVale(points) {
             $('#money').text("￥ " + points * 5);
+            $('#money2').val(points * 5);
         }
+        $('#money').text("￥ " + <%=points %> * 5);
+        $('#money2').val(<%=points %> * 5);
         $('.cy-btn-pay').on("click", function () {
             if ($('.points').val() > 0) {
-                weui.toast('支付完成', 3000);
+                $.post("/pay/recharge", { points: $(".points").val(), money: $("#money2").val(), }, function (result) {
+                    if (result.error == 0) {
+                        //weui.toast('支付完成', 3000);
+                        weui.toast('支付完成', {
+                            duration: 3000,
+                            className: 'custom-classname',
+                            callback: function () { window.location.replace("../mypoints"); }
+                        });
+
+                    } else {
+                        weui.toast('支付失败，请联系客服。', 3000);
+                    }
+                });
             }
         });
     </script>

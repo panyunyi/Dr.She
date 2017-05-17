@@ -38,6 +38,7 @@ app.use(cookieSession({
 }));
 app.use('/',  require('./routes/index'));
 app.use('/ask',  require('./routes/ask'));
+app.use('/pay',  require('./routes/pay'));
 app.use('/inquiry',  require('./routes/inquiry'));
 app.use('/health',  require('./routes/health'));
 app.use('/doctor',  require('./routes/doctor'));

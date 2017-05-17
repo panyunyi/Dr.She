@@ -27,21 +27,28 @@
                 <section class="all-service-element">
                     <a href="/inquiry?id=<%= list[i].problem.id%>">
                         <div class="qa-content">
-                        <p class="gray-little">
-                            <span class="qa-time"><%= list[i].problem.created_time%></span>
-                            <span class="qa-status"><%=list[i].problem.status%><span class="red-text" style="color: #999999"></span></span>
-                        </p>
-                        <p class="qa-text"><%=list[i].problem.ask%></p>
+                            <p class="gray-little">
+                                <span class="qa-time"><%= list[i].problem.created_time%></span>
+                                <%if (list[i].problem.status=="医生已回复"||list[i].problem.status=="待回复"){%>
+                                    <span class="qa-status" style="color: #FF6134"><%=list[i].problem.status%>
+                                <% } else{%>
+                                <span class="qa-status"><%=list[i].problem.status%>
+                                <% } %>
+                                <span class="red-text" style="color: #999999"></span></span>
+                            </p>
+                            <p class="qa-text">
+                                <%=list[i].problem.ask%>
+                            </p>
                         </div>
                         <div class="qa-info">
                             <%if (typeof(list[i].doctor.image)!="undefined"){%>
-                            <img class="thumbnail" src="<%=list[i].doctor.image%>">
-                            <span class="gray-little left"><%=list[i].doctor.name%></span>
-                            <%}%>
+                                <img class="thumbnail" src="<%=list[i].doctor.image%>">
+                                <span class="gray-little left"><%=list[i].doctor.name%></span>
+                            <% } %>
                         </div>
                     </a>
                 </section>
-            <% } %>
+                <% } %>
         </main>
 
         <div class="notice" id="loading" style="display: none;">
@@ -55,7 +62,7 @@
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
-        $(".feedback_btn").on("click",function(){
+        $(".feedback_btn").on("click", function () {
             weui.toast('已提交', 3000);
         });
     </script>

@@ -10,27 +10,40 @@ var Problem = AV.Object.extend('Problem');
 var chunyu = require('../routes/chunyu');
 var multiparty = require('multiparty');
 var fs = require('fs');
+var async=require('async');
 
 router.get('/', function (req, res) {
     let sess = req.session;
     console.log(sess.objid);
-    res.render('ask');
+    let user = AV.Object.createWithoutData('WxUser', sess.objid);
+    user.fetch().then(function () {
+        res.render('ask', { points: user.get('points') });
+    });
 });
 
 router.post('/add', function (req, res) {
     let sess = req.session;
-    let query = new AV.Query('WxUser');
-    query.get(sess.objid).then(function (user) {
+    let num = req.body.num;
+    let user = AV.Object.createWithoutData('WxUser', sess.objid);
+    user.increment('points', -num);
+    user.save().then(function (user) {
         let time = Math.round(new Date().getTime() / 1000).toString();
-        let imglist=req.body.imglist.split(',');
-        let data = { "content": req.body.content, "image": imglist, "age": req.body.age+"岁", "sex": "女" };
-        chunyu.createFree(sess.objid, time, data).then(function(data){
-            res.jsonp({ id: data });
-        });
-    }, function (error) {
-        // 异常处理
+        let imglist = req.body.imglist.split(',');
+        let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女", "num": num };
+        if(num==5){
+            async.times(3,function(n,callback){
+                chunyu.createFree(sess.objid, time, data).then(function (data) {
+                    callback(null,data);
+                });
+            },function(err,results){
+                res.jsonp({ id: results[0] });
+            });
+        }else{
+            chunyu.createFree(sess.objid, time, data).then(function (data) {
+                res.jsonp({ id: data });
+            });
+        }
     });
-
 });
 
 router.post('/upload', function (req, res) {
@@ -44,8 +57,8 @@ router.post('/upload', function (req, res) {
                 }
                 var theFile = new AV.File(iconFile.originalFilename, data);
                 theFile.save().then(function (theFile) {
-                    theFile.fetch().then(function(){
-                         res.send({img:theFile.get('url')});
+                    theFile.fetch().then(function () {
+                        res.send({ img: theFile.get('url') });
                     });
                 }).catch(console.error);
             });
