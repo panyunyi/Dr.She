@@ -122,7 +122,7 @@ function problemDetail(user_id, problem_id, atime) {
             result["content"] = body.content;
             result["doctor"] = body.doctor;
             result["problem"] = body.problem;
-            console.log(body.content);
+            //console.log(body.content);
             return result;
             // POST succeeded...
         })

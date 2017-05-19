@@ -17,7 +17,11 @@
 
     <link rel="stylesheet" href="../stylesheets/cy1.css">
     <link rel="stylesheet" href="../stylesheets/inquiry.css">
-
+    <style>
+        audio{
+            max-width: 7rem;
+        }
+    </style>
 </head>
 
 <body class="">
@@ -40,10 +44,10 @@
 
                 </div>
                 <div class="qa-bottom-wrap fixed center">
-                    
+
 
                 </div>
-   
+
                 <div class="qa-text-mask" style="display: none;">
                     <div class="qa-text-send"><textarea placeholder="输入文字" id="qa-text-area" class="qa-textarea" oninput="changeVale(this.value)" onpropertychange="changeVale(this.value)"></textarea>
                         <div class="qa-text-send-bottom"><span>Dr.She为您解答</span> <a href="javascript:void(0)" class="qa-btn disabled">发送</a></div> <span class="hide-text-send"></span></div>
@@ -80,44 +84,97 @@
                     } else {
                         weui.alert("回复失败，请退出重试。")
                     }
-                    
+
                 });
             }
         });
+        showUnreadNews();
         function showUnreadNews() {
-       
-                $.ajax({
-                    type: "GET",
-                    url: "/inquiry/pooling/" + problem_id,
-                    dataType: "json",
-                    success: function (msg) {
-                        if (msg.isreply) {
-                            $(".qa-doctor-wrap").html(msg.doctor);
-                            $(".qa-tipbar").html("23小时后或19次对话后问题关闭");
-                            $(".qa-doctor-wrap").removeClass("empty");
-                        }
-                        $(".qa-inquiry-wrap").html(msg.content);
-                        if (msg.isclose) {
-                            $(".qa-bottom-wrap").html('<h6 class="qa-bottom-title">问题已关闭</h6><a href="/ask" class="qa-bottom-btn pay" style="float:left;margin: 0 auto;display: none;">继续咨询</a>');
-                        }else{
-                            $(".qa-bottom-wrap").html('<div class="up-img-btn"><input type="file" id="up-img-input" name="images" accept="image/*" multiple="multiple"></div><div class="block-send-txt">点击输入文字</div>');
-                            $(".block-send-txt").on("click", function () {
-                                $(".qa-text-mask").css("display", "block");
-                                $(".qa-tipbar").css("display", "none");
-                                $("#qa-text-area").val("");
-                            });
-                            $(".hide-text-send").on("click", function () {
-                                $(".qa-text-mask").css("display", "none");
-                                $(".qa-tipbar").css("display", "block");
-                            });
-                        }
+            $.ajax({
+                type: "GET",
+                url: "/inquiry/pooling/" + problem_id,
+                dataType: "json",
+                success: function (msg) {
+                    if (msg.isreply) {
+                        $(".qa-doctor-wrap").html(msg.doctor);
+                        $(".qa-tipbar").html("23小时后或19次对话后问题关闭");
+                        $(".qa-doctor-wrap").removeClass("empty");
                     }
-                });
-       
+                    $(".qa-inquiry-wrap").html(msg.content);
+                    if (msg.isclose) {
+                        $(".qa-bottom-wrap").html('<h6 class="qa-bottom-title">问题已关闭</h6><a href="/ask" class="qa-bottom-btn pay" style="float:left;margin: 0 auto;display: none;">继续咨询</a>');
+                    } else {
+                        $(".qa-bottom-wrap").html('<div class="up-img-btn"><input type="file" id="up-img-input" name="images" accept="image/*" multiple="multiple"></div><div class="block-send-txt">点击输入文字</div>');
+                        $(".block-send-txt").on("click", function () {
+                            $(".qa-text-mask").css("display", "block");
+                            $(".qa-tipbar").css("display", "none");
+                            $("#qa-text-area").val("");
+                        });
+                        $(".hide-text-send").on("click", function () {
+                            $(".qa-text-mask").css("display", "none");
+                            $(".qa-tipbar").css("display", "block");
+                        });
+                    }
+                    audio();
+                    gallery();
+                }
+            });
         }
-        setInterval('showUnreadNews()', 1000);
+        function audio(){
+            var t=$(".qa-inquiry-wrap audio");
+            $.each(t,function(t,i){
+                var e=$(i),o=e.closest(".qa-inquiry-content"),s=e[0];
+                s.addEventListener("loadedmetadata",function(t){
+                    o.find(".audio-seconds b").text(Math.floor(t.target.duration)),0===t.target.duration&&(s.volume=0,s.play(),setTimeout(function(){
+                        s.volume=.5,s.pause(),s.currentTime=0
+                    },800),s.addEventListener("timeupdate",function(t){
+                        o.find(".audio-seconds b").text(Math.floor(t.target.duration))
+                    }))
+                })
+            })
+            var s=e.currentTarget,n=s.querySelector("audio");
+            +n.dataset.isPlaying?(n.dataset.isPlaying=0,n.pause()):(n.dataset.isPlaying=1,n.play()),n.addEventListener("timeupdate",function(t){
+                var i=Math.floor(t.target.duration-t.target.currentTime);
+                s.querySelector(".audio-seconds b").innerText=i,setTimeout(function(){
+                    0>=i&&(n.dataset.isPlaying=0,s.querySelector(".audio-seconds b").innerText=Math.floor(t.target.duration))
+                },1008)
+            })
+        }
+        function gallery() {//这个是调用微信图片浏览器的函数   
+            //下面是获取当前页面所有的img的src 转成数组 并且 转换成json格式  
+            var aa = [];
+            var i = 0;
+            var src = [];
+            aa = $('img');
+            for (i = 0; i < aa.length; i++) {
+                src[i] = aa[i].src;    //把所有的src存到数组里  
+            }
+
+            //下面是点击图片的时候获取当前第几个图片并且启用咱们做的调用微信图片浏览器的函数  
+            $('img').click(function () {
+                var index = $('img').index(this);
+                imagePreview(src[index], src);
+            });
+
+
+        };
+        function imagePreview(curSrc, srcList) {
+            //这个检测是否参数为空  
+            if (!curSrc || !srcList || srcList.length == 0) {
+                return;
+            }
+
+            //这个使用了微信浏览器提供的JsAPI 调用微信图片浏览器  
+            WeixinJSBridge.invoke('imagePreview', {
+                'current': curSrc,
+                'urls': srcList
+            });
+        };
+
+
+        //setInterval('showUnreadNews()', 1000);
         $(document).ready(function () {
-            var h = $(document).height()-$(window).height();
+            var h = $(document).height() - $(window).height();
             $(document).scrollTop(h);
         });
     </script>

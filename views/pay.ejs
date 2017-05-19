@@ -220,6 +220,15 @@
             border-bottom-left-radius: 5px;
             border-right: 1px solid #d6d6d6
         }
+
+        header {
+            background-color: #f4f4f4;
+            font-size: .13667rem;
+            padding: 0.08667rem .4rem;
+            line-height: 1.2;
+            text-align: center;
+            color: #999;
+        }
     </style>
 </head>
 
@@ -228,6 +237,9 @@
     <div class="cy-bd">
 
         <div id="common-pay">
+            <header>
+                <span id="now">您当前<%=now%>积分</span>
+            </header>
             <div class="cy-sec" style="margin-bottom: .005rem;">
 
                 <div class="cy-sec-item block">

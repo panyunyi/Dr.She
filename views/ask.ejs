@@ -43,11 +43,11 @@
 
 <body class="">
 
-    <div id="html1" class="partner-right" >
+    <div id="html1" class="partner-right">
         <section class="ask-description">
             <textarea autofocus="" id="description" placeholder="请上传妇科自检图像并详细描述您的症状疾病和身体状况，便于医生更准确的分析，星天使将确保您的隐私安全（字数限制为10~1000字）"></textarea>
-            <span class="age">请填写年龄:</span><input style="width: 16%;height:22px;border: 0px;font-size: .4rem;margin-bottom: .06rem;" type="number"
-                id="age" name="age" min="18" max="60" placeholder="年龄" />
+            <span class="age">请填写年龄:</span><input style="width: 16%;height:22px;border: 0px;font-size: .4rem;margin-bottom: .06rem;"
+                type="number" id="age" name="age" min="18" max="60" placeholder="年龄" />
         </section>
 
         <div class="img-list">
@@ -61,13 +61,13 @@
         </div>
         <div class="toolbar">
 
-            <button id="ask" class="btn" onclick="getNum(description.value)">下一步</button>
+            <button id="ask" class="btn" onclick="getNum(description.value)">提交</button>
             <p class="notice" style="float:left;margin-left:.5rem;text-decoration:underline">自检图像采集方法</p>
             <p class="notice">问诊服务由公立三甲、专科医生提供</p>
         </div>
     </div>
 
-    <div id="html2" class="partner-right" style="display:none">
+    <!--<div id="html2" class="partner-right" style="display:none">
         <header>
             <span>您当前<%=points%>积分</span>
         </header>
@@ -114,13 +114,13 @@
         <section class="upgrade-btn-wrap">
             <div class="upgrade-btn">提交</div>
         </section>
-    </div>
+    </div>-->
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
         var sum = 0;
-        
+
         var points = <%=points%>
             $('#Image').change(function (event) {
                 if (sum >= 3) {
@@ -192,37 +192,52 @@
                 $(".img-list img").each(function (i) {
                     imglist += $(this).attr("src") + ",";
                 });
-                $('#html1').css('display', 'none');
-                $('#html2').css('display', 'block');
+                // $('#html1').css('display', 'none');
+                // $('#html2').css('display', 'block');
+                var num = 2;
+                if ($('#three').hasClass('checked')) {
+                    num = 5;
+                }
+                if (points < num) {
+                    window.location.replace("pay?points=" + num);
+                    return;
+                }
+                $.post("/ask/add", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num }, function (result) {
+                    if (result.id != 0) {
+                        window.location.replace("inquiry?id=" + result.id);
+                    } else {
+                        weui.alert("创建问题失败，请联系客服。")
+                    }
+                });
             } else {
                 weui.alert('字数限制为10~1000');
             }
         }
-        $(".upgrade-btn").on("click", function () {
-            var num = 2;
-            if ($('#three').hasClass('checked')) {
-                num = 5;
-            }
-            if (points < num) {
-                window.location.replace("pay?points=" + num);
-                return;
-            }
-            $.post("/ask/add", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num }, function (result) {
-                if (result.id != 0) {
-                    window.location.replace("inquiry?id=" + result.id);
-                } else {
-                    weui.alert("创建问题失败，请联系客服。")
-                }
-            });
-        });
-        $("#auto").on("click", function () {
-            $("#auto").addClass("checked");
-            $('#three').removeClass("checked");
-        });
-        $("#three").on("click", function () {
-            $("#three").addClass("checked");
-            $('#auto').removeClass("checked");
-        });
+        // $(".upgrade-btn").on("click", function () {
+        //     var num = 2;
+        //     if ($('#three').hasClass('checked')) {
+        //         num = 5;
+        //     }
+        //     if (points < num) {
+        //         window.location.replace("pay?points=" + num);
+        //         return;
+        //     }
+        //     $.post("/ask/add", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num }, function (result) {
+        //         if (result.id != 0) {
+        //             window.location.replace("inquiry?id=" + result.id);
+        //         } else {
+        //             weui.alert("创建问题失败，请联系客服。")
+        //         }
+        //     });
+        // });
+        // $("#auto").on("click", function () {
+        //     $("#auto").addClass("checked");
+        //     $('#three').removeClass("checked");
+        // });
+        // $("#three").on("click", function () {
+        //     $("#three").addClass("checked");
+        //     $('#auto').removeClass("checked");
+        // });
     </script>
 </body>
 
