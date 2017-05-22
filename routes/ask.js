@@ -29,7 +29,7 @@ router.post('/add', function (req, res) {
     user.save().then(function (user) {
         let time = Math.round(new Date().getTime() / 1000).toString();
         let imglist = req.body.imglist.split(',');
-        let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女", "num": num };
+        let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女"};
         if(num==5){
             async.times(3,function(n,callback){
                 chunyu.createFree(sess.objid, time, data).then(function (data) {

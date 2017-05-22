@@ -28,7 +28,7 @@
                 <h3 class="logo-text">公立三甲、专科医生的图像问诊服务</h3>
             </div>
 
-            <a class="header-link free" style="background-image: url(&#39;../assets/i/icon1.png&#39;)" href="ask">
+            <a class="header-link free" style="background-image: url(&#39;../assets/i/icon1.png&#39;)" href="#">
                 <h6>快问医生</h6>
                 <span class="header-link-tip">妇科自检 图像问诊，让医生看护你</span>
                 <span class="next-icon"></span>
@@ -45,28 +45,32 @@
         <main class="service-list">
             <% for(var i=0; i<list.length; i++) {%>
                 <% if (list[i].problem.status!="已关闭"&&list[i].problem.status!="系统举报"){%>
-                <a href="/inquiry?id=<%= list[i].problem.id%>">
-                    <section class="service-element">
-                        <% if (list[i].problem.status=="医生已回复"||list[i].problem.status=="待回复"){%>
-                        <span class="qa-status" style="color: #FF6134">
+                    <a href="/inquiry?id=<%= list[i].problem.id%>">
+                        <section class="service-element">
+                            <% if (list[i].problem.status=="医生已回复"||list[i].problem.status=="待回复"){%>
+                                <span class="qa-status" style="color: #FF6134">
                         <% } else{%><span class="qa-status" style="color: #999999"> <% } %><%=list[i].problem.status%></span>
-                        <%if (typeof(list[i].doctor.image)!="undefined"){%>
-                        <img class="thumbnail" src="<%=list[i].doctor.image%>">
-                        <%}%>
-                        <div class="service-element-right">
-                            <%if (typeof(list[i].doctor.image)!="undefined"){%>
-                            <h6 class="doctor-name"><%=list[i].doctor.name%></h6>
-                            <%}%>
-                            <p class="qa-detail">
-                                <span><%=list[i].problem.created_time%></span>
-                                <span><%=list[i].problem.clinic_name%></span>
-                            </p>
-                            <p class="qa-text"><%=list[i].problem.ask%></p>
-                        </div>
-                    </section>
-                </a>
-                <% } %>
-            <% } %>
+                                <%if (typeof(list[i].doctor.image)!="undefined"){%>
+                                    <img class="thumbnail" src="<%=list[i].doctor.image%>">
+                                    <%}%>
+                                        <div class="service-element-right">
+                                            <%if (typeof(list[i].doctor.image)!="undefined"){%>
+                                                <h6 class="doctor-name">
+                                                    <%=list[i].doctor.name%>
+                                                </h6>
+                                                <%}%>
+                                                    <p class="qa-detail">
+                                                        <span><%=list[i].problem.created_time%></span>
+                                                        <span><%=list[i].problem.clinic_name%></span>
+                                                    </p>
+                                                    <p class="qa-text">
+                                                        <%=list[i].problem.ask%>
+                                                    </p>
+                                        </div>
+                        </section>
+                    </a>
+                    <% } %>
+                        <% } %>
         </main>
         <section class="mask hide">
             <div class="mask-content">
@@ -106,6 +110,8 @@
     </div>
 
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
         $(".sidebar-icon").on("click", function () {
             $("body").addClass("no-scroll"), $(".mask").removeClass("hide"),
@@ -127,6 +133,19 @@
         //     });
         // }
         //setInterval('showUnreadNews()', 1000);
+        $(".header-link.free").on("click", function () {
+            hasAnswer();
+        });
+        function hasAnswer(){
+           var count= $(".service-list").find("a").length;
+           if(count>0){
+            weui.confirm('上次问诊尚未结束，点击“确定”跳转到上一次问诊，点击“取消”发起一个新的问诊。', function(){
+                window.location.replace("inquiry?id=" + result.id);
+            }, function(){ 
+                window.location.replace("ask");    
+            });  
+           }
+        }
     </script>
 </body>
 
