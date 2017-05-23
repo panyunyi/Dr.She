@@ -8,6 +8,8 @@ var async=require('async');
 var Content = AV.Object.extend('Content');
 var Doctor = AV.Object.extend('Doctor');
 var chunyu = require('../routes/chunyu');
+var fs = require('fs');
+var file = "./public/city_list.json";
 
 router.post('/reply', function(req, res) {
     let result={
@@ -87,7 +89,9 @@ router.get('/list', function (req, res) {
     let num=req.query.num*1;
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;
-    res.render('doctorlist');
+    let city_list = JSON.parse(fs.readFileSync(file));
+    console.log(city_list.length);
+    //res.render('doctorlist');
     // chunyu.doctorList(sess.objid,id,num,"","",time).then(function(data){
 
     // });

@@ -84,7 +84,6 @@
                     } else {
                         weui.alert("回复失败，请退出重试。")
                     }
-
                 });
             }
         });
@@ -132,13 +131,13 @@
                     }))
                 })
             })
-            var s=e.currentTarget,n=s.querySelector("audio");
-            +n.dataset.isPlaying?(n.dataset.isPlaying=0,n.pause()):(n.dataset.isPlaying=1,n.play()),n.addEventListener("timeupdate",function(t){
-                var i=Math.floor(t.target.duration-t.target.currentTime);
-                s.querySelector(".audio-seconds b").innerText=i,setTimeout(function(){
-                    0>=i&&(n.dataset.isPlaying=0,s.querySelector(".audio-seconds b").innerText=Math.floor(t.target.duration))
-                },1008)
-            })
+            // var s=e.currentTarget,n=s.querySelector("audio");
+            // +n.dataset.isPlaying?(n.dataset.isPlaying=0,n.pause()):(n.dataset.isPlaying=1,n.play()),n.addEventListener("timeupdate",function(t){
+            //     var i=Math.floor(t.target.duration-t.target.currentTime);
+            //     s.querySelector(".audio-seconds b").innerText=i,setTimeout(function(){
+            //         0>=i&&(n.dataset.isPlaying=0,s.querySelector(".audio-seconds b").innerText=Math.floor(t.target.duration))
+            //     },1008)
+            // })
         }
         function gallery() {//这个是调用微信图片浏览器的函数   
             //下面是获取当前页面所有的img的src 转成数组 并且 转换成json格式  
@@ -157,7 +156,7 @@
             });
 
 
-        };
+        }
         function imagePreview(curSrc, srcList) {
             //这个检测是否参数为空  
             if (!curSrc || !srcList || srcList.length == 0) {
@@ -172,11 +171,7 @@
         };
 
 
-        //setInterval('showUnreadNews()', 1000);
-        $(document).ready(function () {
-            var h = $(document).height() - $(window).height();
-            $(document).scrollTop(h);
-        });
+        setInterval('showUnreadNews()', 1000);
     </script>
 </body>
 

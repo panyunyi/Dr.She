@@ -8,8 +8,6 @@ var partner = process.env.partner;
 var test_url = process.env.test_url;
 var product_url = process.env.product_url;
 var Problem = AV.Object.extend('Problem');
-var fs = require('fs');
-var file = "./public/city_list.json";
 
 function chunyulogin(user_id, atime) {
     let sign = getSign(user_id, atime);
@@ -230,7 +228,6 @@ function problemList(user_id, atime) {
 }
 
 function doctorList(user_id, clinic_no, num, province, city, atime) {
-    var city_list = JSON.parse(fs.readFileSync(file));
     let result = { error: 1 };
     let sign = getSign(user_id, atime);
     let data = {
