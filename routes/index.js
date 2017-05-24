@@ -12,7 +12,7 @@ var async=require('async');
 
 router.get('/', function (req, res) {
     let sess = req.session;
-    sess.objid='590b18d52f301e00582f024a';
+    //sess.objid='590b18d52f301e00582f024a';
     let time = Math.round(new Date().getTime() / 1000).toString();
     if (typeof (sess.objid) == "undefined") {
         let code = req.query.code;

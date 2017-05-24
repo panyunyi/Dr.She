@@ -11,6 +11,8 @@ var chunyu = require('../routes/chunyu');
 var multiparty = require('multiparty');
 var fs = require('fs');
 var async = require('async');
+var multiparty = require('multiparty');
+var PersonalFile=AV.Object.extend('PersonalFile');
 
 router.get('/points/:user_id', function (req, res) {
     let user_id = req.params.user_id;
@@ -57,4 +59,66 @@ router.get('/problemList/:user_id', function (req, res) {
         res.jsonp(data);
     });
 });
+
+router.post('/upload', function (req, res) {
+    let form = new multiparty.Form();
+    form.parse(req, function (err, fields, files) {
+        var iconFile = files.iconImage[0];
+        if (iconFile.size !== 0) {
+            fs.readFile(iconFile.path, function (err, data) {
+                if (err) {
+                    return res.send('读取文件失败');
+                }
+                var theFile = new AV.File(iconFile.originalFilename, data);
+                theFile.save().then(function (theFile) {
+                    theFile.fetch().then(function () {
+                        res.send({ img: theFile.get('url') });
+                    });
+                }).catch(console.error);
+            });
+        } else {
+            res.send('请选择一个文件。');
+        }
+    });
+});
+
+router.post('/health/add', function (req, res) {
+    let name=req.body.name;
+    let age=req.body.age;
+    let user_id=req.body.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let person=new PersonalFile();
+    person.set('name',name);
+    person.set('age',age);
+    if(typeof(user)!="undefined"){
+        person.set('user',user);
+        person.save().then(function(){
+            res.jsonp({error:0})
+        });
+    }else{
+        res.jsonp({error:1,msg:"账号不存在"});
+    }
+});
+
+router.get('/health/:user_id', function (req, res) {
+    let user_id=req.params.user_id;
+    let query=new AV.Query('PersonalFile');
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    query.equalTo('user',user);
+    query.find().then(function(results){
+        if(results.length==0){
+            res.jsonp({error:0,count:0});
+        }else{
+            res.jsonp({error:0,data:results});
+        }
+    });
+});
+
+router.get('/health/delete/:id', function (req, res) {
+    let id=req.params.id;
+    let person = AV.Object.createWithoutData('PersonalFile', id);
+    person.destroy();
+    res.jsonp({error:0});
+});
+
 module.exports = router;
