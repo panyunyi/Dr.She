@@ -12,7 +12,7 @@ var multiparty = require('multiparty');
 var fs = require('fs');
 var async = require('async');
 var multiparty = require('multiparty');
-var PersonalFile=AV.Object.extend('PersonalFile');
+var PersonalFile = AV.Object.extend('PersonalFile');
 
 router.get('/points/:user_id', function (req, res) {
     let user_id = req.params.user_id;
@@ -83,42 +83,42 @@ router.post('/upload', function (req, res) {
 });
 
 router.post('/health/add', function (req, res) {
-    let name=req.body.name;
-    let age=req.body.age;
-    let user_id=req.body.user_id;
+    let name = req.body.name;
+    let age = req.body.age * 1;
+    let user_id = req.body.user_id;
     let user = AV.Object.createWithoutData('WxUser', user_id);
-    let person=new PersonalFile();
-    person.set('name',name);
-    person.set('age',age);
-    if(typeof(user)!="undefined"){
-        person.set('user',user);
-        person.save().then(function(){
-            res.jsonp({error:0})
+    let person = new PersonalFile();
+    person.set('name', name);
+    person.set('age', age);
+    if (typeof (user.id) != "undefined") {
+        person.set('user', user);
+        person.save().then(function () {
+            res.jsonp({ error: 0 })
         });
-    }else{
-        res.jsonp({error:1,msg:"账号不存在"});
+    } else {
+        res.jsonp({ error: 1, msg: "账号不存在" });
     }
 });
 
 router.get('/health/:user_id', function (req, res) {
-    let user_id=req.params.user_id;
-    let query=new AV.Query('PersonalFile');
+    let user_id = req.params.user_id;
+    let query = new AV.Query('PersonalFile');
     let user = AV.Object.createWithoutData('WxUser', user_id);
-    query.equalTo('user',user);
-    query.find().then(function(results){
-        if(results.length==0){
-            res.jsonp({error:0,count:0});
-        }else{
-            res.jsonp({error:0,data:results});
+    query.equalTo('user', user);
+    query.find().then(function (results) {
+        if (results.length == 0) {
+            res.jsonp({ error: 0, count: 0 });
+        } else {
+            res.jsonp({ error: 0, data: results });
         }
     });
 });
 
 router.get('/health/delete/:id', function (req, res) {
-    let id=req.params.id;
+    let id = req.params.id;
     let person = AV.Object.createWithoutData('PersonalFile', id);
     person.destroy();
-    res.jsonp({error:0});
+    res.jsonp({ error: 0 });
 });
 
 module.exports = router;

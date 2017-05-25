@@ -31,20 +31,21 @@
             <div id="list-container">
                 <ul id="list" class="doctor-list">
                     <% for(var i=0; i<doctors.length; i++) {%>
-                    <li>
-                        <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=<%=doctors[i].id%>&partner=chunyu_wap">
+                        <li>
+                            <a href="detail/<%=doctors[i].id%>/<%=doctors[i].purchase_num%>">
                             <img src="<%=doctors[i].image%>">
                             <div class="detail">
                                 <strong><%=doctors[i].name%></strong><%=doctors[i].clinic_name%> <%=doctors[i].title%>
                                 <p><span class="hospital"><%=doctors[i].hospital_name%></span></p>
-                                <p class="good"><%=doctors[i].hospital_name%></p>
+                                <p class="good"><%=doctors[i].good_at%></p>
                             </div>
                             <div class="bottom">
-                                <i><%=doctors[i].points%></i>
+                                <% var point= doctors[i].price/5;if(point<=5){point=5}else if(point>5&&point<=10){point=10}else if(point>10){point=20}%>
+                                <i><%=point%>积分</i>
                             </div>
                         </a>
-                    </li>
-                    <%}%>
+                        </li>
+                        <%}%>
                 </ul>
                 <div id="more" class="more" style="display: block; transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">点击查看更多<span class="icon"></span></div>
                 <div class="notice" id="loading" style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;">
@@ -66,8 +67,8 @@
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
-        $('#more').on("click",function(){
-            
+        $('#more').on("click", function () {
+
         });
     </script>
 </body>

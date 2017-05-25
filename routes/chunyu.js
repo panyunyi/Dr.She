@@ -67,7 +67,6 @@ function createFree(user_id, atime, ask) {
         "sign": sign,
         "atime": atime
     };
-    console.log(data);
     var options = {
         method: 'POST',
         uri: test_url + '/cooperation/server/free_problem/create',
@@ -153,7 +152,7 @@ function doctorDetail(user_id, doctor_id, atime) {
             result["error"] = 0;
             result["doctor"] = body;
             //console.log(result);
-            return result;
+            return body;
             // POST succeeded...
         })
         .catch(function (err) {
