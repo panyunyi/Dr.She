@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+    <meta http-equiv="cleartype" content="on">
+    <title>
+        积分购买
+    </title>
+    <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
+    <link rel="stylesheet" href="../stylesheets/pay.css">
+    <style type="text/css">
+        html,
+        body {
+            min-height: 100%
+        }
+
+        footer {
+            margin-top: 1.6rem;
+            padding-bottom: .53333rem;
+        }
+
+        .humane,
+        .humane-bigbox {
+            position: fixed;
+            -moz-transition: all .3s ease-out;
+            -webkit-transition: all .3s ease-out;
+            -ms-transition: all .3s ease-out;
+            -o-transition: all .3s ease-out;
+            transition: all .3s ease-out;
+            z-index: 100000;
+            filter: alpha(opacity=100)
+        }
+
+        .humane,
+        .humane-bigbox {
+            font-family: Ubuntu, Verdana, sans-serif;
+            line-height: 1.5;
+            font-size: 16px;
+            top: 25%;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            opacity: 0;
+            width: 60%;
+            min-height: 40px;
+            padding: 60px 10px 15px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            background-position: center 10px;
+            background-repeat: no-repeat;
+            background-size: 32px 32px;
+            box-sizing: border-box;
+            color: #fff;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+            -moz-transform: scale(0.1);
+            -webkit-transform: scale(0.1);
+            -ms-transform: scale(0.1);
+            -o-transform: scale(0.1);
+            transform: scale(0.1)
+        }
+
+        .humane p,
+        .humane-bigbox p,
+        .humane ul,
+        .humane-bigbox ul {
+            margin: 0;
+            padding: 0
+        }
+
+        .humane ul,
+        .humane-bigbox ul {
+            list-style: none
+        }
+
+        .humane.humane-bigbox-info,
+        .humane-bigbox.humane-bigbox-info {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAERklEQVR4nO2b32uXVRzHX1sWmkM3Glm6sNiuarnURmGm0YVs4U3RKgoiMKgr/4DdFaSoKEJXY3URLJgalIqkaDSMCGxtjBWIeFFTRnqR3/0wZWqfLs7Ar/PzPM855znP8+z73V5wLr7nfM45n/P+nufH+Zzz1IgIC5naoh0omkUBinagaJbk0Mcq4PmytBpomE11wCRwbTb9BQyWpVLWztVkdBNsBN4C3gM2ebZxBzgD9AHfAdNBPJuLiIRMLSLSJyK3JCzXReSgiKwK7G8wAZpEpDeDgc9lWkR2icjKQH4HuQTeBz4HVqSfj9ZcBj4AfkjbUJqnwCPAN8BX5Dt4gCbgNHAQWJqqJc+p85SIXHCcvh0Jba4TkZuObYqI/CQi9Z7j8LoE1gEngccd69VY2FwEml0dAkaBDmDctaLrJdAGnMV98FnzLPAzHn65CPAYcBxY6dpJTjwJHAWWuVSyFWAZcAx4ws2n3GnH3JRtLjfAXoADs41XAl3ATltjm5vgFmAAB1Wj+rKw8b0JzuU68AxmbRFL0gxYCvSSfvAA2xLKWzHP9xAsB3psDJNmQDfwWQiPCuIN4Ns4gzgBHsZMocbATuXJELAxziDuEviYyh48wAbgtTiDqBnwADCGCV5UOmeBrVGFUTPgFapj8AAvE3NzjRLgzQAdd2KeHrbpQczqLjQ1xIxHE6AWeD1Axycd7W8DpwL0q9EVVaAJ0IoJZFYTL2LeDe5DE2B9tr4UQi1mGa8WzKUaBYCIcWkCqEpVAW1apibAoxk7UhTquDQB6gN12BKonVCogRxtayxUxOc34FLZ79ZA7fpSr2VqAqQLM99lBWZNPl9QQ2XaJTCVsSNFMallagJMZOxIUZS0TE0A1bAKKGmZmgCJcbQKZUzL1AQYztiRohjSMheSAOq4NAEGM3akCCaBC1qBJsA41SfCceA/rSAqInQ4O18K4VBUQVRQdC3wZ8pOJ3F/FX6Jezc0GkkfnJnALIRm1NKYwwMnPA4rlNPie2ihLD0kIudT+rE/ro+4fYFPUip/MWV9MP9amnZuAPviDOIEOId7YHO+0QP8HWeQtDnajYnWViL/ALuTjJIEGAb2BHEnf3YCV5OMbA5IfAr8ntqdfDkKfG1jaCPADPAulRMnGAM+sjW2PSIzitldcbkfdDjYRrEGeM7BvoTZkrtiW8H1nOAO4AuXCjkygxH9R5dKrucEvwQ+ZP49GaaA7TgOHvy/F+jErBfqfCoHZhxzCGLEp7LvYenvgc3AH571QzEAvIDn4CHdafERzPmbvZivO/LkX8xz/lXM0Xl/AixYEJF2ETmTctFiwx0R6ReR5kB+B/9kZrOInM5o4IdE5OnA/mb20VQz8A7wNuYktw8C/AL0A0dIWNT4kpUA5azFfC63EfNSswazT9eAOYs4hXmBKWGCMMOYCO6vOLzQ+JKHAPOaBf/l6KIARTtQNP8DI4XGdOj5B+8AAAAASUVORK5CYII=')
+        }
+
+        .humane.humane-bigbox-success,
+        .humane-bigbox.humane-bigbox-success {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFV0lEQVR4nO2bW2wVRRyHv9OKiIFaMVTSNBCDJiCxhtaqiAleEoyJVxIUL9FXnjA+qcSoiUaffZQng8RQDYgmNWpERUBUoKh4qYgiXkBQelGDLdj+fJjTeNIzszszu+fSwJfMyzk7v/9lZ2ZnZ2YLkjidaai1A7XmTAJq7UCtOasKNlqBK4COYmkDzgeagenA38AgMAD8AvQWy27gcKWdK1RoEGwD7gZWYoKPZTewAejGJCd/JOVZOiS9LmlM+TJW1F2Us7+5JWChpM05B+1ic9FeXSSgUdIaSSMVDbmcEUmPFe1niiHLGHAJsB64Mr8OGcwnwP3AgViB2AQsAd4AZsYazpHjwG3ARzGVY+YBy4F3qY/gAS4AtmD8Cia0BSwHXqU+J1BjwApgU0ilkARcDbwHTAvzq6r8A1yPGRu88E3ARUXRWXF+VZVjmJt10Odin6bcALzE5AgeoAVYh2c39bnoIcyoP5m4Fljtc2FaF7gY+IL67vcuTgDtwPdJF6W1gGeYnMEDnIvxP5GkFrAA+JL6fOT5MgYsBPpcFyQF90TK/9XmCHAz0IR53g951GnAxOHE1QIuBH4FGsN8rBhHgOuA/SW/LQHewTT1JEYxizLHbH+67vAK6if43zCTm/0Tft+BmZmeTKnfiInHiisBK329qzBHgRuAbx3/vw3ch7nLSbjjsbwjtyj/FZ0Yjkq6VH7v9WtStMZk4iqra2sBXUDB4+5Ukt8xd/5rz+vXpvxfwLE2aUtAh6fRSvEHcCPwVUCdKR7XWOOyJaAzwDCYQeoWYAawDPg5sH4pxzHB7wuoUwCe87jOHpelX+wN6Kc/Spo3of5cSQcCNMY5LulyWz9NKA2S1nrq99o0bKIHPQX7JLU5HGuV9I2njiT1K3zJu1HSugAbP9h0bMKDHmL75BhVS8osSZ97aPXL7CeEBD9F0ise2qUM2LRs4v96iHV6OjpT0q4Up3y1xstUmU2SUE7Z9GwGhjzEZgQ43CRpu0VjUFJXgA6Spkl6KyTqCfbKNG1PgQGPEdU5tbTwJ3ATZj1xnCHME2NXgM504M2iVgz2uCxZ+cwjm8OSbg28e+dI6pFpYVcF1j1P0o7IOz/OXpu2rQX85JHNqcBG4K6AOzAM3AlcQ8CqLWb/YUuxXhas8xNbAno9BacALwMPBDhxkrAZXgvwPuGTMxt7bD/aEmC90EEj8CKwKsKhNFqBDzDrenlgj8vSL2ZH9rGHbX0sssxR3Gwyidk2Wy4HPo408rhDL6TMk3Qo0r6LnS57rgWRDZHN7Gng2ci6APOBD4E5GTRsuONxZKZV0miGjD8vqeDKuqNcJrMIkjejMvEEtYDDwOYMGV8NvID/qnInZsBryWDTxWsknTZLuCPtyr40tl7px1gWy+8FLIYxmZbltJ/WLDfl4MRGSWc79JdK+isHG0m2E2NMS8ACmWlvVnpkpsKl2ssknchB28WwpPnKmAAkPZqTQ9tkjrc1SVqlfBKbxCPyGHx9Dkg0Ajsxq8WThU8x7w5p+wVeo/QoZvOhP6NT1aIfc3QuNXjwf0x9B9wBjMT5VDVGgNsx/noRsvu7DXgQqNdPTITxb3tIpdDt727gXtI3JKvNCHAPxr8gYk+KLsXMFJtjKufMIKZ7bo2pHHsAYiuwmLC1g0qwp+hHVPCQ7QRIH+Y83lPAqQw6MZwCnizadx5/8cJnsuBR2mVme9Wgp2gvF9/zSsB46So6WIkvRnoUvo+Qy0wwhrn8/83Qogw6vZiRvRs4lINfZVQqAaW0Uf7VWDPlX40NUv7VWGU+lCqhGgmoa+rpHGBNOJOAWjtQa077BPwHmiZq8SupBkwAAAAASUVORK5CYII=')
+        }
+
+        .humane.humane-bigbox-error,
+        .humane-bigbox.humane-bigbox-error {
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAE0ElEQVR4nO2bTWtcVRjHf50qdpFCRBPSQt000NJMRFJLTehGBd2kggVrQd3oN5Bqd13pJ3FTmmkXfoC4kaTFpgjJiEJ00bRqZgLNojAVmnlcPPeSYXLuveft3pmQ/OFsDuc8L//zcp/z3HOOiAgHGbVBGzBoHBIwaAMGjZcq0DEBvA3MAOeBU8Ao8CowAjwDngLbwAawAjwEHgD/lm3ckZI2wRPAVeAa8E6AnHvALeA28E8Eu/ZCRGKWaRFZEJEdiYudRG49sr3RCDgjIg0R6UZ2vB9dUSLORLI7mICaiHwjIp0yvTagIyLXE/1BPoTsAaeBH4DZeAvSGUvAF8BfvgJ8CZgFfgRe91UcEVvAZXTDdIZPHHAFWGQ4nAe1YxH42Kez6wy4AiwwnAFUF/gEuOvSyYWAWZTpY252VYoO8B4Oy8GWgNOJ0GGZ9nloo8GX1cZoM5Vr6G6/H5wHGEPttVqmNo2uM9hPnQ/mgK9tGhYtgbPAr8Ar4TZVjufAW8AfeY2KZsD3+Dn/BPgQOI5+o1uO/VtJv+OJnCceNhwDvitslRMmvil+sf2GiEz2yZoSkU3L/psicq6v/2Qi1xVdKThA5RHQ8FBocr6XhFZB/82knam/LwkLGfJyCTgp7kfax5LtfFrqkk1CS7Kd7yXhsaNdOyJyIktm1h5wFfdo70tgvaDNGhqotPvq28C7QLOg/3qixwU11B8zMpi558iyiMhIwehlzYSWuCU6RjxsW86SZ6qc8FAgIjLv4ASi2aOmuGd55j3tmzDJMym47KnAtHsXFdeEhsvXpB/GATKt8/OOayzFOPATMOXQp+vQdgo9jI27GNWDGVOliQBjQ0uMo0a6kGCDKZRcX+chY2BNBLwRoATik1BHnR8LlHPKVGkiYDRQEewuh3qgnDpKZqjzkOFXWQSAGr2IPwnTxHMe9E/UHphOgy+Ao5GUAvyGOuOy4dWAVeBcRDteAC+bFPXjWUSlbeBT3JwnaX+NvRFjCIx+mQjYjqSwjYa9a579V4H3iUfCU1NlWQS00Nje1/kUq5jPDj7YNlWaCHgUqKiFGl10sLHFGkpmKAkbpkoTAQ8DlMR2PkUTJcE1s9SLFVOliQBjQwuk097FeZcjdxMl15cE48CaDPjFU8FX6CfPFtPoGneJE5qJHh88MNZmnLqqzgcUZYJKywdkTcFbHgzPWbbrD2/HcDtF2urpRbY/GcyUlRPMS4zmJUTTEj0nmKesjKxwUTIjL6lSaVYYOfwvIIjIHQ+lIjpNPxDdsObFPY21mfQbSeS4TvsUuaMvUnxH6MD/G/wduBnJoKpxkwLnwe6CxFHgZ8JufFaNZeASFsdw2xsik+gNkdfC7KoEW+hg/WnT2DYWXwc+QtfVMKOD2mnlPLgdRpaAz3DP7lSFLvA5Ov2t4foD9C56FW3YZkIHjyty4H9TdA69KToMe8IWOu2dRj6F74XHJXSj8bqeGhHLiR1ezkPYjc919FNzA/gvQI4PngPfJvqtNzwjikJFy3JWNGyu4r1AQ4bovYDpANWQcl6MNETvFES1uaw3QyfZfTN0MUDOfXbfDP0dwa49KIuAXkwAF9Df0zPo3+fRpKSvxraT8ghNXq6gucl9+2ps32AY7/1XikMCBm3AoHHgCfgfSKi5nfrmXEsAAAAASUVORK5CYII=')
+        }
+
+        .humane.humane-animate,
+        .humane-bigbox.humane-bigbox-animate {
+            opacity: 1;
+            -moz-transform: scale(1);
+            -webkit-transform: scale(1);
+            -ms-transform: scale(1);
+            -o-transform: scale(1);
+            transform: scale(1)
+        }
+
+        .humane.humane-animate:hover,
+        .humane-bigbox.humane-bigbox-animate:hover {
+            opacity: .6;
+            -moz-transform: scale(0.8);
+            -webkit-transform: scale(0.8);
+            -ms-transform: scale(0.8);
+            -o-transform: scale(0.8);
+            transform: scale(0.8)
+        }
+
+        .humane.humane-js-animate,
+        .humane-bigbox.humane-bigbox-js-animate {
+            opacity: 1;
+            -moz-transform: scale(1);
+            -webkit-transform: scale(1);
+            -ms-transform: scale(1);
+            -o-transform: scale(1);
+            transform: scale(1)
+        }
+
+        .humane.humane-js-animate:hover,
+        .humane-bigbox.humane-bigbox-js-animate:hover {
+            opacity: .6;
+            filter: alpha(opacity=60)
+        }
+
+        @media screen and (min-width:640px) {
+            .humane,
+            .humane-bigbox {
+                width: 400px
+            }
+        }
+
+        .points {
+            display: inline;
+            color: #999;
+            vertical-align: middle;
+            background-color: #fff;
+            background-image: none;
+            border: 0px;
+            -webkit-appearance: none;
+            font-size: 2em;
+            width: 35%;
+            margin-left: .5rem;
+            margin-top: .05rem;
+        }
+    </style>
+    <style type="text/css">
+        .dlg-confirm {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3)
+        }
+
+        .dlg-main {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background: #fff;
+            width: 80%;
+            font-size: .17rem;
+            color: #676767;
+            border-radius: 5px;
+            -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+            -webkit-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%)
+        }
+
+        .dlg-bd {
+            padding: .2rem .1rem;
+            text-align: center
+        }
+
+        .dlg-ft {
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border-top: 1px solid #d6d6d6;
+            display: -webkit-box;
+            display: -moz-box;
+            display: box;
+            display: -webkit-flex;
+            display: -moz-flex;
+            display: -ms-flexbox;
+            display: flex
+        }
+
+        .dlg-ft button {
+            position: relative;
+            display: block;
+            padding: .1rem 0;
+            border: 0;
+            color: #f6a245;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            font-size: .2rem;
+            background: transparent;
+            -webkit-box-flex: 1;
+            box-flex: 1;
+            -webkit-flex: 1;
+            -moz-flex: 1;
+            -ms-flex: 1;
+            flex: 1
+        }
+
+        .dlg-ft button:nth-child(1) {
+            border-bottom-left-radius: 5px;
+            border-right: 1px solid #d6d6d6
+        }
+
+        header {
+            background-color: #f4f4f4;
+            font-size: .13667rem;
+            padding: 0.08667rem .4rem;
+            line-height: 1.2;
+            text-align: center;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cy-bd">
+
+        <div id="common-pay">
+            <header>
+                <span id="now">您当前<%=now%>积分</span>
+            </header>
+            <div class="cy-sec" style="margin-bottom: .005rem;">
+
+                <div class="cy-sec-item block">
+                    <div class="cy-label" style="display:inline;font-size:2em;">
+                        <%=title%>
+                    </div>
+                    <div class="cy-txt cy-should-pay" style="display: inline;float: right;width: 53%;">
+                        <input type="number" value=<%=points%> class="points" placeholder="" emptyTips="" oninput="changeVale(this.value)"
+                        onpropertychange="changeVale(this.value)">
+                        <div class="cy-txt cy-should-pay" style="font-size: 2em;float:right;">积分</div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="cy-sec cy-no-margin">
+                <div class="cy-sec-item">
+                    <div class="cy-label"><strong>支付</strong><span style="margin-left: .2rem;color:#999;">(￥5.00=1积分)</span></div>
+                    <div id="money" class="cy-txt cy-should-pay" style="font-size: .2rem;">¥ 0</div>
+                    <input id="money2" type="hidden">
+                </div>
+            </div>
+            <h6 class="cy-title">选择支付方式</h6>
+            <div class="cy-sec">
+
+                <div class="cy-pay-method weixin-pay checked" data-pay-method="weixin" style="display: block;">
+                    <div class="cy-label">微信支付</div>
+                    <div class="cy-txt">推荐安装微信5.0及以上版本的用户使用</div>
+                    <i class="cy-pay-method-cb" style="display: inline;"></i>
+                </div>
+
+            </div>
+            <div class="cy-btn-wrap">
+                <button class="cy-btn cy-btn-pay " type="submit">去支付</button>
+            </div>
+            <footer>
+                <p class="footer-tip" style="text-align: center;">平台客服：<a style="color:#68aafc" href="tel:400-600-0414">400-600-0414</a></p>
+            </footer>
+        </div>
+
+
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        function changeVale(points) {
+            $('#money').text("￥ " + points * 5);
+            $('#money2').val(points * 5);
+        }
+        $('#money').text("￥ " + <%=points %> * 5);
+        $('#money2').val(<%=points %> * 5);
+        $('.cy-btn-pay').on("click", function () {
+            if ($('.points').val() > 0) {
+                $.post("/pay/recharge", { points: $(".points").val(), money: $("#money2").val(), }, function (result) {
+                    if (result.error == 0) {
+                        //weui.toast('支付完成', 3000);
+                        weui.toast('支付完成', {
+                            duration: 3000,
+                            className: 'custom-classname',
+                            callback: function () { window.location.replace("../"); }
+                        });
+
+                    } else {
+                        weui.toast('支付失败，请联系客服。', 3000);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
