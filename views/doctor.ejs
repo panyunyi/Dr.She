@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<!-- saved from url=(0266)http://weixin.chunyuyisheng.com/cooperation/wap/doctor_detail_info/?doctor_id=clinic_web_ac9fe8bec54cd573&partner=chunyu_wap&source_type=chunyu_weixin&clinic_name=%E8%84%8A%E6%9F%B1%E7%A7%91&from_type=QA%E8%AF%A6%E6%83%85%E9%A1%B5%E9%A1%B6%E9%83%A8%E5%8D%A1%E7%89%87 -->
 <html class="no-js drshe_wap" style="font-size: 37.5px;">
 
 <head>
@@ -11,50 +11,113 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
-    <title>张继伟医生</title>
+    <title>
+        <%=doctor.name%>
+    </title>
 
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
-
-    <link rel="stylesheet" href="../stylesheets/cy1.css">
-    <link rel="stylesheet" href="../stylesheets/doctor.css">
-
+    <link rel="stylesheet" href="../../../stylesheets/cy1.css">
+    <link rel="stylesheet" href="../../../stylesheets/doctor_v2.css">
 </head>
 
 <body class="">
-
     <div class="partner-right">
-        <div id="page-share-info" data-img="" data-title="" data-desc=""></div>
-        <div id="doctor-home-preview" class="d-intro">
-            <div class="doctor_intro">
+        <div id="doctor-home-preview">
+            <a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=<%=doctor.id%>&partner=chunyu_wap">
                 <div class="sec sec-doctor-intro">
                     <div class="doctor-meta">
-                        <div class="doctor-img"><img src="../2acb520ace1f_w1467_h1428_.jpg" onerror="javascript:this.style.display = &#39;none&#39;"></div>
+                        <div class="doctor-img"><img src="<%=doctor.image%>" onerror="javascript:this.style.display = &#39;none&#39;"></div>
                         <div class="doctor-intro">
-                            <div class="doctor-name">张继伟</div>
-                            <div class="doctor-title">
-                                <span>骨伤科</span>
-                                <span>医师</span>
+                            <div class="doctor-name">
+                                <%=doctor.name%>
                             </div>
-                            <div class="doctor-hospital">甘肃省中医院</div>
+                            <div class="doctor-title">
+                                <span><%=doctor.clinic_name%></span>
+                                <span><%=doctor.title%></span>
+                            </div>
+                            <div class="doctor-hospital">
+                                <span><%=doctor.hospital_grade%></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="doctor-recommend">
+
+                        <div class="recommend-item rec-reply">
+                            <div class="rec-lable">
+                                <%=purchase_num%><span>次</span></div>
+                            <div class="rec-num">服务人数</div>
+                        </div>
+
+                        <div class="recommend-item rec-fans">
+                            <div class="rec-lable">99.6<span>%</span></div>
+                            <div class="rec-num">好评率</div>
+                        </div>
+
+                        <div class="recommend-item rec-rate">
+                            <div class="rec-lable">
+                                <%=doctor.recommend_rate%><span>分</span></div>
+                            <div class="rec-num">同行认可</div>
                         </div>
                     </div>
                 </div>
-                <div class="extra-info">
+            </a>
 
-                    <div class="d-title">擅长及诊所介绍</div>
-                    <div class="d-content">擅长骨伤科常见病如颈椎病、腰椎间盘突出、脊柱侧弯、椎管狭窄等脊柱退行性疾病的诊断和治疗。</div>
 
-                    <div class="d-title">医学教育背景介绍</div>
-                    <div class="d-content">2008.09-2013.07就读于承德医学院获得学士学位 2013.09-2016.07就读于上海中医药大学获骨伤专业硕士学位 2016.08至今就职于甘肃省中医院从事骨伤科工作</div>
 
-                    <div class="d-title">学术研究成果、获奖介绍</div>
-                    <div class="d-content">在国家核心期刊发表学术论文6篇，其中第一作者发表2篇；参与省部级课题2项。</div>
 
+            <div class="counsel-tips graph-tips">通过文字、图片进行咨询</div>
+
+
+
+
+            <div class="sec sec-doctor-detail">
+                <div class="sec-title">
+                    <div>热度推荐</div>
+                </div>
+                <div class="doctor-desc">
+                    <%=doctor.good_at%>
                 </div>
             </div>
+
+
+
+
+            <div class="sec sec-doctor-detail">
+                <div class="sec-title">
+                    <div>执业地点</div>
+                </div>
+                <div class="doctor-desc">
+                    <%=doctor.hospital%>
+                        <%=doctor.clinic_name%>
+                </div>
+            </div>
+
+
         </div>
+
+        <div class="fixed-layer ">
+            <% var point= doctor.price/500;if(point<=5){point=5}else if(point>5&&point<=10){point=10}else if(point>10){point=20}%>
+                <a class="C_graph-pay second-btn" href="javascript:void(0)">图像问诊 (<%=point%>积分)</a>
+
+        </div>
+
     </div>
 
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../../../weui.js"></script>
+    <script type="text/javascript">
+        var mypoints = <%=mypoints%>;
+        var num = <%=point%>;
+        $('.second-btn').on("click", function () {
+            if (mypoints < num) {
+                window.location.replace("../../../pay?points=" + num + "&name=<%=doctor.name%>&hospital=<%=doctor.hospital%>&purchase_num=<%=purchase_num%>&doctor_id=<%=doctor.id%>");
+                return;
+            } else {
+                window.location.replace("../../../ask?doctor_id=<%=doctor.id%>&price=<%=doctor.price%>&image=<%=doctor.image%>&name=<%=doctor.name%>&hospital=<%=doctor.hospital%>&clinic=<%=doctor.clinic_name%>&title=<%=doctor.title%>");
+            }
+        });
+    </script>
 </body>
 
 </html>

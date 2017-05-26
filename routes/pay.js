@@ -12,16 +12,19 @@ var moment = require('moment');
 router.get('/', function (req, res) {
     let points = req.query.points;
     let name = req.query.name;
-    let hospital=req.query.hospital;
+    let hospital = req.query.hospital;
+    let purchase_num=req.query.purchase_num;
+    let doctor_id=req.query.doctor_id;
     let sess = req.session;
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.fetch().then(function () {
-        if (points > 0) {
-            
-            res.render('pay', { points: points, title: (points == 2 ? "快问医生" : name), now: user.get('points') ,hospital:hospital});
-        } else {
-            res.render('pay', { points: 0, title: "充值", now: user.get('points') });
+        if (points == 2) {
+            res.render('pay', { points: points, title: "快问医生", now: user.get('points'), hospital: hospital });
         }
+        else if (points > 2) {
+            res.render('pay1', { points: points - user.get('points'), title: name, now: user.get('points'), hospital: hospital, doctor_id: doctor_id, purchase_num: purchase_num });
+        } else
+            res.render('pay', { points: 0, title: "充值", now: user.get('points') });
     });
 });
 

@@ -88,7 +88,7 @@ router.get('/detail/:id/:purchase_num', function (req, res) {
     chunyu.doctorDetail(sess.objid, id, time).then(function (data) {
         let user = AV.Object.createWithoutData('WxUser', sess.objid);
         user.fetch().then(function (user) {
-            res.render('doctor1', { doctor: data, purchase_num: purchase_num, mypoints: user.get('points') });
+            res.render('doctor', { doctor: data, purchase_num: purchase_num, mypoints: user.get('points') });
         });
     });
 });

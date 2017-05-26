@@ -8,6 +8,7 @@ var partner = process.env.partner;
 var test_url = process.env.test_url;
 var product_url = process.env.product_url;
 var Problem = AV.Object.extend('Problem');
+var Order = AV.Object.extend('Order');
 
 function chunyulogin(user_id, atime) {
     let sign = getSign(user_id, atime);
@@ -246,7 +247,6 @@ function doctorList(user_id, clinic_no, num, province, city, atime) {
     };
     return rp(options)
         .then(function (body) {
-            console.log(body);
             result["error"] = 0;
             result["doctors"] = body.doctors;
             //console.log(result);
@@ -290,10 +290,107 @@ function deleteProblem(user_id, problem_id, atime) {
             // POST failed...
         });
 }
+
+function createPay(user_id, atime, ask, partner_order_id, price) {
+    let result = { error: 1 };
+    let sign = getSign(user_id, atime);
+    let content = [
+        { "type": "text", "text": ask.content },
+        { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
+    ];
+    if (ask.image == 2) {
+        content = [
+            { "type": "text", "text": ask.content },
+            { "type": "image", "file": ask.image[0] },
+            { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
+        ];
+    } else if (ask.image == 3) {
+        content = [
+            { "type": "text", "text": ask.content },
+            { "type": "image", "file": ask.image[0] },
+            { "type": "image", "file": ask.image[1] },
+            { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
+        ];
+    } else if (ask.image == 4) {
+        content = [
+            { "type": "text", "text": ask.content },
+            { "type": "image", "file": ask.image[0] },
+            { "type": "image", "file": ask.image[1] },
+            { "type": "image", "file": ask.image[2] },
+            { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
+        ];
+    }
+    let data = {
+        "user_id": user_id,
+        "doctor_ids": ask.dotcors,
+        "partner_order_id": partner_order_id,
+        "price": price,
+        "content": JSON.stringify(content),
+        "partner": partner,
+        "sign": sign,
+        "atime": atime
+    };
+    var options = {
+        method: 'POST',
+        uri: test_url + '/cooperation/server/payment/create_record',
+        body: data,
+        json: true // Automatically stringifies the body to JSON
+    };
+    return rp(options)
+        .then(function (body) {
+                console.log(body);
+            if (body.error == 0) {
+                let chunyu_order_id = body.chunyu_order_id;
+                let order = AV.Object.createWithoutData('Order', partner_order_id);
+                order.set('chunyu_order_id',chunyu_order_id);
+                order.save();
+                return chunyu_order_id;
+            }
+            // POST succeeded...
+        })
+        .catch(function (err) {
+            console.log(err);
+            return result;
+            // POST failed...
+        });
+}
+
+function successNotice(user_id, chunyu_order_id, atime) {
+    let result = { error: 1 };
+    let sign = getSign(user_id, atime);
+    let data = {
+        "user_id": user_id,
+        "chunyu_order_id": chunyu_order_id,
+        "partner": partner,
+        "sign": sign,
+        "atime": atime
+    };
+    var options = {
+        method: 'POST',
+        uri: test_url + '/cooperation/server/payment/success_notice',
+        body: data,
+        json: true // Automatically stringifies the body to JSON
+    };
+    return rp(options)
+        .then(function (body) {
+            //result["error"]=0;
+            //result["content"]=body.content;
+            //console.log(result);
+            return body;
+            // POST succeeded...
+        })
+        .catch(function (err) {
+            console.log(err);
+            return result;
+            // POST failed...
+        });
+}
+
 function getSign(user_id, atime) {
     let sign = utils.md5(partner_key + atime + user_id);
     return sign.substr(8, 16);
 }
+
 module.exports.login = chunyulogin;
 module.exports.createFree = createFree;
 module.exports.problemDetail = problemDetail;
@@ -302,3 +399,5 @@ module.exports.problemAdd = problemAdd;
 module.exports.problemList = problemList;
 module.exports.doctorList = doctorList;
 module.exports.deleteProblem = deleteProblem;
+module.exports.createPay = createPay;
+module.exports.successNotice = successNotice;

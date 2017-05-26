@@ -99,6 +99,9 @@
                         $(".qa-tipbar").html("23小时后或19次对话后问题关闭");
                         $(".qa-doctor-wrap").removeClass("empty");
                     }
+                    if(msg.ispay){
+                        $(".qa-tipbar").html("等待医生回复");
+                    }
                     $(".qa-inquiry-wrap").html(msg.content);
                     if (msg.isclose) {
                         $(".qa-bottom-wrap").html('<h6 class="qa-bottom-title">问题已关闭</h6><a href="/ask" class="qa-bottom-btn pay" style="float:left;margin: 0 auto;display: none;">继续咨询</a>');

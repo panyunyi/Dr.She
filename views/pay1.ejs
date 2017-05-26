@@ -243,23 +243,16 @@
             <div class="cy-sec" style="margin-bottom: .005rem;">
 
                 <div class="cy-sec-item block">
-                    <div class="cy-label" style="display:inline;font-size:2em;">
-                        <%=title%>
-                    </div>
-                    <div class="cy-txt cy-should-pay" style="display: inline;float: right;width: 53%;">
-                        <input type="number" value=<%=points%> class="points" placeholder="" emptyTips="" oninput="changeVale(this.value)"
-                        onpropertychange="changeVale(this.value)">
-                        <div class="cy-txt cy-should-pay" style="font-size: 2em;float:right;">积分</div>
-                    </div>
-
+                    <h6 class="cy-order-name"><%=title%>-图文咨询</h6>
+                    <p class="cy-order-desc" style="display:inline"><%=hospital%>
+                        </p><span class="cy-payment-price" style="float:right;color:#ff6134;font-size:.2rem"><%=points%> <span style="color:#ff6134">积分</span></span>
                 </div>
 
             </div>
             <div class="cy-sec cy-no-margin">
                 <div class="cy-sec-item">
-                    <div class="cy-label"><strong>支付</strong><span style="margin-left: .2rem;color:#999;">(￥5.00=1积分)</span></div>
+                    <div class="cy-label"><strong>需付金额</strong><span style="margin-left: .2rem;color:#999;">(￥5.00=1积分)</span></div>
                     <div id="money" class="cy-txt cy-should-pay" style="font-size: .2rem;">¥ 0</div>
-                    <input id="money2" type="hidden">
                 </div>
             </div>
             <h6 class="cy-title">选择支付方式</h6>
@@ -286,21 +279,15 @@
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
-        function changeVale(points) {
-            $('#money').text("￥ " + points * 5);
-            $('#money2').val(points * 5);
-        }
         $('#money').text("￥ " + <%=points %> * 5);
-        $('#money2').val(<%=points %> * 5);
         $('.cy-btn-pay').on("click", function () {
-            if ($('.points').val() > 0) {
-                $.post("/pay/recharge", { points: $(".points").val(), money: $("#money2").val(), }, function (result) {
+            if (<%=points%> > 0) {
+                $.post("/pay/recharge", { points: <%=points%>, money: <%=points%>*5 }, function (result) {
                     if (result.error == 0) {
-                        //weui.toast('支付完成', 3000);
                         weui.toast('支付完成', {
                             duration: 3000,
                             className: 'custom-classname',
-                            callback: function () { window.location.replace("../"); }
+                            callback: function () { window.location.replace("../doctor/detail/<%=doctor_id%>/<%=purchase_num%>"); }
                         });
 
                     } else {

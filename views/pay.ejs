@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
     <meta http-equiv="cleartype" content="on">
     <title>
-        积分购买
+        积分充值
     </title>
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
     <link rel="stylesheet" href="../stylesheets/pay.css">
@@ -296,7 +296,6 @@
             if ($('.points').val() > 0) {
                 $.post("/pay/recharge", { points: $(".points").val(), money: $("#money2").val(), }, function (result) {
                     if (result.error == 0) {
-                        //weui.toast('支付完成', 3000);
                         weui.toast('支付完成', {
                             duration: 3000,
                             className: 'custom-classname',
