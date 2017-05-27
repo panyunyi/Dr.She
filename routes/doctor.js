@@ -100,7 +100,7 @@ router.get('/list', function (req, res) {
     let city = req.query.city;
     let city_list = JSON.parse(fs.readFileSync(file));
     chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
-        res.render('doctorlist', { doctors: data.doctors });
+        res.render('doctorlist', { doctors: data.doctors, cities: city_list });
     });
 });
 

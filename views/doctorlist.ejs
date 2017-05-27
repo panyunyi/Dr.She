@@ -25,8 +25,8 @@
         <div id="clinic-preview" class="clinic-preview">
 
             <ul class="tab" id="tab">
-                <li><span class="title">全国</span><i class="arrow"></i></li>
-                <li><span class="title">妇科</span><i class="arrow"></i></li>
+                <li id="all" class=""><span class="title">全国</span><i class="arrow"></i></li>
+                <li id="clinic" class=""><span class="title">妇科</span><i class="arrow"></i></li>
             </ul>
             <div id="list-container">
                 <ul id="list" class="doctor-list">
@@ -59,6 +59,50 @@
                     <p>没有相关内容</p>
                 </div>
             </div>
+            <ul class="win" id="win-city">
+                <li class="left">
+                    <ul>
+                        <li data-province="">全部地区</li>
+                        <%for(var i=0;i<cities.length;i++){%>
+                            <li data-province="<%=cities[i].province%>">
+                                <%=cities[i].province%>
+                            </li>
+                            <%}%>
+                    </ul>
+                </li>
+                <li class="right">
+                    <ul></ul>
+                    <%for(var i=0;i<cities.length;i++){%>
+                        <ul>
+                            <li data-city="">全部</li>
+                            <%for(var j=0;j<cities[i].cities.length;j++){%>
+                                <li data-city="<%=cities[i].cities[j]%>">
+                                    <%=cities[i].cities[j]%>
+                                </li>
+                                <%}%>
+                        </ul>
+                        <%}%>
+                </li>
+            </ul>
+            <ul class="win" id="win-clinic">
+                <li class="left">
+                    <ul>
+                        <li data-cn="" class="">全部</li>
+                        <li data-cn="1" class="">妇科</li>
+                        <li data-cn="4" class="">皮肤性病科</li>
+                    </ul>
+                </li>
+                <li class="right">
+                    <ul style="display: none;"></ul>
+
+                    <ul style="display: block; transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
+                        <li data-scn="">全部科室</li>
+                    </ul>
+                    <ul style="display: none;">
+                        <li data-scn="">全部科室</li>
+                    </ul>
+                </li>
+            </ul>
         </div>
         <div id="mask" style="display: none;"></div>
     </div>
@@ -69,6 +113,33 @@
     <script type="text/javascript">
         $('#more').on("click", function () {
 
+        });
+        $('#all').on("click", function () {
+            $('#win-city').addClass('display-flex');
+            $('#win-clinic').removeClass('display-flex');
+            $('#mask').css('display', 'block');
+        });
+        $('#clinic').on("click", function () {
+            $('#win-clinic').addClass('display-flex');
+            $('#win-city').removeClass('display-flex');
+            $('#mask').css('display', 'block');
+        });
+        $('#mask').on("click", function () {
+            $('#win-city').removeClass('display-flex');
+            $('#win-clinic').removeClass('display-flex');
+            $('#mask').css('display', 'none');
+        });
+        $('#win-city .left li').click(function(){
+            $(this).siblings('li').removeClass('cur');
+            $(this).addClass('cur');
+        });
+        $('#win-city .right li').click(function(){
+            $(this).siblings('li').removeClass('cur');
+            $(this).addClass('cur');
+        });
+        $('#win-clinic li').click(function(){
+            $(this).siblings('li').removeClass('cur');
+            $(this).addClass('cur');
         });
     </script>
 </body>

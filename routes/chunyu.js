@@ -338,11 +338,10 @@ function createPay(user_id, atime, ask, partner_order_id, price) {
     };
     return rp(options)
         .then(function (body) {
-                console.log(body);
             if (body.error == 0) {
                 let chunyu_order_id = body.chunyu_order_id;
                 let order = AV.Object.createWithoutData('Order', partner_order_id);
-                order.set('chunyu_order_id',chunyu_order_id);
+                order.set('chunyu_order_id', chunyu_order_id);
                 order.save();
                 return chunyu_order_id;
             }
@@ -373,9 +372,14 @@ function successNotice(user_id, chunyu_order_id, atime) {
     };
     return rp(options)
         .then(function (body) {
-            //result["error"]=0;
-            //result["content"]=body.content;
-            //console.log(result);
+            let problem = new Problem();
+            problem.set('problem_id', body.problems[0].problem_id);
+            problem.set('status', 'n');
+            problem.set('has_answer', false);
+            problem.set('user_id', user_id);
+            let user = AV.Object.createWithoutData('WxUser', user_id);
+            problem.set('user', user);
+            problem.save();
             return body;
             // POST succeeded...
         })

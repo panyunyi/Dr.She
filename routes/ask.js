@@ -25,7 +25,7 @@ router.get('/', function (req, res) {
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.fetch().then(function () {
         if (typeof (doctor_id) == "undefined") {
-            res.render('ask', { points: user.get('points'), hasheader: false });
+            res.render('ask', { points: user.get('points'), hasheader: false, price: 10, doctor_id: doctor_id, image: image, name: name, hospital: hospital, clinic: clinic, title: title  });
         } else {
             res.render('ask', { points: user.get('points'), hasheader: true, price: price, doctor_id: doctor_id, image: image, name: name, hospital: hospital, clinic: clinic, title: title });
         }
@@ -38,7 +38,7 @@ router.post('/add/free', function (req, res) {
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.increment('points', -num);
     let order = new Order();
-    order.set('price', price/100);
+    order.set('price', 10);
     order.set('points', num);
     order.set('user', user);
     order.save();
@@ -55,13 +55,13 @@ router.post('/add/free', function (req, res) {
 router.post('/add/pay', function (req, res) {
     let sess = req.session;
     let num = req.body.num * 1;
-    let price = req.body.price*1;
+    let price = req.body.price * 1;
     let doctor_id = req.body.doctor_id;
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.increment('points', -num);
     let order = new Order();
     order.set('points', num);
-    order.set('price', price/100);
+    order.set('price', price / 100);
     order.set('user', user);
     user.save().then(function (user) {
         let time = Math.round(new Date().getTime() / 1000).toString();
@@ -73,7 +73,9 @@ router.post('/add/pay', function (req, res) {
                     res.jsonp({ id: data.problems[0].problem_id });
                 });
             });
-        })
+        }, function (err) {
+            console.log(err);
+        });
     });
 });
 

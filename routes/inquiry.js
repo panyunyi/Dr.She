@@ -63,11 +63,11 @@ router.get('/pooling/:id', function (req, res) {
                 });
             }
         }, function (err, contentres) {
-            if (data.problem.status == "a") {
+            if (data.problem.interaction == 0 && typeof (data.doctor.id) != "undefined") {
                 ispay = 1;
                 contentHtml += '<div class="qa-inquiry-list doctor"><div class="block-left"><img src="../01.png" class="doctor-avatar-small"></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span>亲爱的，您好：我们已通知到' + data.doctor.hospital + '医生。为您答题的医生均在医院临床一线工作，无法做到随问随答，请您耐心等待哦！您的问题得到回复后，我们会在第一时间给您推送消息~</span> </div></div></div></div>';
             }
-            res.send({ doctor: doctorHtml, content: contentHtml, isreply: isreply, isclose: isclose, ispay: ispay });
+            res.send({ doctor: doctorHtml, content: contentHtml, isreply: isreply, isclose: isclose, ispay: ispay, interaction: data.problem.interaction });
         });
     });
 });

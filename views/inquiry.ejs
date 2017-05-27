@@ -95,8 +95,9 @@
                 dataType: "json",
                 success: function (msg) {
                     if (msg.isreply) {
+                        var count=20-msg.interaction;
                         $(".qa-doctor-wrap").html(msg.doctor);
-                        $(".qa-tipbar").html("23小时后或19次对话后问题关闭");
+                        $(".qa-tipbar").html("23小时后或"+count+"次对话后问题关闭");
                         $(".qa-doctor-wrap").removeClass("empty");
                     }
                     if(msg.ispay){
