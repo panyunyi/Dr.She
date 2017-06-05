@@ -23,9 +23,11 @@
     <div class="partner-right">
         <div id="feedback" class="container">
             <div class="head">聆听，让我们做的更好...</div>
-            <div class="content_box"><textarea placeholder="如需咨询健康问题，请您到“快问医生”里向医生咨询。" class="content bg_white"></textarea>
-                <div class="up-img-btn"><img src="./assets/i/add_img_3d8621a.png" alt="" class="img_add"> <input type="file" id="up-img-input"
-                        name="images" accept="image/*" multiple="multiple"> </div>
+            <div class="content_box"><textarea id="content" placeholder="如需咨询健康问题，请您到“快问医生”里向医生咨询。" class="content bg_white"></textarea>
+                <div class="up-img-btn"><img src="./assets/i/add_img_3d8621a.png" alt="" class="img_add" id="add-img">
+                    <input style="font-size: 999px; opacity: 0; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;" type="file"
+                        name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp">
+                </div>
             </div>
             <div class="btn feedback_btn">提交</div>
         </div>
@@ -34,8 +36,45 @@
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
-        $(".feedback_btn").on("click",function(){
-            weui.toast('已提交', 3000);
+        var imageurl = "";
+        $('#Image').change(function (event) {
+            /* Act on the event */
+            if ($('#Image').val().length) {
+                var fileName = $('#Image').val();
+                var extension = fileName.substring(fileName.lastIndexOf('.'), fileName.length).toLowerCase();
+                if (extension == ".jpg" || extension == ".png") {
+                    var data = new FormData();
+                    data.append('iconImage', $('#Image')[0].files[0]);
+                    var loading = weui.loading('正在上传图片...', {
+                        className: 'custom-classname'
+                    });
+                    $.ajax({
+                        url: '/ask/upload',
+                        type: 'POST',
+                        data: data,
+                        cache: false,
+                        contentType: false, //不可缺参数
+                        processData: false, //不可缺参数
+                        success: function (data) {
+                            loading.hide();
+                            imageurl = data.img;
+                            $("#add-img").attr('src',imageurl); 
+                        },
+                        error: function () {
+                            console.log('error');
+                        }
+                    });
+                }
+            }
+        });
+        $(".feedback_btn").on("click", function () {
+            $.post("/advice/add", { content: $("#content").val(), image: imageurl }, function (result) {
+                if (result == 1) {
+                    weui.toast('已提交', 3000);
+                } else {
+                    weui.alert("回复失败，请退出重试。")
+                }
+            });
         });
     </script>
 </body>

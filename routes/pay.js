@@ -35,9 +35,7 @@ router.post('/recharge', function (req, res) {
     let money = req.body.money * 1;
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.increment('points', points);
-    user.save().then(function (user) {
-        res.send({ error: 0 });
-    });
+    res.send({ error: 0 });
 });
 
 module.exports = router;

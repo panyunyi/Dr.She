@@ -11,7 +11,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
-    <title>我的问诊</title>
+    <title>快问医生</title>
 
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
 
@@ -105,6 +105,7 @@
                     }
                     $(".qa-inquiry-wrap").html(msg.content);
                     if (msg.isclose) {
+                         $(".qa-tipbar").html("问题已关闭");
                         $(".qa-bottom-wrap").html('<h6 class="qa-bottom-title">问题已关闭</h6><a href="/ask" class="qa-bottom-btn pay" style="float:left;margin: 0 auto;display: none;">继续咨询</a>');
                     } else {
                         $(".qa-bottom-wrap").html('<div class="up-img-btn"><input type="file" id="up-img-input" name="images" accept="image/*" multiple="multiple"></div><div class="block-send-txt">点击输入文字</div>');

@@ -97,7 +97,7 @@
 
         <div class="fixed-layer ">
             <% var point= doctor.price/500;if(point<=5){point=5}else if(point>5&&point<=10){point=10}else if(point>10){point=20}%>
-                <a class="C_graph-pay second-btn" href="javascript:void(0)">图像问诊 (<%=point%>积分)</a>
+                <a class="C_graph-pay second-btn" href="javascript:void(0)">"自选医生"，请下载"Dr.She"APP</a>
 
         </div>
 
@@ -110,12 +110,12 @@
         var mypoints = <%=mypoints%>;
         var num = <%=point%>;
         $('.second-btn').on("click", function () {
-            if (mypoints < num) {
-                window.location.replace("../../../pay?points=" + num + "&name=<%=doctor.name%>&hospital=<%=doctor.hospital%>&purchase_num=<%=purchase_num%>&doctor_id=<%=doctor.id%>");
-                return;
-            } else {
-                window.location.replace("../../../ask?doctor_id=<%=doctor.id%>&price=<%=doctor.price%>&image=<%=doctor.image%>&name=<%=doctor.name%>&hospital=<%=doctor.hospital%>&clinic=<%=doctor.clinic_name%>&title=<%=doctor.title%>");
-            }
+            // if (mypoints < num) {
+            //     window.location.replace("../../../pay?points=" + num + "&name=<%=doctor.name%>&hospital=<%=doctor.hospital%>&purchase_num=<%=purchase_num%>&doctor_id=<%=doctor.id%>");
+            //     return;
+            // } else {
+            //     window.location.replace("../../../ask?doctor_id=<%=doctor.id%>&price=<%=doctor.price%>&image=<%=doctor.image%>&name=<%=doctor.name%>&hospital=<%=doctor.hospital%>&clinic=<%=doctor.clinic_name%>&title=<%=doctor.title%>");
+            // }
         });
     </script>
 </body>

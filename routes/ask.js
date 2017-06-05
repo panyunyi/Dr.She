@@ -25,7 +25,7 @@ router.get('/', function (req, res) {
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.fetch().then(function () {
         if (typeof (doctor_id) == "undefined") {
-            res.render('ask', { points: user.get('points'), hasheader: false, price: 10, doctor_id: doctor_id, image: image, name: name, hospital: hospital, clinic: clinic, title: title  });
+            res.render('ask', { points: user.get('points'), hasheader: false, price: 10, doctor_id: doctor_id, image: image, name: name, hospital: hospital, clinic: clinic, title: title });
         } else {
             res.render('ask', { points: user.get('points'), hasheader: true, price: price, doctor_id: doctor_id, image: image, name: name, hospital: hospital, clinic: clinic, title: title });
         }
@@ -42,13 +42,11 @@ router.post('/add/free', function (req, res) {
     order.set('points', num);
     order.set('user', user);
     order.save();
-    user.save().then(function (user) {
-        let time = Math.round(new Date().getTime() / 1000).toString();
-        let imglist = req.body.imglist.split(',');
-        let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-        chunyu.createFree(sess.objid, time, data).then(function (data) {
-            res.jsonp({ id: data });
-        });
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let imglist = req.body.imglist.split(',');
+    let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
+    chunyu.createFree(sess.objid, time, data).then(function (data) {
+        res.jsonp({ id: data });
     });
 });
 
@@ -63,19 +61,17 @@ router.post('/add/pay', function (req, res) {
     order.set('points', num);
     order.set('price', price / 100);
     order.set('user', user);
-    user.save().then(function (user) {
-        let time = Math.round(new Date().getTime() / 1000).toString();
-        let imglist = req.body.imglist.split(',');
-        let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女", "dotcors": doctor_id };
-        order.save().then(function (order) {
-            chunyu.createPay(sess.objid, time, data, order.id, price).then(function (data) {
-                chunyu.successNotice(sess.objid, data, time).then(function (data) {
-                    res.jsonp({ id: data.problems[0].problem_id });
-                });
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let imglist = req.body.imglist.split(',');
+    let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女", "dotcors": doctor_id };
+    order.save().then(function (order) {
+        chunyu.createPay(sess.objid, time, data, order.id, price).then(function (data) {
+            chunyu.successNotice(sess.objid, data, time).then(function (data) {
+                res.jsonp({ id: data.problems[0].problem_id });
             });
-        }, function (err) {
-            console.log(err);
         });
+    }, function (err) {
+        console.log(err);
     });
 });
 

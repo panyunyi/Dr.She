@@ -126,41 +126,41 @@
     <script type="text/javascript">
         var sum = 0;
 
-        var points = <%=points%>
-            $('#Image').change(function (event) {
-                if (sum >= 3) {
-                    weui.alert('只能上传3张图片');
-                    return;
+        var points = <%=points%>;
+        $('#Image').change(function (event) {
+            if (sum >= 3) {
+                weui.alert('只能上传3张图片');
+                return;
+            }
+            /* Act on the event */
+            if ($('#Image').val().length) {
+                var fileName = $('#Image').val();
+                var extension = fileName.substring(fileName.lastIndexOf('.'), fileName.length).toLowerCase();
+                if (extension == ".jpg" || extension == ".png") {
+                    var data = new FormData();
+                    data.append('iconImage', $('#Image')[0].files[0]);
+                    var loading = weui.loading('正在上传图片...', {
+                        className: 'custom-classname'
+                    });
+                    $.ajax({
+                        url: '/ask/upload',
+                        type: 'POST',
+                        data: data,
+                        cache: false,
+                        contentType: false, //不可缺参数
+                        processData: false, //不可缺参数
+                        success: function (data) {
+                            loading.hide();
+                            sum++;
+                            $('#add-img').before('<div class="img-container"><img src="' + data.img + '"><span class="del"></span></div>');
+                        },
+                        error: function () {
+                            console.log('error');
+                        }
+                    });
                 }
-                /* Act on the event */
-                if ($('#Image').val().length) {
-                    var fileName = $('#Image').val();
-                    var extension = fileName.substring(fileName.lastIndexOf('.'), fileName.length).toLowerCase();
-                    if (extension == ".jpg" || extension == ".png") {
-                        var data = new FormData();
-                        data.append('iconImage', $('#Image')[0].files[0]);
-                        var loading = weui.loading('正在上传图片...', {
-                            className: 'custom-classname'
-                        });
-                        $.ajax({
-                            url: '/ask/upload',
-                            type: 'POST',
-                            data: data,
-                            cache: false,
-                            contentType: false, //不可缺参数
-                            processData: false, //不可缺参数
-                            success: function (data) {
-                                loading.hide();
-                                sum++;
-                                $('#add-img').before('<div class="img-container"><img src="' + data.img + '"><span class="del"></span></div>');
-                            },
-                            error: function () {
-                                console.log('error');
-                            }
-                        });
-                    }
-                }
-            });
+            }
+        });
         $(".img-list").on("click", ".del", function () {
             var e = $(this);
             weui.dialog({
@@ -203,21 +203,21 @@
                 // if ($('#three').hasClass('checked')) {
                 //     num = 5;
                 // }
-                
+
                 if (points < num) {
                     window.location.replace("pay?points=" + num);
                     return;
                 }
                 if (<%=hasheader %>){
-                    var point= <%=price%>/500;
-                    if(point<=5){
-                        num=5
-                    }else if(point>5&&point<=10){
-                        num=10
-                    }else if(point>10){
-                        num=20
+                    var point = <%=price%>/500;
+                    if (point <= 5) {
+                        num = 5
+                    } else if (point > 5 && point <= 10) {
+                        num = 10
+                    } else if (point > 10) {
+                        num = 20
                     }
-                    $.post("/ask/add/pay", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num, price: <%=price%> ,doctor_id: "<%=doctor_id%>"}, function (result) {
+                    $.post("/ask/add/pay", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num, price: <%=price%> ,doctor_id: "<%=doctor_id%>" }, function (result) {
                         if (result.id != 0) {
                             window.location.replace("inquiry?id=" + result.id);
                         } else {

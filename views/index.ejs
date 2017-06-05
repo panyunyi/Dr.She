@@ -9,7 +9,7 @@
     <meta name="MobileOptimized" content="320">
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-    <title>问诊服务</title>
+    <title>求助医生</title>
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
     <link rel="stylesheet" href="../stylesheets/cy1.css">
     <link rel="stylesheet" href="../stylesheets/cy2.css">
@@ -24,13 +24,22 @@
         header .header-top .logo-text {
             color: #ccc
         }
+        body{
+            background-color: #f3fdf1
+        }
+        header{
+            background-color: #fff
+        }
+        .service-element{
+            background-color: #f3fdf1
+        }
     </style>
 </head>
 
 <body class="">
     <div class="partner-right">
         <header>
-            <div class="header-top">
+            <!--<div class="header-top">
                 <div class="sidebar-icon">
                 </div>
                 <img style="display:inline" class="logo" src="../assets/i/logo.png">
@@ -39,18 +48,18 @@
                     <span style="display:block">图像问诊</span>
                 </div>
                 <h3 class="logo-text">(三甲专科医生提供问诊服务)</h3>
-            </div>
+            </div>-->
 
-            <a class="header-link free" style="background-image: url(&#39;../assets/i/icon1.png&#39;)" href="#">
+            <a class="header-link free" style="background-image: url(&#39;../assets/i/kuaiwen.png&#39;)" href="#">
                 <h6>快问医生</h6>
-                <span class="header-link-tip">图像问诊，让医生看护你</span>
+                <span class="header-link-tip">每次问诊消耗2积分</span>
                 <span class="next-icon"></span>
             </a>
 
             <!--/doctor/list?id=1&num=0-->
-            <a class="header-link pay" style="background-image: url(&#39;../assets/i/icon3.png&#39;)" href="doctor/list">
+            <a class="header-link pay" style="background-image: url(&#39;../assets/i/icon4.png&#39;)" href="doctor/list">
                 <h6>自选医生</h6>
-                <span class="header-link-tip">安心选医，保护健康</span>
+                <span class="header-link-tip">查看各地三甲专科医生</span>
                 <span class="next-icon"></span>
             </a>
 
@@ -91,7 +100,7 @@
                 <ul class="mask-list">
                     <li>
                         <a href="all_service">
-                            <span class="icon icon-all-service"></span>我的咨询
+                            <span class="icon icon-all-service"></span>我的问诊
                         </a>
                     </li>
                     <li>
@@ -114,7 +123,7 @@
 
                 <div class="mask-download">
                     <a href="">
-                        <span class="icon-download"></span>下载 Dr.She App
+                        <span class="icon-download"></span>下载"Dr.She"APP
                     </a>
                 </div>
 
@@ -152,11 +161,19 @@
         function hasAnswer(){
            var count= $(".service-list").find("a").length;
            if(count>0){
-            weui.confirm('上次问诊尚未结束，点击“确定”跳转到上一次问诊，点击“取消”发起一个新的问诊。', function(){
-                window.location.replace($(".service-list").find("a")[0].href);
-            }, function(){ 
-                window.location.replace("ask");
-            });  
+               weui.confirm('上次问诊尚未结束，是否发起一个新的问诊？', {
+                buttons: [{
+                    label: '跳转上次问诊',
+                    type: 'default',
+                    onClick: function(){ window.location.replace($(".service-list").find("a")[0].href); }
+                }, {
+                    label: '发起新问诊',
+                    type: 'primary',
+                    onClick: function(){ window.location.replace("ask");  }
+                }]
+            });
+           }else{
+               window.location.replace("ask");
            }
         }
     </script>

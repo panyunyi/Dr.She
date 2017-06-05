@@ -13,6 +13,7 @@ var fs = require('fs');
 var async = require('async');
 var multiparty = require('multiparty');
 var PersonalFile = AV.Object.extend('PersonalFile');
+var Order = AV.Object.extend('Order');
 
 router.get('/points/:user_id', function (req, res) {
     let user_id = req.params.user_id;
@@ -33,13 +34,16 @@ router.post('/add', function (req, res) {
     let num = req.body.num;
     let user = AV.Object.createWithoutData('WxUser', req.body.user_id);
     user.increment('points', -num);
-    user.save().then(function (user) {
-        let time = Math.round(new Date().getTime() / 1000).toString();
-        let imglist = req.body.imglist.split(',');
-        let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-        chunyu.createFree(user.id, time, data).then(function (data) {
-            res.jsonp({ error: 0, id: data });
-        });
+    let order = new Order();
+    order.set('price', 10);
+    order.set('points', num);
+    order.set('user', user);
+    order.save();
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let imglist = req.body.imglist.split(',');
+    let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
+    chunyu.createFree(user.id, time, data).then(function (data) {
+        res.jsonp({ error: 0, id: data });
     });
 });
 
@@ -119,6 +123,18 @@ router.get('/health/delete/:id', function (req, res) {
     let person = AV.Object.createWithoutData('PersonalFile', id);
     person.destroy();
     res.jsonp({ error: 0 });
+});
+
+router.post('/doctor/list', function (req, res) {
+    let clinic_no = req.body.clinic_no;
+    let num = req.body.num * 1;
+    let province = req.body.province;
+    let city = req.body.city;
+    let user_id = req.body.user_id;
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    chunyu.doctorList(user_id, clinic_no, num, province, city, time).then(function (data) {
+        res.jsonp(data);
+    });
 });
 
 module.exports = router;
