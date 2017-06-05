@@ -52,9 +52,9 @@ router.post('/add', function (req, res) {
     order.set('user', user);
     order.save();
     let time = Math.round(new Date().getTime() / 1000).toString();
-    let imglist = parseArray(req.body.imglist).push('');
+    let imglist = parseArray(req.body.imglist);
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-    chunyu.createFree(user.id, time, data).then(function (data) {
+    chunyu.createFree(user.id, time, data,1).then(function (data) {
         res.jsonp({ error: 0, id: data });
     });
 });

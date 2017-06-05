@@ -32,27 +32,31 @@ function chunyulogin(user_id, atime) {
     });
 }
 
-function createFree(user_id, atime, ask) {
+function createFree(user_id, atime, ask, flag) {
     let result = 0;
     let sign = getSign(user_id, atime);
     let content = [
         { "type": "text", "text": ask.content },
         { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
     ];
-    if (ask.image.length == 2) {
+    let imgArrLen=1;
+    if(flag==0){
+        imgArrLen+=1;
+    }
+    if (ask.image.length == imgArrLen) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image.length == 3) {
+    } else if (ask.image.length == imgArrLen) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
             { "type": "image", "file": ask.image[1] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image.length == 4) {
+    } else if (ask.image.length == imgArrLen) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
@@ -331,20 +335,20 @@ function createPay(user_id, atime, ask, partner_order_id, price) {
         { "type": "text", "text": ask.content },
         { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
     ];
-    if (ask.image == 2) {
+    if (ask.image.length == 1) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image == 3) {
+    } else if (ask.image.length == 2) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
             { "type": "image", "file": ask.image[1] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image == 4) {
+    } else if (ask.image.length == 3) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },

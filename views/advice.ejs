@@ -25,7 +25,7 @@
             <div class="head">聆听，让我们做的更好...</div>
             <div class="content_box"><textarea id="content" placeholder="如需咨询健康问题，请您到“快问医生”里向医生咨询。" class="content bg_white"></textarea>
                 <div class="up-img-btn"><img src="./assets/i/add_img_3d8621a.png" alt="" class="img_add" id="add-img">
-                    <input type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp">
+                    <input style="opacity: 0;width: 13%;margin-left: -2rem;margin-bottom: 1rem;" type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp">
                 </div>
             </div>
             <div class="btn feedback_btn">提交</div>
@@ -57,7 +57,7 @@
                         success: function (data) {
                             loading.hide();
                             imageurl = data.img;
-                            $("#add-img").attr('src',imageurl); 
+                            $("#add-img").attr('src', imageurl);
                         },
                         error: function () {
                             console.log('error');

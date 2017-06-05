@@ -45,7 +45,7 @@ router.post('/add/free', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let imglist = req.body.imglist.split(',');
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-    chunyu.createFree(sess.objid, time, data).then(function (data) {
+    chunyu.createFree(sess.objid, time, data, 0).then(function (data) {
         res.jsonp({ id: data });
     });
 });
