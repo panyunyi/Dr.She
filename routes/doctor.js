@@ -99,9 +99,65 @@ router.get('/list', function (req, res) {
     let province = req.query.province;
     let city = req.query.city;
     let city_list = JSON.parse(fs.readFileSync(file));
-    chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
-        res.render('doctorlist', { doctors: data.doctors, cities: city_list });
-    });
+    if (typeof (sess.objid) == "undefined") {
+        let code = req.query.code;
+        let state = req.query.state;
+        let client = request.createClient('https://api.weixin.qq.com/sns/oauth2/');
+        client.get('access_token?appid=' + appid + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code', function (err, res1, body) {
+            if (body != "undefined" && typeof (body.openid) != "undefined") {
+                client = request.createClient('https://api.weixin.qq.com/sns/');
+                client.get('userinfo?access_token=' + body.access_token + '&openid=' + body.openid + '&lang=zh_CN', function (err2, res2, body2) {
+                    if (body2 != "undefined" && typeof (body2.openid) != "undefined") {
+                        let openid = body2.openid;
+                        let query = new AV.Query('WxUser');
+                        query.equalTo('openid', openid);
+                        query.count().then(function (count) {
+                            if (count == 0) {
+                                let wxuser = new WxUser();
+                                wxuser.set('openid', openid);
+                                wxuser.set('nickname', body2.nickname);
+                                wxuser.set('sex', body2.sex == 1 ? "男" : "女");
+                                wxuser.set('city', body2.city);
+                                wxuser.set('province', body2.province);
+                                wxuser.set('country', body2.country);
+                                wxuser.set('headimgurl', body2.headimgurl);
+                                wxuser.set('points', 2);
+                                wxuser.save().then(function (data) {
+                                    sess.objidid = data.id;
+                                    chunyu.login(data.id, time);
+                                    chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
+                                        res.render('doctorlist', { doctors: data.doctors, cities: city_list });
+                                    });
+                                }, function (err) {
+                                    console.log(err);
+                                });
+                            } else if (count == 1) {
+                                query.first().then(function (data) {
+                                    sess.objid = data.id;
+                                    chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
+                                        res.render('doctorlist', { doctors: data.doctors, cities: city_list });
+                                    });
+                                });
+                            } else {
+                                res.send("用户信息有重复，为保证用户利益请及时联系客服。");
+                            }
+                        });
+                    } else {
+                        console.log(body);
+                        res.send("已超时，请退出菜单重进。");
+                    }
+                });
+            } else {
+                console.log(body);
+                res.send("已超时，请退出菜单重进。");
+            }
+        });
+    } else {
+        chunyu.login(sess.objid, time);
+        chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
+            res.render('doctorlist', { doctors: data.doctors, cities: city_list });
+        });
+    }
 });
 
 module.exports = router;

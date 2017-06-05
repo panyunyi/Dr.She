@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="../stylesheets/cy1.css">
     <link rel="stylesheet" href="../stylesheets/inquiry.css">
     <style>
-        audio{
+        audio {
             max-width: 7rem;
         }
     </style>
@@ -95,20 +95,20 @@
                 dataType: "json",
                 success: function (msg) {
                     if (msg.isreply) {
-                        var count=20-msg.interaction;
+                        var count = 20 - msg.interaction;
                         $(".qa-doctor-wrap").html(msg.doctor);
-                        $(".qa-tipbar").html("23小时后或"+count+"次对话后问题关闭");
+                        $(".qa-tipbar").html("23小时后或" + count + "次对话后问题关闭");
                         $(".qa-doctor-wrap").removeClass("empty");
                     }
-                    if(msg.ispay){
+                    if (msg.ispay) {
                         $(".qa-tipbar").html("等待医生回复");
                     }
                     $(".qa-inquiry-wrap").html(msg.content);
                     if (msg.isclose) {
-                         $(".qa-tipbar").html("问题已关闭");
+                        $(".qa-tipbar").html("问题已关闭");
                         $(".qa-bottom-wrap").html('<h6 class="qa-bottom-title">问题已关闭</h6><a href="/ask" class="qa-bottom-btn pay" style="float:left;margin: 0 auto;display: none;">继续咨询</a>');
                     } else {
-                        $(".qa-bottom-wrap").html('<div class="up-img-btn"><input type="file" id="up-img-input" name="images" accept="image/*" multiple="multiple"></div><div class="block-send-txt">点击输入文字</div>');
+                        $(".qa-bottom-wrap").html('<div class="up-img-btn"><input type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp"></div><div class="block-send-txt">点击输入文字</div>');
                         $(".block-send-txt").on("click", function () {
                             $(".qa-text-mask").css("display", "block");
                             $(".qa-tipbar").css("display", "none");
@@ -118,20 +118,21 @@
                             $(".qa-text-mask").css("display", "none");
                             $(".qa-tipbar").css("display", "block");
                         });
+                        uploadImage();
                     }
                     audio();
                     gallery();
                 }
             });
         }
-        function audio(){
-            var t=$(".qa-inquiry-wrap audio");
-            $.each(t,function(t,i){
-                var e=$(i),o=e.closest(".qa-inquiry-content"),s=e[0];
-                s.addEventListener("loadedmetadata",function(t){
-                    o.find(".audio-seconds b").text(Math.floor(t.target.duration)),0===t.target.duration&&(s.volume=0,s.play(),setTimeout(function(){
-                        s.volume=.5,s.pause(),s.currentTime=0
-                    },800),s.addEventListener("timeupdate",function(t){
+        function audio() {
+            var t = $(".qa-inquiry-wrap audio");
+            $.each(t, function (t, i) {
+                var e = $(i), o = e.closest(".qa-inquiry-content"), s = e[0];
+                s.addEventListener("loadedmetadata", function (t) {
+                    o.find(".audio-seconds b").text(Math.floor(t.target.duration)), 0 === t.target.duration && (s.volume = 0, s.play(), setTimeout(function () {
+                        s.volume = .5, s.pause(), s.currentTime = 0
+                    }, 800), s.addEventListener("timeupdate", function (t) {
                         o.find(".audio-seconds b").text(Math.floor(t.target.duration))
                     }))
                 })
@@ -175,7 +176,39 @@
             });
         };
 
-
+        function uploadImage() {
+            $('#Image').change(function (event) {
+                var fileName = $('#Image').val();
+                var extension = fileName.substring(fileName.lastIndexOf('.'), fileName.length).toLowerCase();
+                if (extension == ".jpg" || extension == ".png") {
+                    var data = new FormData();
+                    data.append('iconImage', $('#Image')[0].files[0]);
+                    var loading = weui.loading('正在上传图片...', {
+                        className: 'custom-classname'
+                    });
+                    $.ajax({
+                        url: '../ask/upload',
+                        type: 'POST',
+                        data: data,
+                        cache: false,
+                        contentType: false, //不可缺参数
+                        processData: false, //不可缺参数
+                        success: function (data) {
+                            $.post("/inquiry/imageadd", { image: data.img, id: problem_id }, function (result) {
+                                if (result.error == 0) {
+                                    loading.hide();
+                                }else{
+                                    weui.alert('图片上传失败');
+                                }
+                            });
+                        },
+                        error: function () {
+                            console.log('error');
+                        }
+                    });
+                }
+            });
+        }
         setInterval('showUnreadNews()', 1000);
     </script>
 </body>

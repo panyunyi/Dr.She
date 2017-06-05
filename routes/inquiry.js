@@ -80,6 +80,14 @@ router.post('/add', function (req, res) {
     });
 });
 
+router.post('/imageadd', function (req, res) {
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let sess = req.session;
+    chunyu.problemImageAdd(sess.objid, req.body.id * 1, req.body.image, time).then(function (data) {
+        res.send({ error: data.error });
+    });
+});
+
 router.get('/list/', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;

@@ -39,20 +39,20 @@ function createFree(user_id, atime, ask) {
         { "type": "text", "text": ask.content },
         { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
     ];
-    if (ask.image == 2) {
+    if (ask.image.length == 2) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image == 3) {
+    } else if (ask.image.length == 3) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
             { "type": "image", "file": ask.image[1] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image == 4) {
+    } else if (ask.image.length == 4) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
@@ -185,6 +185,39 @@ function problemAdd(user_id, problem_id, line, atime) {
     };
     return rp(options)
         .then(function (body) {
+            return body;
+            // POST succeeded...
+        })
+        .catch(function (err) {
+            console.log(err);
+            return result;
+            // POST failed...
+        });
+}
+
+function problemImageAdd(user_id, problem_id, image_url, atime) {
+    let result = { error: 1 };
+    let sign = getSign(user_id, atime);
+    let content = [
+        { "type": "image", "file": image_url }
+    ];
+    let data = {
+        "user_id": user_id,
+        "partner": partner,
+        "problem_id": problem_id,
+        "content": JSON.stringify(content),
+        "sign": sign,
+        "atime": atime
+    };
+    var options = {
+        method: 'POST',
+        uri: test_url + '/cooperation/server/problem_content/create',
+        body: data,
+        json: true // Automatically stringifies the body to JSON
+    };
+    return rp(options)
+        .then(function (body) {
+            console.log(body);
             return body;
             // POST succeeded...
         })
@@ -405,3 +438,4 @@ module.exports.doctorList = doctorList;
 module.exports.deleteProblem = deleteProblem;
 module.exports.createPay = createPay;
 module.exports.successNotice = successNotice;
+module.exports.problemImageAdd = problemImageAdd;

@@ -30,6 +30,18 @@ router.get('/login/:user_id', function (req, res) {
     res.jsonp({ error: 0, msg: "" });
 });
 
+function parseArray(arrStr) {
+	var tempKey = 'arr23' + new Date().getTime();//arr231432350056527
+	var arrayJsonStr = '{"' + tempKey + '":' + arrStr + '}';
+	var arrayJson;
+	if (JSON && JSON.parse) {
+		arrayJson = JSON.parse(arrayJsonStr);
+	} else {
+		arrayJson = eval('(' + arrayJsonStr + ')');
+	}
+	return arrayJson[tempKey];
+};
+
 router.post('/add', function (req, res) {
     let num = req.body.num;
     let user = AV.Object.createWithoutData('WxUser', req.body.user_id);
@@ -40,7 +52,7 @@ router.post('/add', function (req, res) {
     order.set('user', user);
     order.save();
     let time = Math.round(new Date().getTime() / 1000).toString();
-    let imglist = req.body.imglist.split(',');
+    let imglist = parseArray(req.body.imglist).push('');
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
     chunyu.createFree(user.id, time, data).then(function (data) {
         res.jsonp({ error: 0, id: data });
@@ -134,6 +146,38 @@ router.post('/doctor/list', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     chunyu.doctorList(user_id, clinic_no, num, province, city, time).then(function (data) {
         res.jsonp(data);
+    });
+});
+
+router.get('/doctor/detail/:user_id/:doctor_id', function (req, res) {
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    chunyu.doctorDetail(req.params.user_id, req.params.doctor_id, time).then(function (data) {
+        res.jsonp(data);
+    });
+});
+
+router.post('/choice', function (req, res) {
+    let user_id = req.body.user_id;
+    let num = req.body.num * 1;
+    let price = req.body.price * 1;
+    let doctor_id = req.body.doctor_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    user.increment('points', -num);
+    let order = new Order();
+    order.set('points', num);
+    order.set('price', price / 100);
+    order.set('user', user);
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let imglist = req.body.imglist.split(',');
+    let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女", "dotcors": doctor_id };
+    order.save().then(function (order) {
+        chunyu.createPay(user_id, time, data, order.id, price).then(function (data) {
+            chunyu.successNotice(user_id, data, time).then(function (data) {
+                res.jsonp({ id: data.problems[0].problem_id });
+            });
+        });
+    }, function (err) {
+        console.log(err);
     });
 });
 
