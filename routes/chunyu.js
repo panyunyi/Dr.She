@@ -222,7 +222,6 @@ function problemImageAdd(user_id, problem_id, image_url, atime) {
     };
     return rp(options)
         .then(function (body) {
-            console.log(body);
             return body;
             // POST succeeded...
         })

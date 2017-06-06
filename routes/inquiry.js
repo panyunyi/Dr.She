@@ -13,19 +13,23 @@ router.get('/', function (req, res) {
     res.render('inquiry', { id: req.query.id });
 });
 
-router.get('/pooling/:id', function (req, res) {
+router.get('/pooling/:id/:content_id', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let id = req.params.id;
+    let content_id = req.params.content_id;
     let sess = req.session;
     let isreply = 0;
     let isclose = 0;
     let ispay = 0;
-    chunyu.problemDetail(sess.objid, id, time).then(function (data) {
+    chunyu.problemDetail(sess.objid, id, content_id, time).then(function (data) {
         if (typeof (data.doctor.id) != "undefined") {
             isreply = 1;
         }
         if (data.problem.status == "c" || data.problem.status == "p") {
             isclose = 1;
+        }
+        if (data.content.length > 0) {
+            content_id = data.content[data.content.length - 1].id
         }
         let doctorimage = data.doctor.image;
         let clinic = { '1': "妇科", '2': "儿科", '3': "内科", '4': "皮肤性病科", '6': "营养科", '7': "骨伤科", '8': "男科", '9': "外科", '11': "肿瘤及防治科", '12': "中医科", '13': "口腔颌面科", '14': "耳鼻咽喉科", '15': "眼科", '16': "整形美容科", '17': "精神心理科", '21': "产科" };
@@ -67,7 +71,7 @@ router.get('/pooling/:id', function (req, res) {
                 ispay = 1;
                 contentHtml += '<div class="qa-inquiry-list doctor"><div class="block-left"><img src="../01.png" class="doctor-avatar-small"></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span>亲爱的，您好：我们已通知到' + data.doctor.hospital + '医生。为您答题的医生均在医院临床一线工作，无法做到随问随答，请您耐心等待哦！您的问题得到回复后，我们会在第一时间给您推送消息~</span> </div></div></div></div>';
             }
-            res.send({ doctor: doctorHtml, content: contentHtml, isreply: isreply, isclose: isclose, ispay: ispay, interaction: data.problem.interaction });
+            res.send({ content_id: content_id*1, doctor: doctorHtml, content: contentHtml, isreply: isreply, isclose: isclose, ispay: ispay, interaction: data.problem.interaction });
         });
     });
 });

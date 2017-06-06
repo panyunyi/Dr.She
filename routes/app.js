@@ -149,9 +149,9 @@ router.post('/doctor/list', function (req, res) {
     });
 });
 
-router.get('/doctor/detail/:user_id/:doctor_id', function (req, res) {
+router.get('/doctor/detail/:user_id/:doctor_id/:content_id', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
-    chunyu.doctorDetail(req.params.user_id, req.params.doctor_id, time).then(function (data) {
+    chunyu.doctorDetail(req.params.user_id, req.params.doctor_id, req.params.content_id, time).then(function (data) {
         res.jsonp(data);
     });
 });
