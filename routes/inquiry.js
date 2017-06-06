@@ -24,7 +24,7 @@ router.get('/pooling/:id', function (req, res) {
         if (typeof (data.doctor.id) != "undefined") {
             isreply = 1;
         }
-        if (data.problem.status == "c") {
+        if (data.problem.status == "c" || data.problem.status == "p") {
             isclose = 1;
         }
         let doctorimage = data.doctor.image;

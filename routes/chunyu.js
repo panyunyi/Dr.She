@@ -39,9 +39,9 @@ function createFree(user_id, atime, ask, flag) {
         { "type": "text", "text": ask.content },
         { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
     ];
-    let imgArrLen=1;
-    if(flag==0){
-        imgArrLen+=1;
+    let imgArrLen = 1;
+    if (flag == 0) {
+        imgArrLen += 1;
     }
     if (ask.image.length == imgArrLen) {
         content = [
@@ -49,14 +49,14 @@ function createFree(user_id, atime, ask, flag) {
             { "type": "image", "file": ask.image[0] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image.length == imgArrLen) {
+    } else if (ask.image.length == imgArrLen + 1) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
             { "type": "image", "file": ask.image[1] },
             { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
         ];
-    } else if (ask.image.length == imgArrLen) {
+    } else if (ask.image.length == imgArrLen + 2) {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },
@@ -101,7 +101,7 @@ function createFree(user_id, atime, ask, flag) {
         });
 }
 
-function problemDetail(user_id, problem_id, atime) {
+function problemDetail(user_id, problem_id, last, atime) {
     let result = { error: 1 };
     let sign = getSign(user_id, atime);
     let data = {
@@ -109,6 +109,7 @@ function problemDetail(user_id, problem_id, atime) {
         "partner": partner,
         "problem_id": problem_id,
         "sign": sign,
+        "last_content_id": last,
         "atime": atime
     };
     //console.log(data);

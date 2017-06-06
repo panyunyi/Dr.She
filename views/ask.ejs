@@ -72,54 +72,6 @@
                 </div>
     </div>
 
-    <!--<div id="html2" class="partner-right" style="display:none">
-        <header>
-            <span>您当前<%=points%>积分</span>
-        </header>
-        <div class="container">
-
-            <div class="doctor-list appoint">
-                <div class="doctor-list-left">
-                    <div class="doctor-img">
-                        <img src="../01.png">
-                    </div>
-                </div>
-                <div class="doctor-list-right">
-                    <div class="doctor-list-top">
-                        <p class="doctor-name">系统指派医生</p>
-                        <p class="hospital-name">三级甲等或专科医院（限20次对话）</p>
-                    </div>
-                    <div class="doctor-list-bottom">
-                        <p class="price">2积分</p>
-                        <span id="auto" class="square checked money_num"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="doctor-list" style="border:0">
-                <div class="doctor-list-left">
-                    <a class="doctor-img" href="javascript:;">
-                  <img src="../02.png">
-              </a>
-                </div>
-                <div class="doctor-list-right">
-                    <div class="doctor-list-top">
-                        <p class="doctor-name">一题多问</p>
-                        <p class="hospital-name">将问题同时发送给3名医生咨询
-                        </p>
-                    </div>
-                    <div class="doctor-list-bottom">
-                        <p class="price">5积分</p>
-
-                        <span id="three" class="square money_num"></span>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <section class="upgrade-btn-wrap">
-            <div class="upgrade-btn">提交</div>
-        </section>
-    </div>-->
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
@@ -127,8 +79,10 @@
         var sum = 0;
 
         var points = <%=points%>;
+
         $('#Image').change(function (event) {
-            if (sum >= 3) {
+            console.log(1);
+            if ($(".img-list img").length == 3) {
                 weui.alert('只能上传3张图片');
                 return;
             }
@@ -152,7 +106,11 @@
                         success: function (data) {
                             loading.hide();
                             sum++;
-                            $('#add-img').before('<div class="img-container"><img src="' + data.img + '"><span class="del"></span></div>');
+                            if(sum==3){
+                                return;
+                            }else{
+                                $('#add-img').before('<div class="img-container"><img src="' + data.img + '"><span class="del"></span></div>');
+                            }
                         },
                         error: function () {
                             console.log('error');
@@ -197,12 +155,8 @@
                 $(".img-list img").each(function (i) {
                     imglist += $(this).attr("src") + ",";
                 });
-                // $('#html1').css('display', 'none');
-                // $('#html2').css('display', 'block');
+
                 var num = 2;
-                // if ($('#three').hasClass('checked')) {
-                //     num = 5;
-                // }
 
                 if (points < num) {
                     window.location.replace("pay?points=" + num);
@@ -237,31 +191,6 @@
                 weui.alert('字数限制为10~1000');
             }
         }
-        // $(".upgrade-btn").on("click", function () {
-        //     var num = 2;
-        //     if ($('#three').hasClass('checked')) {
-        //         num = 5;
-        //     }
-        //     if (points < num) {
-        //         window.location.replace("pay?points=" + num);
-        //         return;
-        //     }
-        //     $.post("/ask/add", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num }, function (result) {
-        //         if (result.id != 0) {
-        //             window.location.replace("inquiry?id=" + result.id);
-        //         } else {
-        //             weui.alert("创建问题失败，请联系客服。")
-        //         }
-        //     });
-        // });
-        // $("#auto").on("click", function () {
-        //     $("#auto").addClass("checked");
-        //     $('#three').removeClass("checked");
-        // });
-        // $("#three").on("click", function () {
-        //     $("#three").addClass("checked");
-        //     $('#auto').removeClass("checked");
-        // });
     </script>
 </body>
 

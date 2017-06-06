@@ -31,15 +31,15 @@ router.get('/login/:user_id', function (req, res) {
 });
 
 function parseArray(arrStr) {
-	var tempKey = 'arr23' + new Date().getTime();//arr231432350056527
-	var arrayJsonStr = '{"' + tempKey + '":' + arrStr + '}';
-	var arrayJson;
-	if (JSON && JSON.parse) {
-		arrayJson = JSON.parse(arrayJsonStr);
-	} else {
-		arrayJson = eval('(' + arrayJsonStr + ')');
-	}
-	return arrayJson[tempKey];
+    var tempKey = 'arr23' + new Date().getTime();//arr231432350056527
+    var arrayJsonStr = '{"' + tempKey + '":' + arrStr + '}';
+    var arrayJson;
+    if (JSON && JSON.parse) {
+        arrayJson = JSON.parse(arrayJsonStr);
+    } else {
+        arrayJson = eval('(' + arrayJsonStr + ')');
+    }
+    return arrayJson[tempKey];
 };
 
 router.post('/add', function (req, res) {
@@ -52,9 +52,9 @@ router.post('/add', function (req, res) {
     order.set('user', user);
     order.save();
     let time = Math.round(new Date().getTime() / 1000).toString();
-    let imglist = parseArray(req.body.imglist);
+    let imglist = req.body.imglist.split(',');
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-    chunyu.createFree(user.id, time, data,1).then(function (data) {
+    chunyu.createFree(user.id, time, data, 1).then(function (data) {
         res.jsonp({ error: 0, id: data });
     });
 });
@@ -178,6 +178,26 @@ router.post('/choice', function (req, res) {
         });
     }, function (err) {
         console.log(err);
+    });
+});
+
+router.post('/problem/add', function (req, res) {
+    let user_id = req.body.user_id;
+    let problem_id = req.body.problem_id;
+    let content = req.body.content;
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    chunyu.problemAdd(user_id, problem_id, content, time).then(function (data) {
+        res.jsonp(data);
+    });
+});
+
+router.post('/problem/imageadd', function (req, res) {
+    let user_id = req.body.user_id;
+    let problem_id = req.body.problem_id;
+    let url = req.body.url;
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    chunyu.problemImageAdd(user_id, problem_id, url, time).then(function (data) {
+        res.jsonp(data);
     });
 });
 
