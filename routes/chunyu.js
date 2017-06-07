@@ -335,7 +335,7 @@ function createPay(user_id, atime, ask, partner_order_id, price) {
         { "type": "text", "text": ask.content },
         { "type": "patient_meta", "age": ask.age, "sex": ask.sex }
     ];
-    if (ask.image.length == 1) {
+    if (ask.image.length == 1 && ask.image[0] != '') {
         content = [
             { "type": "text", "text": ask.content },
             { "type": "image", "file": ask.image[0] },

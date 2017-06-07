@@ -43,8 +43,6 @@ router.post('/add/free', function (req, res) {
     order.set('user', user);
     order.save();
     let time = Math.round(new Date().getTime() / 1000).toString();
-    console.log(req.body);
-    //return;
     let imglist = req.body.imglist.split(',');
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
     chunyu.createFree(sess.objid, time, data, 0).then(function (data) {

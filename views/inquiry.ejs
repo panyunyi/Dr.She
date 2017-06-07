@@ -102,8 +102,10 @@
                     }
                     if (msg.ispay) {
                         $(".qa-tipbar").html("等待医生回复");
+                        $(".qa-inquiry-wrap").html(msg.content);
+                    }else{
+                        $(".qa-inquiry-wrap").append(msg.content);
                     }
-                    $(".qa-inquiry-wrap").append(msg.content);
                     if (msg.isclose) {
                         $(".qa-tipbar").html("问题已关闭");
                         $(".qa-bottom-wrap").html('<h6 class="qa-bottom-title">问题已关闭</h6><a href="/ask" class="qa-bottom-btn pay" style="float:left;margin: 0 auto;display: none;">继续咨询</a>');
@@ -119,10 +121,11 @@
                         });
                     }
                     audio();
-                    gallery();
+                    
                 }
             });
         }
+        gallery();
         function audio() {
             var t = $(".qa-inquiry-wrap audio");
             $.each(t, function (t, i) {
@@ -141,18 +144,23 @@
         }
         function gallery() {//这个是调用微信图片浏览器的函数   
             //下面是获取当前页面所有的img的src 转成数组 并且 转换成json格式  
-            var aa = [];
-            var i = 0;
-            var src = [];
-            aa = $('img');
-            for (i = 0; i < aa.length; i++) {
-                src[i] = aa[i].src;    //把所有的src存到数组里  
-            }
+            // var aa = [];
+            // var i = 0;
+            // var src = [];
+            // aa = $('img');
+            // for (i = 0; i < aa.length; i++) {
+            //     src[i] = aa[i].src;    //把所有的src存到数组里  
+            // }
 
             //下面是点击图片的时候获取当前第几个图片并且启用咱们做的调用微信图片浏览器的函数  
-            $('img').click(function () {
-                var index = $('img').index(this);
-                imagePreview(src[index], src);
+            // $('img').click(function () {
+            //     var index = $('img').index(this);
+            //     imagePreview(src[index], src);
+            // });
+            $('img').on("click",function(){
+                var list=[];
+                list[0]=this.src;
+                imagePreview(this.src,list);
             });
         }
         function imagePreview(curSrc, srcList) {

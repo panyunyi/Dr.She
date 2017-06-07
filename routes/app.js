@@ -53,17 +53,22 @@ router.post('/add', function (req, res) {
     order.save();
     let time = Math.round(new Date().getTime() / 1000).toString();
     let imglist = req.body.imglist.split(',');
+    let flag=1;
+    if(imglist[0]==''){
+        flag=0;
+    }
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-    chunyu.createFree(user.id, time, data, 1).then(function (data) {
+    chunyu.createFree(user.id, time, data, flag).then(function (data) {
         res.jsonp({ error: 0, id: data });
     });
 });
 
-router.get('/problem/:user_id/:problem_id', function (req, res) {
+router.get('/problem/:user_id/:problem_id/:content_id', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let user_id = req.params.user_id;
     let problem_id = req.params.problem_id;
-    chunyu.problemDetail(user_id, problem_id, time).then(function (data) {
+    let content_id = req.params.content_id
+    chunyu.problemDetail(user_id, problem_id, content_id, time).then(function (data) {
         res.jsonp(data);
     });
 });
@@ -149,9 +154,9 @@ router.post('/doctor/list', function (req, res) {
     });
 });
 
-router.get('/doctor/detail/:user_id/:doctor_id/:content_id', function (req, res) {
+router.get('/doctor/detail/:user_id/:doctor_id', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
-    chunyu.doctorDetail(req.params.user_id, req.params.doctor_id, req.params.content_id, time).then(function (data) {
+    chunyu.doctorDetail(req.params.user_id, req.params.doctor_id,  time).then(function (data) {
         res.jsonp(data);
     });
 });
