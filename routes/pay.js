@@ -8,13 +8,19 @@ var partner_key = process.env.partner_key;
 var chunyu = require('../routes/chunyu');
 var async = require('async');
 var moment = require('moment');
+var WXPay = require('weixin-pay');
+
+var wxpay = WXPay({
+    appid: appid,
+    mch_id: '1409060102'
+});
 
 router.get('/', function (req, res) {
     let points = req.query.points;
     let name = req.query.name;
     let hospital = req.query.hospital;
-    let purchase_num=req.query.purchase_num;
-    let doctor_id=req.query.doctor_id;
+    let purchase_num = req.query.purchase_num;
+    let doctor_id = req.query.doctor_id;
     let sess = req.session;
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.fetch().then(function () {
@@ -28,15 +34,44 @@ router.get('/', function (req, res) {
     });
 });
 
+var Recharge = AV.Object.extend('Recharge');
 router.post('/recharge', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;
     let points = req.body.points * 1;
-    let money = req.body.money * 1;
+    let money = req.body.points * 1 * 5;
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
-    user.increment('points', points);
-    res.send({ error: 0 });
+    user.fetch().then(function (user) {
+        let recharge = new Recharge();
+        recharge.set('result', false);
+        recharge.set('title', "积分充值");
+        recharge.set('source', "wechat");
+        recharge.set('price', money);
+        recharge.set('user', user);
+        recharge.save().then(function (data) {
+            wxpay.getBrandWCPayRequestParams({
+                openid: user.get('openid'),
+                body: '积分充值',
+                out_trade_no: data.id,
+                total_fee: money * 100,
+                spbill_create_ip: req.headers['x-real-ip'],
+                notify_url: 'http://drshe.leanapp.cn/pay/wxpay/notify'
+            }, function (err, result) {
+                // in express
+                console.log(result);
+                res.send({ payargs: result })
+            });
+
+        });
+    });
 });
 
+router.use('/wxpay/notify', wxpay.useWXCallback(function (msg, req, res, next) {
+    // 处理商户业务逻辑
+
+    // res.success() 向微信返回处理成功信息，res.fail()返回失败信息。
+    console.log(req);
+    res.success();
+}));
 module.exports = router;
 

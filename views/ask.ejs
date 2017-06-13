@@ -20,14 +20,31 @@
     <style>
         .age {
             margin-top: .26667rem;
-            font-weight: lighter;
-            font-size: .34667rem;
-            color: #979797;
             margin-right: .21rem;
         }
 
         .toolbar {
             height: 0
+        }
+
+        .ask-description p {
+            font-size: .42667rem;
+            margin-bottom: .2rem;
+        }
+
+        .ask-description textarea {
+            border-bottom: 2px solid #eee !important;
+        }
+
+        .age {
+            font-size: .42667rem;
+            border-bottom: 2px solid #eee !important;
+            padding-bottom: .4rem;
+            width: 100%;
+        }
+        .img-list p {
+            font-size: .42667rem;
+            margin-bottom: .2rem;
         }
     </style>
 </head>
@@ -49,15 +66,17 @@
                 </div>
             </header>
             <%}%>
+
                 <section class="ask-description">
-                    <textarea autofocus="" id="description" placeholder="请填写年龄和上传妇科自检图像，描述体症便于医生作准确的分析（字数限制为10~300字）"></textarea>
-                    <span class="age">请填写年龄:</span><input style="width: 16%;height:22px;border: 0px;font-size: .4rem;margin-bottom: .06rem;"
-                        type="number" id="age" name="age" min="18" max="60" placeholder="年龄" />
+                    <p>描述体症：</p>
+                    <textarea autofocus="" id="description" placeholder="便于医生做出准确分析，字数限制为10~300字"></textarea>
+                    <p class="age">请填写年龄：<input style="width: 16%;height:22px;border: 0px;font-size: .42667rem;margin-bottom: .06rem;" type="number"
+                            id="age" name="age" min="18" max="60" placeholder="年龄" /></p>
                 </section>
 
                 <div class="img-list">
                     <div class="line" style="position: relative;">
-
+                        <p>添加照片：</p>
                         <button class="img-container select" id="add-img">
                     <input style="font-size: 999px; opacity: 0; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;" type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp">
                 </button>
@@ -106,9 +125,9 @@
                         success: function (data) {
                             loading.hide();
                             sum++;
-                            if(sum==3){
+                            if (sum == 3) {
                                 return;
-                            }else{
+                            } else {
                                 $('#add-img').before('<div class="img-container"><img src="' + data.img + '"><span class="del"></span></div>');
                             }
                         },
@@ -144,7 +163,7 @@
             }
 
         });
-        
+
         function getNum(str) {
             if ($("#age").val().length < 1) {
                 weui.alert('请输入年龄');

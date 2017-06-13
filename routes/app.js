@@ -14,6 +14,7 @@ var async = require('async');
 var multiparty = require('multiparty');
 var PersonalFile = AV.Object.extend('PersonalFile');
 var Order = AV.Object.extend('Order');
+var Recharge = AV.Object.extend('Recharge');
 
 router.get('/points/:user_id', function (req, res) {
     let user_id = req.params.user_id;
@@ -53,9 +54,9 @@ router.post('/add', function (req, res) {
     order.save();
     let time = Math.round(new Date().getTime() / 1000).toString();
     let imglist = req.body.imglist.split(',');
-    let flag=1;
-    if(imglist[0]==''){
-        flag=0;
+    let flag = 1;
+    if (imglist[0] == '') {
+        flag = 0;
     }
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
     chunyu.createFree(user.id, time, data, flag).then(function (data) {
@@ -156,7 +157,7 @@ router.post('/doctor/list', function (req, res) {
 
 router.get('/doctor/detail/:user_id/:doctor_id', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
-    chunyu.doctorDetail(req.params.user_id, req.params.doctor_id,  time).then(function (data) {
+    chunyu.doctorDetail(req.params.user_id, req.params.doctor_id, time).then(function (data) {
         res.jsonp(data);
     });
 });
@@ -203,6 +204,22 @@ router.post('/problem/imageadd', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     chunyu.problemImageAdd(user_id, problem_id, url, time).then(function (data) {
         res.jsonp(data);
+    });
+});
+
+router.post('/recharge/add', function (req, res) {
+    let user_id = req.body.user_id;
+    let goods = req.body.goods;
+    let price = req.body.price * 1;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let recharge = new Recharge();
+    recharge.set('result', false);
+    recharge.set('title', goods);
+    recharge.set('source', "app");
+    recharge.set('price', price);
+    recharge.set('user', user);
+    recharge.save().then(function (data) {
+        res.jsonp({ id: data.id });
     });
 });
 

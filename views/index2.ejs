@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html class="no-js drshe_wap" style="font-size: 37.5px;">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <title>求助医生</title>
+    <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
+    <link rel="stylesheet" href="../stylesheets/cy1.css">
+    <link rel="stylesheet" href="../stylesheets/cy2.css">
+    <link rel="stylesheet" href="../stylesheets/pay.css">
+    <script type="text/javascript">
+        window.addEventListener("resize", function () { var MAX_WIDTH = 640, htmlDom = document.querySelector("html"), htmlWidth = htmlDom.clientWidth, screenWidth = screen.width, width = Math.min(htmlWidth, MAX_WIDTH), htmlFontSize = width / 10, preHtmlFontSize = htmlDom.style.fontSize || ""; preHtmlFontSize = parseFloat(preHtmlFontSize); if (preHtmlFontSize && htmlFontSize == preHtmlFontSize) { return } if (screenWidth > 750) { htmlFontSize = 37.5 }; htmlDom.style.fontSize = htmlFontSize + "px" }); !function () { var event = document.createEvent("HTMLEvents"); event.initEvent("resize", false, false); window.dispatchEvent(event) }();
+    </script>
+    <style>
+        header .header-top .logo {
+            width: 2.6rem;
+            margin-left: 2.8rem;
+        }
+
+        header .header-top .logo-text {
+            color: #ccc
+        }
+
+        body {
+            background-color: #e7e7e7
+        }
+
+        header {
+            background-color: #fff
+        }
+
+        .service-element {
+            background-color: #f3fdf1
+        }
+
+        .kuaiwen {
+            margin-left: 1rem;
+        }
+
+        .cy-fld-send,
+        .cy-btn {
+            padding: .387rem;
+        }
+
+        .cy-btn-wrap {
+            padding: 0 .4rem;
+        }
+    </style>
+</head>
+
+<body class="">
+    <div class="partner-right">
+        <header>
+
+            <a class="header-link free" style="background-image: url(&#39;../assets/i/zixuan.png&#39;)" href="/doctor/list">
+                <h6 class="kuaiwen">自选医生</h6>
+                <span class="kuaiwen header-link-tip">查看全国各地三甲、专科医生；</span>
+                <br class="kuaiwen">
+                <span class="kuaiwen header-link-tip">一症多问，让多位医生看护您。</span>
+                <span class="next-icon"></span>
+            </a>
+
+        </header>
+        <main class="service-list">
+            <div class="cy-btn-wrap">
+                <button class="cy-btn cy-btn-look " style="font-size:.48rem" type="submit">查看更多医生</button>
+            </div>
+        </main>
+        <section class="mask hide">
+            <div class="mask-content">
+                <h6 class="mask-title">功能列表</h6>
+                <ul class="mask-list">
+                    <li>
+                        <a href="all_service">
+                            <span class="icon icon-all-service"></span>我的问诊
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mypoints">
+                            <span class="icon icon-my-count"></span>我的积分
+                        </a>
+                    </li>
+                    <li>
+                        <a href="advice">
+                            <span class="icon icon-feedback"></span>
+                            <span class="feedback-text">我的建议</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="mask-download">
+                    <a href="">
+                        <span class="icon-download"></span>下载"Dr.She"APP
+                    </a>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        $('.cy-btn').on("click",function(){
+            window.location.replace("/doctor/list");
+        });
+    </script>
+</body>
+
+</html>
