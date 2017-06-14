@@ -71,7 +71,9 @@
                                                 <%}%>
                                                     <p class="qa-detail">
                                                         <span><%=list[i].problem.created_time%></span>
+                                                        <%if(list[i].problem.status=="医生已回复"){%>
                                                         <span><%=list[i].problem.clinic_name%></span>
+                                                        <%}%>
                                                     </p>
                                                     <p class="qa-text">
                                                         <%=list[i].problem.ask%>
@@ -113,7 +115,8 @@
             </div>
         </section>
     </div>
-
+    <script src="https://cdn.bootcss.com/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://cdn.bootcss.com/moment.js/2.18.1/locale/zh-cn.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>

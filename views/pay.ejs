@@ -296,13 +296,13 @@
             if ($('.points').val() > 0) {
                 $.post("/pay/recharge", { points: $(".points").val(), money: $("#money2").val(), }, function (result) {
                     WeixinJSBridge.invoke(
-                        "getBrandWCPayRequest", JSON.stringify(result.payargs), function (res) {
+                        "getBrandWCPayRequest", result.payargs, function (res) {
                             if (res.err_msg == "get_brand_wcpay_request:ok") {
                                 // success
                                 weui.toast('支付完成', {
                                     duration: 3000,
                                     className: 'custom-classname',
-                                    callback: function () { window.location.replace("../ask"); }
+                                    callback: function () { window.location.replace("../mypoints"); }
                                 });
                             }
                             else {

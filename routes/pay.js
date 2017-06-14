@@ -12,7 +12,8 @@ var WXPay = require('weixin-pay');
 
 var wxpay = WXPay({
     appid: appid,
-    mch_id: '1409060102'
+    mch_id: '1409060102',
+    partner_key:'syyl1234syyl1234syyl1234syyl1234'
 });
 
 router.get('/', function (req, res) {
@@ -52,13 +53,12 @@ router.post('/recharge', function (req, res) {
             wxpay.getBrandWCPayRequestParams({
                 openid: user.get('openid'),
                 body: '积分充值',
+                detail: '星天使',
                 out_trade_no: data.id,
                 total_fee: money * 100,
                 spbill_create_ip: req.headers['x-real-ip'],
                 notify_url: 'http://drshe.leanapp.cn/pay/wxpay/notify'
             }, function (err, result) {
-                // in express
-                console.log(result);
                 res.send({ payargs: result })
             });
 
@@ -70,7 +70,7 @@ router.use('/wxpay/notify', wxpay.useWXCallback(function (msg, req, res, next) {
     // 处理商户业务逻辑
 
     // res.success() 向微信返回处理成功信息，res.fail()返回失败信息。
-    console.log(req);
+    console.log(msg);
     res.success();
 }));
 module.exports = router;
