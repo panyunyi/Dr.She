@@ -106,7 +106,7 @@ function indexProblemList(req, res, service) {
                     one.problem.status = "已评价";
                     break;
             }
-            one.problem.created_time=new moment(one.problem.created_time).format('LLL');
+            one.problem.created_time=new moment(one.problem.created_time).format('YYYY年MM月DD日 HH:mm');
             callback(null, one);
         }, function (err, problems) {
             res.render(service, { list: problems });

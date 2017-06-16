@@ -247,8 +247,13 @@
                         <%=title%>
                     </div>
                     <div class="cy-txt cy-should-pay" style="display: inline;float: right;width: 53%;">
+                        <%if(points>0){%>
                         <input type="number" value=<%=points%> class="points" placeholder="" emptyTips="" oninput="changeVale(this.value)"
                         onpropertychange="changeVale(this.value)">
+                        <%}else{%>
+                        <input type="number"  class="points" placeholder="0" emptyTips="" oninput="changeVale(this.value)"
+                        onpropertychange="changeVale(this.value)">
+                        <%}%>
                         <div class="cy-txt cy-should-pay" style="font-size: 2em;float:right;">积分</div>
                     </div>
 
@@ -300,13 +305,15 @@
                             if (res.err_msg == "get_brand_wcpay_request:ok") {
                                 // success
                                 weui.toast('支付完成', {
-                                    duration: 3000,
+                                    duration: 2000,
                                     className: 'custom-classname',
                                     callback: function () { window.location.replace("../mypoints"); }
                                 });
+                            }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                                weui.toast('支付已取消', 2000);
                             }
                             else {
-                                weui.toast('支付失败，请联系客服。', 3000);
+                                weui.toast('支付失败，请联系客服。', 2000);
                             }
 
                         });

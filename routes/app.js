@@ -15,7 +15,96 @@ var multiparty = require('multiparty');
 var PersonalFile = AV.Object.extend('PersonalFile');
 var Order = AV.Object.extend('Order');
 var Recharge = AV.Object.extend('Recharge');
+var WxUser = AV.Object.extend('WxUser');
+var Business = AV.Object.extend('Business');
 
+//app微信登录
+router.post('/wx/login', function (req, res) {
+    let openid = req.body.openid;
+    let nickname = req.body.nickname;
+    let sex = req.body.sex;
+    let city = req.body.city;
+    let headimgurl = req.body.headimgurl;
+    let province = req.body.province;
+    let country = req.body.country;
+    let userQuery = new AV.Query('WxUser');
+    userQuery.first().then(function (user) {
+        if (typeof (user) != "undefined") {
+            res.jsonp({ objectid: user.id });
+        } else {
+            let newuser = new WxUser();
+            newuser.set('openid', openid);
+            newuser.set('nickname', nickname);
+            newuser.set('sex', sex);
+            newuser.set('city', city);
+            newuser.set('headimgurl', headimgurl);
+            newuser.set('province', province);
+            newuser.set('country', country);
+            newuser.save().then(function (data) {
+                res.jsonp({ objectid: data.id });
+            });
+        }
+    });
+});
+
+//美容院相关
+router.get('/business/:id', function (req, res) {
+    let id = req.params.id;
+    let business = AV.Object.createWithoutData('Business', id);
+    business.fetch().then(function () {
+        res.jsonp({ business: business });
+    });
+});
+
+router.post('/business', function (req, res) {
+    let user_id = req.body.user_id;
+    let name = req.body.name;
+    let phone = req.body.phone;
+    let address = req.body.address;
+    let area = req.body.area;
+    let connecter = req.body.connecter;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let business = new Business();
+    business.set('user', user);
+    business.set('name', name);
+    business.set('phone', phone);
+    business.set('address', address);
+    business.set('area', area);
+    business.set('connecter', connecter);
+    business.save().then(function (data) {
+        res.jsonp({ error: 0, msg: "", business_id: data.id });
+    });
+});
+
+router.get('/business/:user_id', function (req, res) {
+    let user_id = req.params.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let businessQuery = new AV.Query('Business');
+    businessQuery.equalTo('user', user);
+    businessQuery.first().then(function (data) {
+        if (typeof (data) == "undefined") {
+            res.jsonp({ count: 0 });
+        } else {
+            res.jsonp({ count: 1, business_id: data.id });
+        }
+    });
+});
+
+router.get('/business/clients/:business_id', function (req, res) {
+    let business_id = req.params.business_id;
+    let business = AV.Object.createWithoutData('Business', business_id);
+    let clientsQuery = new AV.Query('BusinessClient');
+    clientsQuery.equalTo('business', business);
+    clientsQuery.find().then(function (clients) {
+        if (clients.length > 0) {
+            
+        } else {
+            res.jsonp({ count: 0 });
+        }
+    });
+});
+
+//春雨接口
 router.get('/points/:user_id', function (req, res) {
     let user_id = req.params.user_id;
     let user = AV.Object.createWithoutData('WxUser', user_id);

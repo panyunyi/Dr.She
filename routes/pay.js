@@ -13,7 +13,7 @@ var WXPay = require('weixin-pay');
 var wxpay = WXPay({
     appid: appid,
     mch_id: '1409060102',
-    partner_key:'syyl1234syyl1234syyl1234syyl1234'
+    partner_key: 'syyl1234syyl1234syyl1234syyl1234'
 });
 
 router.get('/', function (req, res) {
@@ -52,16 +52,16 @@ router.post('/recharge', function (req, res) {
         recharge.save().then(function (data) {
             wxpay.getBrandWCPayRequestParams({
                 openid: user.get('openid'),
-                body: '积分充值',
+                body: '星天使积分充值',
                 detail: '星天使',
                 out_trade_no: data.id,
                 total_fee: money * 100,
+                //total_fee: 1,
                 spbill_create_ip: req.headers['x-real-ip'],
                 notify_url: 'http://drshe.leanapp.cn/pay/wxpay/notify'
             }, function (err, result) {
                 res.send({ payargs: result })
             });
-
         });
     });
 });
@@ -71,7 +71,35 @@ router.use('/wxpay/notify', wxpay.useWXCallback(function (msg, req, res, next) {
 
     // res.success() 向微信返回处理成功信息，res.fail()返回失败信息。
     console.log(msg);
+    let result_code = msg.result_code;
+    let openid = msg.openid;
+    let out_trade_no = msg.out_trade_no;
+    let transaction_id = msg.transaction_id;
+    let total_fee = msg.total_fee * 1;
     res.success();
+    if (result_code == "SUCCESS") {
+        let recharge = AV.Object.createWithoutData('Recharge', out_trade_no);
+        if (typeof (recharge) == "undefined") {
+            res.success();
+        }
+        recharge.set('orderid', transaction_id);
+        recharge.set('result', true);
+        recharge.set('total_fee', total_fee);
+        recharge.save().then(function () {
+            let userQuery = new AV.Query('WxUser');
+            userQuery.equalTo('openid', openid);
+            userQuery.first().then(function (user) {
+                if (typeof (user) != "undefined") {
+                    let points = total_fee / 5;
+                    user.increment('points', points);
+                    user.save();
+                }
+                res.success();
+            });
+        });
+    } else {
+        res.success();
+    }
 }));
 module.exports = router;
 
