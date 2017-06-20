@@ -5,10 +5,11 @@ var request = require('request');
 var rp = require('request-promise');
 var partner_key = process.env.partner_key;
 var partner = process.env.partner;
-var test_url = process.env.test_url;
+var test_url = process.env.product_url;
 var product_url = process.env.product_url;
 var Problem = AV.Object.extend('Problem');
 var Order = AV.Object.extend('Order');
+var Content=AV.Object.extend('Content');
 
 function chunyulogin(user_id, atime) {
     let sign = getSign(user_id, atime);
@@ -87,6 +88,8 @@ function createFree(user_id, atime, ask, flag) {
                 problem.set('status', 'n');
                 problem.set('has_answer', false);
                 problem.set('user_id', user_id);
+                problem.set('ask',ask.content);
+                problem.set('image',ask.image);
                 let user = AV.Object.createWithoutData('WxUser', user_id);
                 problem.set('user', user);
                 problem.save();
@@ -190,7 +193,27 @@ function problemAdd(user_id, problem_id, line, atime) {
     };
     return rp(options)
         .then(function (body) {
-            return body;
+            let user = AV.Object.createWithoutData('WxUser', user_id);
+            let newContent=new Content();
+            newContent.set('askorreply','p');
+            newContent.set('atime',atime*1);
+            newContent.set('type','text');
+            newContent.set('user',user);
+            newContent.set('text',line);
+            let problemQuery=new AV.Query('Problem');
+            problemQuery.equalTo('problem_id',problem_id);
+            problemQuery.first().then(function(problem){
+                newContent.set('problem',problem);
+                newContent.save().then(function(){
+                    
+                },function(err){
+                    console.log(err);
+                });
+                return body;
+            },function(err){
+                console.log(err);
+            });
+            
             // POST succeeded...
         })
         .catch(function (err) {
@@ -222,7 +245,21 @@ function problemImageAdd(user_id, problem_id, image_url, atime) {
     };
     return rp(options)
         .then(function (body) {
-            return body;
+            let user = AV.Object.createWithoutData('WxUser', user_id);
+            let newContent=new Content();
+            newContent.set('askorreply','p');
+            newContent.set('atime',atime*1);
+            newContent.set('type','image');
+            newContent.set('user',user);
+            newContent.set('image',image_url);
+            let problemQuery=new AV.Query('Problem');
+            problemQuery.equalTo('problem_id',problem_id);
+            problemQuery.first().then(function(problem){
+                newContent.set('problem',problem);
+                newContent.save();
+                return body;
+            });
+            
             // POST succeeded...
         })
         .catch(function (err) {

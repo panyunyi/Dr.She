@@ -4,7 +4,6 @@ var AV = require('leanengine');
 var request = require('request-json');
 var appid = process.env.wx_appid;
 var secret = process.env.wx_secret;
-var partner_key = process.env.partner_key;
 var WxUser = AV.Object.extend('WxUser');
 var Problem = AV.Object.extend('Problem');
 var chunyu = require('../routes/chunyu');

@@ -63,6 +63,28 @@ router.post('/reply', function (req, res) {
                     reply.set('doctor', doctor_data);
                     reply.save();
                 }
+                if(one.type=="audio"){
+                    let reply = new Content();
+                    reply.set('type', "audio");
+                    reply.set('askorreply', "d");
+                    reply.set('audio', one.file);
+                    reply.set('problem', problem);
+                    reply.set('user', problem.get('user'));
+                    reply.set('atime', req.body.atime);
+                    reply.set('doctor', doctor_data);
+                    reply.save();
+                }
+                if(one.type=="image"){
+                    let reply = new Content();
+                    reply.set('type', "text");
+                    reply.set('askorreply', "d");
+                    reply.set('image', one.file);
+                    reply.set('problem', problem);
+                    reply.set('user', problem.get('user'));
+                    reply.set('atime', req.body.atime);
+                    reply.set('doctor', doctor_data);
+                    reply.save();
+                }
                 callback(null, one);
             }, function (err, oneres) {
                 res.jsonp(result);

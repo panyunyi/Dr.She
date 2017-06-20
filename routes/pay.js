@@ -4,7 +4,6 @@ var AV = require('leanengine');
 var request = require('request-json');
 var appid = process.env.wx_appid;
 var secret = process.env.wx_secret;
-var partner_key = process.env.partner_key;
 var chunyu = require('../routes/chunyu');
 var async = require('async');
 var moment = require('moment');
@@ -90,7 +89,6 @@ router.use('/wxpay/notify', wxpay.useWXCallback(function (msg, req, res, next) {
             userQuery.equalTo('openid', openid);
             userQuery.first().then(function (user) {
                 if (typeof (user) != "undefined") {
-                    let points = total_fee / 5;
                     user.increment('points', points);
                     user.save();
                 }
