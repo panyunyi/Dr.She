@@ -167,8 +167,7 @@ router.post('/add', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;
     chunyu.problemAdd(sess.objid, req.body.id * 1, req.body.content, time).then(function (data) {
-        console.log(data);
-        res.send({ error: data.error });
+        res.send({ error:typeof(data)!="undefined"? data.error:0 });
     });
 });
 

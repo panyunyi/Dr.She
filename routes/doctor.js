@@ -98,7 +98,7 @@ router.post('/reply', function (req, res) {
                 }
                 callback(null, one);
             }, function (err, oneres) {
-                isView(problem_id);
+                //isView(problem_id);
                 res.jsonp(result);
             });
         });

@@ -237,7 +237,6 @@ function problemAdd(user_id, problem_id, line, atime) {
                 },function(err){
                     console.log(err);
                 });
-                console.log(body);
                 return body;
             },function(err){
                 console.log(err);
@@ -509,3 +508,4 @@ module.exports.deleteProblem = deleteProblem;
 module.exports.createPay = createPay;
 module.exports.successNotice = successNotice;
 module.exports.problemImageAdd = problemImageAdd;
+module.exports.problemView = problemView;
