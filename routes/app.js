@@ -265,6 +265,8 @@ router.post('/business/clientfile/add', function (req, res) {
     let client = AV.Object.createWithoutData('BusinessClient', client_id);
     let business = AV.Object.createWithoutData('Business', business_id);
     let file = new ClientFile();
+    console.log(secretion);
+    console.log(feeling);
     file.set('isDel', false);
     file.set('client', client);
     file.set('business', business);
