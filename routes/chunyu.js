@@ -139,6 +139,34 @@ function problemDetail(user_id, problem_id, last, atime) {
         });
 }
 
+function problemView(user_id, problem_id, atime) {
+    let result = { error: 1 };
+    let sign = getSign(user_id, atime);
+    let data = {
+        "user_id": user_id,
+        "partner": partner,
+        "problem_id": problem_id,
+        "sign": sign,
+        "atime": atime
+    };
+    var options = {
+        method: 'POST',
+        uri: test_url + '/cooperation/server/problem/view',
+        body: data,
+        json: true // Automatically stringifies the body to JSON
+    };
+    return rp(options)
+        .then(function (body) {
+            return body;
+            // POST succeeded...
+        })
+        .catch(function (err) {
+            console.log(err);
+            return result;
+            // POST failed...
+        });
+}
+
 function doctorDetail(user_id, doctor_id, atime) {
     let result = { error: 1 };
     let sign = getSign(user_id, atime);
@@ -209,6 +237,7 @@ function problemAdd(user_id, problem_id, line, atime) {
                 },function(err){
                     console.log(err);
                 });
+                console.log(body);
                 return body;
             },function(err){
                 console.log(err);

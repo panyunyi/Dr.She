@@ -138,11 +138,16 @@ router.get('/business/clients/:business_id/:name', function (req, res) {
                 fileQuery.equalTo('isDel', false);
                 fileQuery.descending('createdAt');
                 fileQuery.count().then(function (count) {
-                    fileQuery.first().then(function (data) {
-                        client.set('count', count);
-                        client.set('last', data.get('createdAt'));
-                        callback(null, client);
-                    });
+                    if(count==0){
+                        client.set('count', 0);
+                        callback(null,client);
+                    }else{
+                        fileQuery.first().then(function (data) {
+                            client.set('count', count);
+                            client.set('last', data.get('createdAt'));
+                            callback(null, client);
+                        });
+                    }
                 });
             }, function (err, resdata) {
                 res.jsonp({ count: clients.length, clients: resdata });

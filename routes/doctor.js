@@ -11,6 +11,17 @@ var chunyu = require('../routes/chunyu');
 var fs = require('fs');
 var file = "./public/city_list.json";
 
+function getTokenAndSendMsg(data) {
+    let client = request.createClient('https://api.weixin.qq.com/cgi-bin/');
+    client.get('token?grant_type=client_credential&appid=' + appid + '&secret=' + secret, function (err, res, body) {
+        let token = body.access_token;
+        client = request.createClient('https://api.weixin.qq.com/cgi-bin/message/template/');
+        client.post('send?access_token=' + token, data, function (err, res, body) {
+            console.log(body);
+        });
+    });
+}
+
 router.post('/reply', function (req, res) {
     let result = {
         "error": 0, // 0 代表成功,其它 代表异常
@@ -63,7 +74,7 @@ router.post('/reply', function (req, res) {
                     reply.set('doctor', doctor_data);
                     reply.save();
                 }
-                if(one.type=="audio"){
+                if (one.type == "audio") {
                     let reply = new Content();
                     reply.set('type', "audio");
                     reply.set('askorreply', "d");
@@ -74,7 +85,7 @@ router.post('/reply', function (req, res) {
                     reply.set('doctor', doctor_data);
                     reply.save();
                 }
-                if(one.type=="image"){
+                if (one.type == "image") {
                     let reply = new Content();
                     reply.set('type', "text");
                     reply.set('askorreply', "d");
@@ -87,9 +98,37 @@ router.post('/reply', function (req, res) {
                 }
                 callback(null, one);
             }, function (err, oneres) {
+                isView(problem_id);
                 res.jsonp(result);
             });
         });
+    }
+    function isView(problem_id) {
+        let data = {
+            touser: openid, template_id: "rxgBGfxyXfMCUg00InZgwsb7Tteycm9IoyaE6CXBpmQ", url: 'http://drshe.leanapp.cn/inquiry/' + problem_id, "data": {
+                "first": {
+                    "value": "医生已为您答复。",
+                    "color": "#173177"
+                },
+                "keyword1": {
+                    "value": "",
+                    "color": "#173177"
+                },
+                "keyword2": {
+                    "value": "",
+                    "color": "#173177"
+                },
+                "keyword3": {
+                    "value": doctorBody.name,
+                    "color": "#173177"
+                },
+                "remark": {
+                    "value": "点击前往查看",
+                    "color": "#173177"
+                }
+            }
+        };
+        getTokenAndSendMsg(data);
     }
 });
 
