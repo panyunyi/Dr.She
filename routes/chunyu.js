@@ -128,12 +128,11 @@ function problemDetail(user_id, problem_id, last, atime) {
             result["content"] = body.content;
             result["doctor"] = body.doctor;
             result["problem"] = body.problem;
-            //console.log(body.content);
             return result;
             // POST succeeded...
         })
         .catch(function (err) {
-            console.log(err);
+            //console.log(err);
             return result;
             // POST failed...
         });

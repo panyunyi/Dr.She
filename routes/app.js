@@ -265,22 +265,22 @@ router.post('/business/clientfile/add', function (req, res) {
     let client = AV.Object.createWithoutData('BusinessClient', client_id);
     let business = AV.Object.createWithoutData('Business', business_id);
     let file = new ClientFile();
-    console.log(secretion);
-    console.log(feeling);
     file.set('isDel', false);
     file.set('client', client);
     file.set('business', business);
     file.set('birthhistory', birthhistory);
     file.set('abortionhistory', abortionhistory);
     file.set('menstruationtime', menstruationtime);
-    file.set('secretion', secretion);
+    file.set('secretion', eval(secretion));
     file.set('medicine', medicine);
-    file.set('feeling', feeling);
+    file.set('feeling', eval(feeling));
     file.set('check', check);
     file.set('checktime', checktime);
     file.set('images', images);
     file.save().then(function (data) {
         res.jsonp({ error: 0, msg: "", file_id: data.id });
+    },function(err){
+        console.log(err);
     });
 });
 
@@ -299,9 +299,9 @@ router.post('/business/clientfile/update', function (req, res) {
     file.set('birthhistory', birthhistory);
     file.set('abortionhistory', abortionhistory);
     file.set('menstruationtime', menstruationtime);
-    file.set('secretion', secretion);
+    file.set('secretion', eval(secretion));
     file.set('medicine', medicine);
-    file.set('feeling', feeling);
+    file.set('feeling', eval(feeling));
     file.set('check', check);
     file.set('checktime', checktime);
     file.set('images', images);

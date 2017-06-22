@@ -105,6 +105,9 @@
                         $(".qa-inquiry-wrap").html(msg.content);
                     }else{
                         $(".qa-inquiry-wrap").append(msg.content);
+                        if(msg.content.length>0){
+                            top();
+                        }
                     }
                     if (msg.isclose) {
                         $(".qa-tipbar").html("问题已关闭");
@@ -121,11 +124,16 @@
                         });
                     }
                     audio();
-                    
                 }
             });
         }
         gallery();
+        function top(){
+            $(document).ready(function () {
+                var h = $(document).height()-$(window).height();
+                $(document).scrollTop(h);
+            });
+        }
         function audio() {
             var t = $(".qa-inquiry-wrap audio");
             $.each(t, function (t, i) {

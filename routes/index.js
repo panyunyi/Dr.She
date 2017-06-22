@@ -15,7 +15,7 @@ router.get('/', function (req, res) {
     let sess = req.session;
     //sess.objid = '590b18d52f301e00582f024a';
     let time = Math.round(new Date().getTime() / 1000).toString();
-    if (typeof (sess.objid) == "undefined") {
+    //if (typeof (sess.objid) != "undefined") {
         let code = req.query.code;
         let state = req.query.state;
         let client = request.createClient('https://api.weixin.qq.com/sns/oauth2/');
@@ -67,11 +67,11 @@ router.get('/', function (req, res) {
                 res.send("已超时，请退出菜单重进。");
             }
         });
-    } else {
-        chunyu.login(sess.objid, time);
-        indexProblemList(req, res, 'index');
-        //res.render('index', { objid: sess.objid })
-    }
+    // } else {
+    //     chunyu.login(sess.objid, time);
+    //     indexProblemList(req, res, 'index');
+    //     //res.render('index', { objid: sess.objid })
+    // }
 });
 
 function indexProblemList(req, res, service) {
