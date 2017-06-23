@@ -11,7 +11,7 @@ var WXPay = require('weixin-pay');
 
 var wxpay = WXPay({
     appid: appid,
-    mch_id: '1409060102',
+    mch_id: '1262876201',
     partner_key: 'syyl1234syyl1234syyl1234syyl1234'
 });
 
@@ -89,7 +89,7 @@ router.use('/wxpay/notify', wxpay.useWXCallback(function (msg, req, res, next) {
             userQuery.equalTo('openid', openid);
             userQuery.first().then(function (user) {
                 if (typeof (user) != "undefined") {
-                    user.increment('points', points);
+                    user.increment('points', total_fee/500);
                     user.save();
                 }
                 res.success();

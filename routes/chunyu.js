@@ -20,17 +20,23 @@ function chunyulogin(user_id, atime) {
         "sign": sign,
         "atime": atime
     };
-    request({
+    var options = {
         method: 'POST',
-        url: test_url + '/cooperation/server/login',
-        json: data
-    }, function (err, res, body) {
-        if (err) {
-            console.error('Request failed with response code ' + res.statusCode);
-        } else {
-            console.log(user_id);
-        }
-    });
+        uri: test_url + '/cooperation/server/login',
+        body: data,
+        json: true // Automatically stringifies the body to JSON
+    };
+
+    return rp(options)
+        .then(function (body) {
+            return body;
+            // POST succeeded...
+        })
+        .catch(function (err) {
+            console.log(err);
+            return result;
+            // POST failed...
+        });
 }
 
 function createFree(user_id, atime, ask, flag) {

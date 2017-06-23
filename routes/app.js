@@ -322,8 +322,9 @@ router.get('/points/:user_id', function (req, res) {
 router.get('/login/:user_id', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let user_id = req.params.user_id;
-    chunyu.login(user_id, time);
-    res.jsonp({ error: 0, msg: "" });
+    chunyu.login(user_id, time).then(function(data){
+        res.jsonp({ error: 0, msg: "" });
+    });
 });
 
 function parseArray(arrStr) {

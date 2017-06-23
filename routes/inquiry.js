@@ -60,8 +60,8 @@ router.get('/pooling2/:id/:content_id', function (req, res) {
             let contentHtml = '';
             async.mapSeries(data.content, function (one, callback) {
                 let subcontent = eval(one.content);
+                let time = new moment(one.created_time_ms).calendar();
                 if (one.type == "p") {
-                    let time = new moment(one.created_time_ms).calendar();
                     async.mapSeries(subcontent, function (subone, callback1) {
                         if (subone.type == "text") {
                             contentHtml += '<div class="qa-inquiry-list user"><p class="qa-first-time">' + time + '</p><div class="qa-list-wrap"><div class="qa-inquiry-content"><span>' + subone.text + '</span></div></div> <br></div>';
@@ -75,12 +75,12 @@ router.get('/pooling2/:id/:content_id', function (req, res) {
                 } else if (one.type == "d") {
                     async.mapSeries(subcontent, function (subreply, callback2) {
                         if (subreply.type == "text") {
-                            contentHtml += '<div class="qa-inquiry-list doctor"><div class="block-left"><a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=' + data.doctor.id + '&partner=chunyu_wap"><img src="' + (typeof (doctorimage) == 'undefined' ? "../01.png" : doctorimage) + '" class="doctor-avatar-small"></a></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span>' + unescape(subreply.text.replace(/\u/g, "%u")) + '</span> </div></div></div></div>';
+                            contentHtml += '<div class="qa-inquiry-list doctor"><p class="qa-first-time">' + time + '</p><div class="block-left"><a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=' + data.doctor.id + '&partner=chunyu_wap"><img src="' + (typeof (doctorimage) == 'undefined' ? "../01.png" : doctorimage) + '" class="doctor-avatar-small"></a></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span>' + unescape(subreply.text.replace(/\u/g, "%u")) + '</span> </div></div></div></div>';
                         }
                         else if (subreply.type == "image") {
-                            contentHtml += '<div class="qa-inquiry-list doctor"><div class="block-left"><a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=' + data.doctor.id + '&partner=chunyu_wap"><img src="' + (typeof (doctorimage) == 'undefined' ? "../01.png" : doctorimage) + '" class="doctor-avatar-small"></a></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><img src="' + subreply.file + '" class="qa-img"> </div></div></div></div>';
+                            contentHtml += '<div class="qa-inquiry-list doctor"><p class="qa-first-time">' + time + '</p><div class="block-left"><a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=' + data.doctor.id + '&partner=chunyu_wap"><img src="' + (typeof (doctorimage) == 'undefined' ? "../01.png" : doctorimage) + '" class="doctor-avatar-small"></a></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><img src="' + subreply.file + '" class="qa-img"> </div></div></div></div>';
                         } else if (subreply.type == "audio") {
-                            contentHtml += '<div class="qa-inquiry-list doctor"><div class="block-left"><a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=' + data.doctor.id + '&partner=chunyu_wap"><img src="' + (typeof (doctorimage) == 'undefined' ? "../01.png" : doctorimage) + '" class="doctor-avatar-small"></a></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span class="audio-beautify"><i class="audio-icon"></i> <span class="audio-seconds right"><b></b>\'\'</span></span><audio src="' + subreply.file + '" controls="controls" preload="auto" class="hide" "></audio> </div></div></div></div>';
+                            contentHtml += '<div class="qa-inquiry-list doctor"><p class="qa-first-time">' + time + '</p><div class="block-left"><a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=' + data.doctor.id + '&partner=chunyu_wap"><img src="' + (typeof (doctorimage) == 'undefined' ? "../01.png" : doctorimage) + '" class="doctor-avatar-small"></a></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span class="audio-beautify"><i class="audio-icon"></i> <span class="audio-seconds right"><b></b>\'\'</span></span><audio src="' + subreply.file + '" controls="controls" preload="auto" class="hide" "></audio> </div></div></div></div>';
                         }
                         callback2(null, one);
                     }, function (err, subreplyres) {

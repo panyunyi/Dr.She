@@ -40,8 +40,9 @@ router.get('/', function (req, res) {
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
-                                    chunyu.login(data.id, time);
-                                    indexProblemList(req, res, 'index');
+                                    chunyu.login(data.id, time).then(function(){
+                                        indexProblemList(req, res, 'index');
+                                    });
                                     //res.render('index', { objid: data.id });
                                 }, function (err) {
                                     console.log(err);
@@ -49,8 +50,9 @@ router.get('/', function (req, res) {
                             } else if (count == 1) {
                                 query.first().then(function (data) {
                                     sess.objid = data.id;
-                                    chunyu.login(data.id, time);
-                                    indexProblemList(req, res, 'index');
+                                    chunyu.login(data.id, time).then(function(){
+                                        indexProblemList(req, res, 'index');
+                                    });
                                     //res.render('index', { objid: data.id});
                                 });
                             } else {
@@ -141,8 +143,9 @@ router.get('/all_service', function (req, res) {
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
-                                    chunyu.login(data.id, time);
-                                    indexProblemList(req, res, 'allservice');
+                                    chunyu.login(data.id, time).then(function(){
+                                        indexProblemList(req, res, 'allservice');
+                                    });
                                 }, function (err) {
                                     console.log(err);
                                 });
@@ -166,8 +169,9 @@ router.get('/all_service', function (req, res) {
             }
         });
     } else {
-        chunyu.login(sess.objid, time);
-        indexProblemList(req, res, 'allservice');
+        chunyu.login(sess.objid, time).then(function(){
+            indexProblemList(req, res, 'allservice');
+        });
     }
     
 });
@@ -200,8 +204,9 @@ router.get('/mypoints', function (req, res) {
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
-                                    chunyu.login(data.id, time);
-                                    res.render('mypoints', { points: data.get('points') });
+                                    chunyu.login(data.id, time).then(function(){
+                                        res.render('mypoints', { points: data.get('points') });
+                                    });
                                 }, function (err) {
                                     console.log(err);
                                 });
@@ -225,10 +230,11 @@ router.get('/mypoints', function (req, res) {
             }
         });
     } else {
-        chunyu.login(sess.objid, time);
-        let user = AV.Object.createWithoutData('WxUser', sess.objid);
-        user.fetch().then(function () {
-            res.render('mypoints', { points: user.get('points') });
+        chunyu.login(sess.objid, time).then(function(){
+            let user = AV.Object.createWithoutData('WxUser', sess.objid);
+            user.fetch().then(function () {
+                res.render('mypoints', { points: user.get('points') });
+            });
         });
     }
 
@@ -266,8 +272,9 @@ router.get('/advice', function (req, res) {
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
-                                    chunyu.login(data.id, time);
-                                    res.render('advice');
+                                    chunyu.login(data.id, time).then(function(){
+                                        res.render('advice');
+                                    });
                                 }, function (err) {
                                     console.log(err);
                                 });
@@ -291,8 +298,9 @@ router.get('/advice', function (req, res) {
             }
         });
     } else {
-        chunyu.login(sess.objid, time);
-        res.render('advice');
+        chunyu.login(sess.objid, time).then(function(){
+            res.render('advice');
+        });
     }
 });
 
@@ -328,8 +336,9 @@ router.get('/index2', function (req, res) {
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
-                                    chunyu.login(data.id, time);
-                                    res.render('index2');
+                                    chunyu.login(data.id, time).then(function(){
+                                        res.render('index2');
+                                    });
                                 }, function (err) {
                                     console.log(err);
                                 });
@@ -353,8 +362,9 @@ router.get('/index2', function (req, res) {
             }
         });
     } else {
-        chunyu.login(sess.objid, time);
-        res.render('index2');
+        chunyu.login(sess.objid, time).then(function(){
+            res.render('index2');
+        });
     }
 });
 

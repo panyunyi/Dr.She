@@ -185,9 +185,10 @@ router.get('/list', function (req, res) {
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
-                                    chunyu.login(data.id, time);
-                                    chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
-                                        res.render('doctorlist', { doctors: data.doctors, cities: city_list });
+                                    chunyu.login(data.id, time).then(function(){
+                                        chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
+                                            res.render('doctorlist', { doctors: data.doctors, cities: city_list });
+                                        });
                                     });
                                 }, function (err) {
                                     console.log(err);
@@ -214,10 +215,12 @@ router.get('/list', function (req, res) {
             }
         });
     } else {
-        chunyu.login(sess.objid, time);
-        chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
-            res.render('doctorlist', { doctors: data.doctors, cities: city_list });
+        chunyu.login(sess.objid, time).then(function(){
+            chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
+                res.render('doctorlist', { doctors: data.doctors, cities: city_list });
+            });
         });
+        
     }
 });
 
