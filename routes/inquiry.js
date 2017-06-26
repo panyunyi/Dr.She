@@ -10,7 +10,13 @@ var moment = require('moment');
 moment.locale('zh-cn');
 
 router.get('/', function (req, res) {
-    res.render('inquiry', { id: req.query.id });
+    let query=new AV.Query('Problem');
+    let sess = req.session;
+    query.equalTo('problem_id',req.query.id);
+    query.first().then(function(data){
+        sess.objid=data.get('user').id;
+        res.render('inquiry', { id: req.query.id });
+    });
 });
 
 router.get('/query', function (req, res) {

@@ -21,6 +21,51 @@ var ClientFile = AV.Object.extend('ClientFile');
 var moment = require('moment');
 moment.locale('zh-cn');
 
+//app用户注册/登录
+router.post('/user/register', function (req, res) {
+    let name = req.body.name;
+    let phone = req.body.phone;
+    let password = req.body.password;
+    let query = new AV.Query('WxUser');
+    query.equalTo('phone', phone);
+    query.count().then(function (count) {
+        if (count > 0) {
+            res.jsonp({ error: 1, msg: "手机号已注册" });
+        } else {
+            let user = new WxUser();
+            user.set('nickname', name);
+            user.set('phone', phone);
+            user.set('password', password);
+            user.save().then(function (data) {
+                res.jsonp({ error: 0, msg:"",objectid: data.id });
+            });
+        }
+    });
+});
+
+router.post('/user/login', function (req, res) {
+    let phone = req.body.phone;
+    let password = req.body.password;
+    let query = new AV.Query('WxUser');
+    query.equalTo('phone', phone);
+    query.count().then(function (count) {
+        if (count == 1) {
+            query.equalTo('phone', phone);
+            query.equalTo('password', password);
+            query.count().then(function (count) {
+                if (count == 1) {
+                    res.jsonp({ error: 0, msg: "" });
+                } else {
+                    res.jsonp({ error: 1, msg: "密码不正确" });
+                }
+            });
+        } else {
+            res.jsonp({ error: 1, msg: "该手机未注册" });
+        }
+    });
+
+});
+
 //app微信登录
 router.post('/wx/login', function (req, res) {
     let openid = req.body.openid;
@@ -138,10 +183,10 @@ router.get('/business/clients/:business_id/:name', function (req, res) {
                 fileQuery.equalTo('isDel', false);
                 fileQuery.descending('createdAt');
                 fileQuery.count().then(function (count) {
-                    if(count==0){
+                    if (count == 0) {
                         client.set('count', 0);
-                        callback(null,client);
-                    }else{
+                        callback(null, client);
+                    } else {
                         fileQuery.first().then(function (data) {
                             client.set('count', count);
                             client.set('last', data.get('createdAt'));
@@ -279,7 +324,7 @@ router.post('/business/clientfile/add', function (req, res) {
     file.set('images', images);
     file.save().then(function (data) {
         res.jsonp({ error: 0, msg: "", file_id: data.id });
-    },function(err){
+    }, function (err) {
         console.log(err);
     });
 });
@@ -322,7 +367,7 @@ router.get('/points/:user_id', function (req, res) {
 router.get('/login/:user_id', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let user_id = req.params.user_id;
-    chunyu.login(user_id, time).then(function(data){
+    chunyu.login(user_id, time).then(function (data) {
         res.jsonp({ error: 0, msg: "" });
     });
 });

@@ -105,7 +105,7 @@ router.post('/reply', function (req, res) {
     }
     function isView(problem_id) {
         let data = {
-            touser: openid, template_id: "rxgBGfxyXfMCUg00InZgwsb7Tteycm9IoyaE6CXBpmQ", url: 'http://drshe.leanapp.cn/inquiry/' + problem_id, "data": {
+            touser: openid, template_id: "ctlB51MI2w3vIjS50cSONDoSEi1k0FX6jyPftNHjHbs", url: 'http://drshe.leanapp.cn/inquiry/' + problem_id, "data": {
                 "first": {
                     "value": "医生已为您答复。",
                     "color": "#173177"
@@ -116,10 +116,6 @@ router.post('/reply', function (req, res) {
                 },
                 "keyword2": {
                     "value": "",
-                    "color": "#173177"
-                },
-                "keyword3": {
-                    "value": doctorBody.name,
                     "color": "#173177"
                 },
                 "remark": {

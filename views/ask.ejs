@@ -245,6 +245,10 @@
                 weui.alert('请输入年龄');
                 return;
             }
+            if(sum<=0){
+                weui.alert('请上传自检图片');
+                return;
+            }
             if (str.length >= 10 && str.length <= 300) {
                 var imglist = '';
                 $(".img-list img").each(function (i) {
