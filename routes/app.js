@@ -37,7 +37,7 @@ router.post('/user/register', function (req, res) {
             user.set('phone', phone);
             user.set('password', password);
             user.save().then(function (data) {
-                res.jsonp({ error: 0, msg:"",objectid: data.id });
+                res.jsonp({ error: 0, msg: "", objectid: data.id });
             });
         }
     });
@@ -54,7 +54,9 @@ router.post('/user/login', function (req, res) {
             query.equalTo('password', password);
             query.count().then(function (count) {
                 if (count == 1) {
-                    res.jsonp({ error: 0, msg: "" });
+                    query.first().then(function (data) {
+                        res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id });
+                    });
                 } else {
                     res.jsonp({ error: 1, msg: "密码不正确" });
                 }
@@ -411,7 +413,9 @@ router.get('/problem/:user_id/:problem_id/:content_id', function (req, res) {
     let problem_id = req.params.problem_id;
     let content_id = req.params.content_id
     chunyu.problemDetail(user_id, problem_id, content_id, time).then(function (data) {
-        res.jsonp(data);
+        chunyu.problemView(user_id, problem_id, time).then(function (view) {
+            res.jsonp(data);
+        });
     });
 });
 

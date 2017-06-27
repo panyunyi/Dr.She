@@ -41,24 +41,32 @@
 
                 </div>
                 <div class="qa-inquiry-wrap">
-
+                    <div class="qa-inquiry-list doctor" id="tip">
+                        <div class="block-left"><img src="../01.png" class="doctor-avatar-small"></div>
+                        <div class="block-right">
+                            <div class="qa-list-wrap">
+                                <div class="qa-inquiry-content">
+                                    <span>亲爱的，您好：我们已通知医生。为您答题的医生均在医院临床一线工作，无法做到随问随答，请您耐心等待哦！您的问题得到回复后，我们会在第一时间给您推送消息~</span>                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="qa-bottom-wrap fixed center">
                     <div class="up-img-btn"><input type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp"></div>
-                    <div
-                        class="block-send-txt">点击输入文字</div>
+                    <div class="block-send-txt">点击输入文字</div>
+
+                </div>
+
+                <div class="qa-text-mask" style="display: none;">
+                    <div class="qa-text-send"><textarea placeholder="输入文字" id="qa-text-area" class="qa-textarea" oninput="changeVale(this.value)" onpropertychange="changeVale(this.value)"></textarea>
+                        <div class="qa-text-send-bottom"><span>Dr.She为您解答</span> <a href="javascript:void(0)" class="qa-btn disabled">发送</a></div> <span class="hide-text-send"></span></div>
+                </div>
 
             </div>
-
-            <div class="qa-text-mask" style="display: none;">
-                <div class="qa-text-send"><textarea placeholder="输入文字" id="qa-text-area" class="qa-textarea" oninput="changeVale(this.value)" onpropertychange="changeVale(this.value)"></textarea>
-                    <div class="qa-text-send-bottom"><span>Dr.She为您解答</span> <a href="javascript:void(0)" class="qa-btn disabled">发送</a></div> <span class="hide-text-send"></span></div>
-            </div>
-
         </div>
     </div>
-    </div>
-    
+
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
@@ -102,10 +110,12 @@
                     }
                     if (msg.ispay) {
                         $(".qa-tipbar").html("等待医生回复");
-                        $(".qa-inquiry-wrap").html(msg.content);
-                    }else{
+                        $("#tip").css("display", "block");
+                        $(".qa-inquiry-wrap").prepend(msg.content);
+                    } else {
+                        $("#tip").css("display", "none");
                         $(".qa-inquiry-wrap").append(msg.content);
-                        if(msg.content.length>0){
+                        if (msg.content.length > 0) {
                             top();
                         }
                     }
@@ -128,9 +138,9 @@
             });
         }
         gallery();
-        function top(){
+        function top() {
             $(document).ready(function () {
-                var h = $(document).height()-$(window).height();
+                var h = $(document).height() - $(window).height();
                 $(document).scrollTop(h);
             });
         }
@@ -138,7 +148,7 @@
             var t = $(".qa-inquiry-wrap audio");
             $.each(t, function (t, i) {
                 var e = $(i), o = e.closest(".qa-inquiry-content"), s = e[0];
-                o.on("click",function(){
+                o.on("click", function () {
                     s.play();
                 });
                 s.addEventListener("loadedmetadata", function (t) {
@@ -165,10 +175,10 @@
             //     var index = $('img').index(this);
             //     imagePreview(src[index], src);
             // });
-            $('img').on("click",function(){
-                var list=[];
-                list[0]=this.src;
-                imagePreview(this.src,list);
+            $('img').on("click", function () {
+                var list = [];
+                list[0] = this.src;
+                imagePreview(this.src, list);
             });
         }
         function imagePreview(curSrc, srcList) {

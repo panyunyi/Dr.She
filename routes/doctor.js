@@ -11,13 +11,18 @@ var chunyu = require('../routes/chunyu');
 var fs = require('fs');
 var file = "./public/city_list.json";
 
-function getTokenAndSendMsg(data) {
+function getTokenAndSendMsg(data,response) {
+    let result = {
+        "error": 0, // 0 代表成功,其它 代表异常
+        "error_msg": "" //错误信息
+    };
     let client = request.createClient('https://api.weixin.qq.com/cgi-bin/');
     client.get('token?grant_type=client_credential&appid=' + appid + '&secret=' + secret, function (err, res, body) {
         let token = body.access_token;
         client = request.createClient('https://api.weixin.qq.com/cgi-bin/message/template/');
         client.post('send?access_token=' + token, data, function (err, res, body) {
-            console.log(body);
+            response.jsonp(result);
+            console.log("body:" + body);
         });
     });
 }
@@ -27,7 +32,7 @@ router.post('/reply', function (req, res) {
         "error": 0, // 0 代表成功,其它 代表异常
         "error_msg": "" //错误信息
     };
-    let problem_id = req.body.problem_id;
+    let problem_id = req.body.problem_id * 1;
     let doctorBody = req.body.doctor;
     let content = eval(req.body.content);
     let doctorQuery = new AV.Query('Doctor');
@@ -61,6 +66,7 @@ router.post('/reply', function (req, res) {
         query.first().then(function (problem) {
             problem.set('has_answer', true);
             problem.save();
+            let replyContent = "";
             async.mapSeries(content, function (one, callback) {
                 if (one.type == "text") {
                     let line = unescape(one.text.replace(/\u/g, "%u"));
@@ -73,6 +79,7 @@ router.post('/reply', function (req, res) {
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
                     reply.save();
+                    replyContent = line;
                 }
                 if (one.type == "audio") {
                     let reply = new Content();
@@ -84,6 +91,7 @@ router.post('/reply', function (req, res) {
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
                     reply.save();
+                    replyContent = "一条语音消息";
                 }
                 if (one.type == "image") {
                     let reply = new Content();
@@ -95,15 +103,22 @@ router.post('/reply', function (req, res) {
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
                     reply.save();
+                    replyContent = "一张图片消息";
                 }
                 callback(null, one);
             }, function (err, oneres) {
-                //isView(problem_id);
-                res.jsonp(result);
+                let time = Math.round(new Date().getTime() / 1000).toString();
+                chunyu.problemDetail(problem.get('user_id'), problem_id, 1, time).then(function (data) {
+                    if (data.problem.status == "s") {
+                        isView(problem.get('user_id'), problem_id, data.problem.ask, replyContent,res);
+                    }else{
+                        res.jsonp(result);
+                    }
+                });
             });
         });
     }
-    function isView(problem_id) {
+    function isView(openid, problem_id, ask, reply,res) {
         let data = {
             touser: openid, template_id: "ctlB51MI2w3vIjS50cSONDoSEi1k0FX6jyPftNHjHbs", url: 'http://drshe.leanapp.cn/inquiry/' + problem_id, "data": {
                 "first": {
@@ -111,11 +126,11 @@ router.post('/reply', function (req, res) {
                     "color": "#173177"
                 },
                 "keyword1": {
-                    "value": "",
+                    "value": ask,
                     "color": "#173177"
                 },
                 "keyword2": {
-                    "value": "",
+                    "value": reply,
                     "color": "#173177"
                 },
                 "remark": {
@@ -124,7 +139,7 @@ router.post('/reply', function (req, res) {
                 }
             }
         };
-        getTokenAndSendMsg(data);
+        getTokenAndSendMsg(data,res);
     }
 });
 
@@ -133,7 +148,6 @@ router.post('/close', function (req, res) {
         "error": 0, // 0 代表成功,其它 代表异常
         "error_msg": "" //错误信息
     };
-    console.log(req.body);
     res.jsonp(result);
 });
 
@@ -181,7 +195,7 @@ router.get('/list', function (req, res) {
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
-                                    chunyu.login(data.id, time).then(function(){
+                                    chunyu.login(data.id, time).then(function () {
                                         chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
                                             res.render('doctorlist', { doctors: data.doctors, cities: city_list });
                                         });
@@ -211,12 +225,12 @@ router.get('/list', function (req, res) {
             }
         });
     } else {
-        chunyu.login(sess.objid, time).then(function(){
+        chunyu.login(sess.objid, time).then(function () {
             chunyu.doctorList(sess.objid, "1", 0, province, city, time).then(function (data) {
                 res.render('doctorlist', { doctors: data.doctors, cities: city_list });
             });
         });
-        
+
     }
 });
 

@@ -1,40 +1,37 @@
 'use strict';
 var router = require('express').Router();
 var AV = require('leanengine');
-
+var request = require('request-json');
 var Todo = AV.Object.extend('Todo');
-
+var sha1 = require('../routes/sha1');
 // 查询 Todo 列表
-router.get('/', function(req, res, next) {
-  var query = new AV.Query(Todo);
-  query.descending('createdAt');
-  query.find().then(function(results) {
-    res.render('todos', {
-      title: 'TODO 列表',
-      todos: results
-    });
-  }, function(err) {
-    if (err.code === 101) {
-      // 该错误的信息为：{ code: 101, message: 'Class or object doesn\'t exists.' }，说明 Todo 数据表还未创建，所以返回空的 Todo 列表。
-      // 具体的错误代码详见：https://leancloud.cn/docs/error_code.html
-      res.render('todos', {
-        title: 'TODO 列表',
-        todos: []
-      });
-    } else {
-      next(err);
+router.get('/', function (req, res, next) {
+  let now = Date.now();
+  let appKey = sha1.SHA1("A6940962555686" + "UZ" + "5F5E4F53-E1B1-149E-6ED2-C8457F9939D6" + "UZ" + now) + "." + now;
+  push();
+  function push() {
+    let client = request.createClient('https://p.apicloud.com/api/push/');
+    client.headers['X-APICloud-AppId'] = 'A6940962555686';
+    client.headers['X-APICloud-AppKey'] = appKey;
+    let data = {
+      "values": {
+        "title": "消息标题",
+        "content": "消息内容",
+        "type": 2, //– 消息类型，1:消息 2:通知
+        "platform": 2, //0:全部平台，1：ios, 2：android
+        //    "groupName" : "department", //推送组名，多个组用英文逗号隔开.默认:全部组。eg.group1,group2 .
+        //    "userIds" : "testId" //推送用户id, 多个用户用英文逗号分隔，eg. user1,user2。
+      }
     }
-  }).catch(next);
+    client.post('message', data, function (err, res, body) {
+      console.log("body:" +JSON.stringify(body));
+    });
+  }
 });
 
 // 新增 Todo 项目
-router.post('/', function(req, res, next) {
-  var content = req.body.content;
-  var todo = new Todo();
-  todo.set('content', content);
-  todo.save().then(function(todo) {
-    res.redirect('/todos');
-  }).catch(next);
+router.post('/', function (req, res, next) {
+
 });
 
 module.exports = router;

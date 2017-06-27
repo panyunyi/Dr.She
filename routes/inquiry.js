@@ -12,7 +12,7 @@ moment.locale('zh-cn');
 router.get('/', function (req, res) {
     let query=new AV.Query('Problem');
     let sess = req.session;
-    query.equalTo('problem_id',req.query.id);
+    query.equalTo('problem_id',req.query.id*1);
     query.first().then(function(data){
         sess.objid=data.get('user').id;
         res.render('inquiry', { id: req.query.id });
@@ -113,7 +113,7 @@ router.get('/pooling/:id/:content_id', function (req, res) {
     let isclose = 0;
     let ispay = 0;
     chunyu.problemDetail(sess.objid, id, content_id, time).then(function (data) {
-        if (typeof (data.doctor.id) != "undefined") {
+        if (data.problem.status != "n") {
             isreply = 1;
         }
         if (data.problem.status == "c" || data.problem.status == "p") {
@@ -158,9 +158,9 @@ router.get('/pooling/:id/:content_id', function (req, res) {
                 });
             }
         }, function (err, contentres) {
-            if (data.problem.interaction == 0 && typeof (data.doctor.id) != "undefined" && isclose != 1) {
+            if (data.problem.interaction == 0 && data.problem.status == "n" && isclose != 1) {
                 ispay = 1;
-                contentHtml += '<div class="qa-inquiry-list doctor"><div class="block-left"><img src="../01.png" class="doctor-avatar-small"></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span>亲爱的，您好：我们已通知到' + data.doctor.hospital + '的' + data.doctor.name + '医生。为您答题的医生均在医院临床一线工作，无法做到随问随答，请您耐心等待哦！您的问题得到回复后，我们会在第一时间给您推送消息~</span> </div></div></div></div>';
+                //contentHtml += '<div class="qa-inquiry-list doctor"><div class="block-left"><img src="../01.png" class="doctor-avatar-small"></div><div class="block-right"><div class="qa-list-wrap"><div class="qa-inquiry-content"><span>亲爱的，您好：我们已通知医生。为您答题的医生均在医院临床一线工作，无法做到随问随答，请您耐心等待哦！您的问题得到回复后，我们会在第一时间给您推送消息~</span> </div></div></div></div>';
             }
             chunyu.problemView(sess.objid, id, time).then(function (view) {
                 res.send({ content_id: content_id * 1, doctor: doctorHtml, content: contentHtml, isreply: isreply, isclose: isclose, ispay: ispay, interaction: data.problem.interaction });
