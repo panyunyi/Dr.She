@@ -44,7 +44,7 @@ router.post('/add/free', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let imglist = req.body.imglist.split(',');
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-    chunyu.createFree(sess.objid, time, data, 0).then(function (data) {
+    chunyu.createFree(sess.objid, time, data, 0, "wechat").then(function (data) {
         res.jsonp({ id: data });
     });
 });
@@ -65,7 +65,7 @@ router.post('/add/pay', function (req, res) {
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女", "dotcors": doctor_id };
     order.save().then(function (order) {
         chunyu.createPay(sess.objid, time, data, order.id, price).then(function (data) {
-            chunyu.successNotice(sess.objid, data, time).then(function (data) {
+            chunyu.successNotice(sess.objid, data, time, "wechat").then(function (data) {
                 res.jsonp({ id: data.problems[0].problem_id });
             });
         });

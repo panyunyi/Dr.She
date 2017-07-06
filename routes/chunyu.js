@@ -9,7 +9,7 @@ var test_url = process.env.product_url;
 var product_url = process.env.product_url;
 var Problem = AV.Object.extend('Problem');
 var Order = AV.Object.extend('Order');
-var Content=AV.Object.extend('Content');
+var Content = AV.Object.extend('Content');
 
 function chunyulogin(user_id, atime) {
     let sign = getSign(user_id, atime);
@@ -39,7 +39,7 @@ function chunyulogin(user_id, atime) {
         });
 }
 
-function createFree(user_id, atime, ask, flag) {
+function createFree(user_id, atime, ask, flag, source) {
     let result = 0;
     let sign = getSign(user_id, atime);
     let content = [
@@ -94,8 +94,9 @@ function createFree(user_id, atime, ask, flag) {
                 problem.set('status', 'n');
                 problem.set('has_answer', false);
                 problem.set('user_id', user_id);
-                problem.set('ask',ask.content);
-                problem.set('image',ask.image);
+                problem.set('ask', ask.content);
+                problem.set('image', ask.image);
+                problem.set('source', source);
                 let user = AV.Object.createWithoutData('WxUser', user_id);
                 problem.set('user', user);
                 problem.save();
@@ -227,26 +228,26 @@ function problemAdd(user_id, problem_id, line, atime) {
     return rp(options)
         .then(function (body) {
             let user = AV.Object.createWithoutData('WxUser', user_id);
-            let newContent=new Content();
-            newContent.set('askorreply','p');
-            newContent.set('atime',atime*1);
-            newContent.set('type','text');
-            newContent.set('user',user);
-            newContent.set('text',line);
-            let problemQuery=new AV.Query('Problem');
-            problemQuery.equalTo('problem_id',problem_id);
-            problemQuery.first().then(function(problem){
-                newContent.set('problem',problem);
-                newContent.save().then(function(){
-                    
-                },function(err){
+            let newContent = new Content();
+            newContent.set('askorreply', 'p');
+            newContent.set('atime', atime * 1);
+            newContent.set('type', 'text');
+            newContent.set('user', user);
+            newContent.set('text', line);
+            let problemQuery = new AV.Query('Problem');
+            problemQuery.equalTo('problem_id', problem_id);
+            problemQuery.first().then(function (problem) {
+                newContent.set('problem', problem);
+                newContent.save().then(function () {
+
+                }, function (err) {
                     console.log(err);
                 });
                 return body;
-            },function(err){
+            }, function (err) {
                 console.log(err);
             });
-            
+
             // POST succeeded...
         })
         .catch(function (err) {
@@ -279,20 +280,20 @@ function problemImageAdd(user_id, problem_id, image_url, atime) {
     return rp(options)
         .then(function (body) {
             let user = AV.Object.createWithoutData('WxUser', user_id);
-            let newContent=new Content();
-            newContent.set('askorreply','p');
-            newContent.set('atime',atime*1);
-            newContent.set('type','image');
-            newContent.set('user',user);
-            newContent.set('image',image_url);
-            let problemQuery=new AV.Query('Problem');
-            problemQuery.equalTo('problem_id',problem_id);
-            problemQuery.first().then(function(problem){
-                newContent.set('problem',problem);
+            let newContent = new Content();
+            newContent.set('askorreply', 'p');
+            newContent.set('atime', atime * 1);
+            newContent.set('type', 'image');
+            newContent.set('user', user);
+            newContent.set('image', image_url);
+            let problemQuery = new AV.Query('Problem');
+            problemQuery.equalTo('problem_id', problem_id);
+            problemQuery.first().then(function (problem) {
+                newContent.set('problem', problem);
                 newContent.save();
                 return body;
             });
-            
+
             // POST succeeded...
         })
         .catch(function (err) {
@@ -343,6 +344,8 @@ function doctorList(user_id, clinic_no, num, province, city, atime) {
         "partner": partner,
         "start_num": num,
         "count": 10,
+        "province": province,
+        "city": city,
         "sign": sign,
         "atime": atime
     };
@@ -461,7 +464,7 @@ function createPay(user_id, atime, ask, partner_order_id, price) {
         });
 }
 
-function successNotice(user_id, chunyu_order_id, atime) {
+function successNotice(user_id, chunyu_order_id, atime, source) {
     let result = { error: 1 };
     let sign = getSign(user_id, atime);
     let data = {
@@ -484,6 +487,9 @@ function successNotice(user_id, chunyu_order_id, atime) {
             problem.set('status', 'n');
             problem.set('has_answer', false);
             problem.set('user_id', user_id);
+            // problem.set('ask', ask.content);
+            // problem.set('image', ask.image);
+            problem.set('source', source);
             let user = AV.Object.createWithoutData('WxUser', user_id);
             problem.set('user', user);
             problem.save();

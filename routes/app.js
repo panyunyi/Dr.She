@@ -18,6 +18,8 @@ var WxUser = AV.Object.extend('WxUser');
 var Business = AV.Object.extend('Business');
 var BusinessClient = AV.Object.extend('BusinessClient');
 var ClientFile = AV.Object.extend('ClientFile');
+var Donate = AV.Object.extend('Donate');
+var Goods = AV.Object.extend('Goods');
 var moment = require('moment');
 moment.locale('zh-cn');
 
@@ -36,6 +38,7 @@ router.post('/user/register', function (req, res) {
             user.set('nickname', name);
             user.set('phone', phone);
             user.set('password', password);
+            user.set('points', 2);
             user.save().then(function (data) {
                 res.jsonp({ error: 0, msg: "", objectid: data.id });
             });
@@ -78,19 +81,20 @@ router.post('/wx/login', function (req, res) {
     let province = req.body.province;
     let country = req.body.country;
     let userQuery = new AV.Query('WxUser');
-    userQuery.equalTo('openid', openid);
+    userQuery.equalTo('unionid', openid);
     userQuery.first().then(function (user) {
         if (typeof (user) != "undefined") {
             res.jsonp({ objectid: user.id });
         } else {
             let newuser = new WxUser();
-            newuser.set('openid', openid);
+            newuser.set('unionid', openid);
             newuser.set('nickname', nickname);
             newuser.set('sex', sex);
             newuser.set('city', city);
             newuser.set('headimgurl', headimgurl);
             newuser.set('province', province);
             newuser.set('country', country);
+            newuser.set('points', 2);
             newuser.save().then(function (data) {
                 res.jsonp({ objectid: data.id });
             });
@@ -107,6 +111,8 @@ router.post('/business', function (req, res) {
     let area = req.body.area;
     let connecter = req.body.connecter;
     let user = AV.Object.createWithoutData('WxUser', user_id);
+    user.set('points', 10);
+    user.save();
     let business = new Business();
     business.set('user', user);
     business.set('name', name);
@@ -402,7 +408,7 @@ router.post('/add', function (req, res) {
         flag = 0;
     }
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-    chunyu.createFree(user.id, time, data, flag).then(function (data) {
+    chunyu.createFree(user.id, time, data, flag, "app").then(function (data) {
         res.jsonp({ error: 0, id: data });
     });
 });
@@ -523,7 +529,7 @@ router.post('/choice', function (req, res) {
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女", "dotcors": doctor_id };
     order.save().then(function (order) {
         chunyu.createPay(user_id, time, data, order.id, price).then(function (data) {
-            chunyu.successNotice(user_id, data, time).then(function (data) {
+            chunyu.successNotice(user_id, data, time, "app").then(function (data) {
                 res.jsonp({ id: data.problems[0].problem_id });
             });
         });
@@ -556,15 +562,62 @@ router.post('/recharge/add', function (req, res) {
     let user_id = req.body.user_id;
     let goods = req.body.goods;
     let price = req.body.price * 1;
+    let source = req.body.source;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     let recharge = new Recharge();
     recharge.set('result', false);
     recharge.set('title', goods);
-    recharge.set('source', "app");
+    recharge.set('source', "app/" + source);
     recharge.set('price', price);
+    recharge.set('total_fee', price * 100);
     recharge.set('user', user);
     recharge.save().then(function (data) {
         res.jsonp({ id: data.id });
+    });
+});
+
+router.get('/donate/:user_id/:points/:title', function (req, res) {
+    let user_id = req.params.user_id;
+    let points = req.params.points * 1;
+    let title = req.params.title;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    user.increment(points);
+    user.save().then(function () {
+        let donate = new Donate();
+        donate.set('user', user);
+        donate.set('points', points);
+        donate.set('source', "app");
+        donate.set('title', title);
+        donate.save();
+        res.jsonp({ error: 0, msg: "" });
+    });
+});
+
+//商城相关
+router.get('/goods', function (req, res) {
+    let type = req.query.type;
+    let query = new AV.Query('Goods');
+    query.equalTo('type', type);
+    query.find().then(function (goods) {
+        res.jsonp({ goods: goods });
+    });
+});
+
+router.post('/goods/add', function (req, res) {
+    let goods = req.body;
+    async.map(goods, function (good, callback) {
+        let goodobj = new Goods();
+        goodobj.set('tid', good.tid);
+        goodobj.set('type', good.type);
+        goodobj.set('imgsrc', good.imgsrc);
+        goodobj.set('price', good.price);
+        goodobj.set('subject', good.subject);
+        goodobj.set('sort', good.sort);
+        goodobj.save().then(function () {
+            callback(null, 1);
+        })
+    }, function (err, data) {
+        res.jsonp(data.length);
     });
 });
 

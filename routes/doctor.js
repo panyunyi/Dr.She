@@ -10,8 +10,9 @@ var Doctor = AV.Object.extend('Doctor');
 var chunyu = require('../routes/chunyu');
 var fs = require('fs');
 var file = "./public/city_list.json";
+var push = require('../routes/push');
 
-function getTokenAndSendMsg(data,response) {
+function getTokenAndSendMsg(data, response) {
     let result = {
         "error": 0, // 0 代表成功,其它 代表异常
         "error_msg": "" //错误信息
@@ -22,10 +23,14 @@ function getTokenAndSendMsg(data,response) {
         client = request.createClient('https://api.weixin.qq.com/cgi-bin/message/template/');
         client.post('send?access_token=' + token, data, function (err, res, body) {
             response.jsonp(result);
-            console.log("body:" + body);
+            console.log("body:" + JSON.stringify(body));
         });
     });
 }
+
+router.get('/test', function (req, res) {
+    push.push("医生有新的回复", "啊哈", "5951c6f8ac502e006c9190cd", "547467188");
+});
 
 router.post('/reply', function (req, res) {
     let result = {
@@ -62,6 +67,7 @@ router.post('/reply', function (req, res) {
     });
     function replySave(doctor_data) {
         let query = new AV.Query('Problem');
+        query.include('user');
         query.equalTo('problem_id', problem_id);
         query.first().then(function (problem) {
             problem.set('has_answer', true);
@@ -107,20 +113,23 @@ router.post('/reply', function (req, res) {
                 }
                 callback(null, one);
             }, function (err, oneres) {
+                if(problem.get('source')=="app"){
+                    push.push("医生有新的回复", replyContent, problem.get('user').id, problem_id);
+                }
                 let time = Math.round(new Date().getTime() / 1000).toString();
                 chunyu.problemDetail(problem.get('user_id'), problem_id, 1, time).then(function (data) {
-                    if (data.problem.status == "s") {
-                        isView(problem.get('user_id'), problem_id, data.problem.ask, replyContent,res);
-                    }else{
+                    if (data.problem.status == "s"&&problem.get('source')=="wechat") {
+                        isView(problem.get('user').get('openid'), problem_id, data.problem.ask, replyContent, res);
+                    } else {
                         res.jsonp(result);
                     }
                 });
             });
         });
     }
-    function isView(openid, problem_id, ask, reply,res) {
+    function isView(openid, problem_id, ask, reply, res) {
         let data = {
-            touser: openid, template_id: "ctlB51MI2w3vIjS50cSONDoSEi1k0FX6jyPftNHjHbs", url: 'http://drshe.leanapp.cn/inquiry/' + problem_id, "data": {
+            touser: openid, template_id: "ctlB51MI2w3vIjS50cSONDoSEi1k0FX6jyPftNHjHbs", url: 'http://drshe.leanapp.cn/inquiry?id=' + problem_id, "data": {
                 "first": {
                     "value": "医生已为您答复。",
                     "color": "#173177"
@@ -139,7 +148,7 @@ router.post('/reply', function (req, res) {
                 }
             }
         };
-        getTokenAndSendMsg(data,res);
+        getTokenAndSendMsg(data, res);
     }
 });
 

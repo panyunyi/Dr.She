@@ -8,7 +8,9 @@ var chunyu = require('../routes/chunyu');
 var async = require('async');
 var moment = require('moment');
 var WXPay = require('weixin-pay');
-
+var pingpp_key = process.env.pingpp_key;
+var pingpp = require('pingpp')(pingpp_key);
+pingpp.setPrivateKeyPath("./public/rsa_key.pem");
 var wxpay = WXPay({
     appid: appid,
     mch_id: '1262876201',
@@ -25,6 +27,48 @@ function getTokenAndSendMsg(data) {
         });
     });
 }
+
+router.post('/app/alipay', function (req, res) {
+    let subject = req.body.subject;
+    let body = req.body.body;
+    let amount = req.body.amount * 1;
+    let order_no = req.body.order_no;
+    pingpp.charges.create({
+        subject: subject,
+        body: body,
+        amount: amount,//订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
+        order_no: order_no,
+        channel: "alipay",
+        currency: "cny",
+        client_ip: req.headers['x-real-ip'],
+        app: { id: "app_urrbfHSGKuXLa90a" }
+    }, function (err, charge) {
+        // YOUR CODE
+        console.log(err);
+        res.jsonp(charge);
+    });
+});
+
+router.post('/app/wxpay', function (req, res) {
+    let subject = req.body.subject;
+    let body = req.body.body;
+    let amount = req.body.amount * 1;
+    let order_no = req.body.order_no;
+    pingpp.charges.create({
+        subject: subject,
+        body: body,
+        amount: amount,//订单总金额, 人民币单位：分（如订单总金额为 1 元，此处请填 100）
+        order_no: order_no,
+        channel: "wx",
+        currency: "cny",
+        client_ip: req.headers['x-real-ip'],
+        app: { id: "app_urrbfHSGKuXLa90a" }
+    }, function (err, charge) {
+        // YOUR CODE
+        console.log(err);
+        res.jsonp(charge);
+    });
+});
 
 router.get('/', function (req, res) {
     let points = req.query.points;
@@ -73,6 +117,17 @@ router.post('/recharge', function (req, res) {
                 res.send({ payargs: result })
             });
         });
+    });
+});
+
+router.post('/pingpp/notify', function (req, res) {
+    let body=req.body;
+    let order_no=body.data.object.order_no;
+    let recharge = AV.Object.createWithoutData('Recharge', order_no);
+    recharge.set('orderid',body.data.object.id);
+    recharge.set('result',body.data.object.paid);
+    recharge.save().then(function(){
+        res.sendStatus(200);
     });
 });
 

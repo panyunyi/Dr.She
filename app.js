@@ -34,7 +34,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
   // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000 *30 // 30 days
 }));
 app.use('/',  require('./routes/index'));
 app.use('/ask',  require('./routes/ask'));

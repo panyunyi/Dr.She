@@ -10,11 +10,11 @@ var moment = require('moment');
 moment.locale('zh-cn');
 
 router.get('/', function (req, res) {
-    let query=new AV.Query('Problem');
+    let query = new AV.Query('Problem');
     let sess = req.session;
-    query.equalTo('problem_id',req.query.id*1);
-    query.first().then(function(data){
-        sess.objid=data.get('user').id;
+    query.equalTo('problem_id', req.query.id * 1);
+    query.first().then(function (data) {
+        sess.objid = data.get('user').id;
         res.render('inquiry', { id: req.query.id });
     });
 });
@@ -123,7 +123,7 @@ router.get('/pooling/:id/:content_id', function (req, res) {
             content_id = data.content[data.content.length - 1].id
         }
         let doctorimage = data.doctor.image;
-        let clinic = { '1': "妇科", '2': "儿科", '3': "内科", '4': "皮肤性病科", '6': "营养科", '7': "骨伤科", '8': "男科", '9': "外科", '11': "肿瘤及防治科", '12': "中医科", '13': "口腔颌面科", '14': "耳鼻咽喉科", '15': "眼科", '16': "整形美容科", '17': "精神心理科", '21': "产科" ,'22':"报告解读科"};
+        let clinic = { '1': "妇科", '2': "儿科", '3': "内科", '4': "皮肤性病科", '6': "营养科", '7': "骨伤科", '8': "男科", '9': "外科", '11': "肿瘤及防治科", '12': "中医科", '13': "口腔颌面科", '14': "耳鼻咽喉科", '15': "眼科", '16': "整形美容科", '17': "精神心理科", '21': "产科", '22': "报告解读科" };
         let doctorHtml = '<div class="block-left"><a href="http://weixin.chunyuyisheng.com/cooperation/wap/doctor/identified_info_page/?doctor_id=' + data.doctor.id + '&partner=chunyu_wap"><img src="' + data
             .doctor.image + '" class="doctor-avatar-small"></a></div><div class="block-right"><h6 class="doctor-title-small">' + data.doctor.name + '<span>' + data.doctor.hospital + '</span></h6> <span class="doctor-label">' + clinic[data.doctor.clinic * 1] + '</span><span class="doctor-label">' + data
                 .doctor.level_title + '</span></div>';
@@ -173,7 +173,7 @@ router.post('/add', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;
     chunyu.problemAdd(sess.objid, req.body.id * 1, req.body.content, time).then(function (data) {
-        res.send({ error:typeof(data)!="undefined"? data.error:0 });
+        res.send({ error: typeof (data) != "undefined" ? data.error : 0 });
     });
 });
 
