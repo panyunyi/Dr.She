@@ -44,8 +44,10 @@ app.use('/health',  require('./routes/health'));
 app.use('/doctor',  require('./routes/doctor'));
 app.use('/app',  require('./routes/app'));
 app.use('/advice',  require('./routes/advice'));
+app.use('/apply',  require('./routes/apply'));
 // 可以将一类的路由单独保存在一个文件中
 app.use('/todos', require('./routes/todos'));
+app.use('/admin', require('./routes/admin/admin'));
 
 app.use(function(req, res, next) {
   // 如果任何一个路由都没有返回响应，则抛出一个 404 异常给后续的异常处理器

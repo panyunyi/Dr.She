@@ -239,11 +239,10 @@ function problemAdd(user_id, problem_id, line, atime) {
             problemQuery.first().then(function (problem) {
                 newContent.set('problem', problem);
                 newContent.save().then(function () {
-
+                    return body;
                 }, function (err) {
                     console.log(err);
                 });
-                return body;
             }, function (err) {
                 console.log(err);
             });

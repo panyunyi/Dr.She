@@ -111,7 +111,7 @@ router.post('/business', function (req, res) {
     let area = req.body.area;
     let connecter = req.body.connecter;
     let user = AV.Object.createWithoutData('WxUser', user_id);
-    user.set('points', 10);
+    user.increment('points', 10);
     user.save();
     let business = new Business();
     business.set('user', user);
@@ -324,9 +324,11 @@ router.post('/business/clientfile/add', function (req, res) {
     file.set('birthhistory', birthhistory);
     file.set('abortionhistory', abortionhistory);
     file.set('menstruationtime', menstruationtime);
-    file.set('secretion', eval(secretion));
+    file.set('secretion', secretion);
+    //file.set('secretion', eval(secretion));
     file.set('medicine', medicine);
-    file.set('feeling', eval(feeling));
+    file.set('feeling', feeling);
+    //file.set('feeling', eval(feeling));
     file.set('check', check);
     file.set('checktime', checktime);
     file.set('images', images);
@@ -352,9 +354,11 @@ router.post('/business/clientfile/update', function (req, res) {
     file.set('birthhistory', birthhistory);
     file.set('abortionhistory', abortionhistory);
     file.set('menstruationtime', menstruationtime);
-    file.set('secretion', eval(secretion));
+    //file.set('secretion', eval(secretion));
+    file.set('secretion', secretion);
     file.set('medicine', medicine);
-    file.set('feeling', eval(feeling));
+    file.set('feeling', feeling);
+    //file.set('feeling', eval(feeling));
     file.set('check', check);
     file.set('checktime', checktime);
     file.set('images', images);
@@ -544,6 +548,15 @@ router.post('/problem/add', function (req, res) {
     let content = req.body.content;
     let time = Math.round(new Date().getTime() / 1000).toString();
     chunyu.problemAdd(user_id, problem_id, content, time).then(function (data) {
+        res.jsonp(data);
+    });
+});
+
+router.post('/problem/delete', function (req, res) {
+    let user_id = req.body.user_id;
+    let problem_id = req.body.problem_id;
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    chunyu.deleteProblem(user_id, problem_id, time).then(function (data) {
         res.jsonp(data);
     });
 });

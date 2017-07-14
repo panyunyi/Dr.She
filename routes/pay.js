@@ -121,13 +121,24 @@ router.post('/recharge', function (req, res) {
 });
 
 router.post('/pingpp/notify', function (req, res) {
-    let body=req.body;
-    let order_no=body.data.object.order_no;
+    let body = req.body;
+    let order_no = body.data.object.order_no;
     let recharge = AV.Object.createWithoutData('Recharge', order_no);
-    recharge.set('orderid',body.data.object.id);
-    recharge.set('result',body.data.object.paid);
-    recharge.save().then(function(){
-        res.sendStatus(200);
+    recharge.fetch().then(function () {
+        recharge.set('orderid', body.data.object.id);
+        recharge.set('result', body.data.object.paid);
+        if (body.data.object.paid) {
+            recharge.get('user').increment('points',recharge.get('price') / 5);
+            recharge.get('user').save().then(function(){
+                recharge.save().then(function () {
+                    res.sendStatus(200);
+                });
+            });
+        } else {
+            recharge.save().then(function () {
+                res.sendStatus(200);
+            });
+        }
     });
 });
 

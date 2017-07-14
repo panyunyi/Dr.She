@@ -123,7 +123,7 @@
                     <div class="line" style="position: relative;">
                         <p>添加照片：<span style="color:#ccc">必填</span></p>
                         <button class="img-container select" id="add-img">
-                    <input style="font-size: 999px; opacity: 0; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;" type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp">
+                    <input style="font-size: 999px; opacity: 0; position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;" type="file" name="iconImage" id="Image" accept="image/jpeg,image/jpg,image/png,image/gif,image/bmp">
                 </button>
                     </div>
 
@@ -182,10 +182,11 @@
                 return;
             }
             /* Act on the event */
+            //weui.alert($('#Image').val().length);
             if ($('#Image').val().length) {
                 var fileName = $('#Image').val();
                 var extension = fileName.substring(fileName.lastIndexOf('.'), fileName.length).toLowerCase();
-                if (extension == ".jpg" || extension == ".png") {
+                //if (extension == ".jpg" || extension == ".png") {
                     var data = new FormData();
                     data.append('iconImage', $('#Image')[0].files[0]);
                     var loading = weui.loading('正在上传图片...', {
@@ -211,7 +212,7 @@
                             console.log('error');
                         }
                     });
-                }
+                //}
             }
         });
         $(".img-list").on("click", ".del", function () {
@@ -262,6 +263,7 @@
                     window.location.replace("pay?points=" + num);
                     return;
                 }
+                $("#ask").attr('disabled','disabled');
                 $.post("/ask/add/free", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num }, function (result) {
                     if (result.id != 0) {
                         window.location.replace("inquiry?id=" + result.id);

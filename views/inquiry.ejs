@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="qa-bottom-wrap fixed center">
-                    <div class="up-img-btn"><input type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp"></div>
+                    <div class="up-img-btn"><input type="file" name="iconImage" id="Image" accept="image/jpeg,image/jpg,image/png,image/gif,image/bmp"></div>
                     <div class="block-send-txt">点击输入文字</div>
 
                 </div>
@@ -196,7 +196,7 @@
         $('#Image').change(function (event) {
             var fileName = $('#Image').val();
             var extension = fileName.substring(fileName.lastIndexOf('.'), fileName.length).toLowerCase();
-            if (extension == ".jpg" || extension == ".png") {
+            //if (extension == ".jpg" || extension == ".png") {
                 var data = new FormData();
                 data.append('iconImage', $('#Image')[0].files[0]);
                 var loading = weui.loading('正在上传图片...', {
@@ -222,7 +222,7 @@
                         console.log('error');
                     }
                 });
-            }
+            //}
         });
         setInterval('showUnreadNews()', 1000);
     </script>
