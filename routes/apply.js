@@ -96,9 +96,10 @@ router.post('/add', function (req, res) {
     let phone = req.body.phone;
     let address = req.body.address;
     let company = req.body.company;
-    let busQuery = new AV.Query('Business');
-    busQuery.equalTo('user', user);
-    busQuery.count().then(function (count) {
+    let donateQuery = new AV.Query('Donate');
+    donateQuery.equalTo('user', user);
+    donateQuery.equalTo('title',"商户注册领取");
+    donateQuery.count().then(function (count) {
         if (count == 0) {
             let business = new Business();
             business.set('name', company);

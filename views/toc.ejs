@@ -26,22 +26,70 @@
             height: auto;
             max-width: 100%;
         }
+
+        #block1 {
+            position: relative;
+        }
+
+        #blcok1 img {
+            position: absolute;
+        }
+
+        .weuibtnarea {
+            position: absolute;
+            left: 9%;
+            top: 57%;
+            width: 82%;
+        }
+
+        .weuicellbd {
+            position: absolute;
+            left: 9%;
+            top: 48%;
+            width: 82%;
+            border: 1px solid #d7d6dc;
+            height: 6%;
+        }
     </style>
 </head>
 
 <body>
     <div id="block1">
-        <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/apply&response_type=code&scope=snsapi_userinfo&state=1">
-            <img src="../block1.jpg" class="img-responsive">
-        </a>
-    </div>
+
+        <img src="../toc.jpg" class="img-responsive">
+        <div class="weuicellbd "> <input id="phone" class="weui-input " type="number" required pattern="[0-9]*" maxlength="11" placeholder="输入手机号领取问医积分"
+                emptytips="请输入手机号 " notmatchtips="请输入正确的手机号 "> </div>
+        <div class="weuibtnarea"> <a id="formSubmitBtn" href="javascript:void(0) " class="weui-btn weui-btn_primary ">立即领取</a> </div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js "></script>
-    <link rel="stylesheet " href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css ">
+    <link rel="stylesheet " href="../weui.min.css ">
     <script type="text/javascript " src="../weui.js "></script>
     <script src="//cdn1.lncld.net/static/js/2.3.2/av-min.js "></script>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script type="text/javascript ">
+        if(<%=had%>){
+            $("#formSubmitBtn").attr("disabled","disabled");
+            weui.alert('您已领取过，分享后有机会获得额外5积分。')
+        }
+        $("#formSubmitBtn").on("click", function () {
+            if(<%=had%>){
+                weui.alert('您已领取过，分享后有机会获得额外5积分。')
+            }else{
+                if($("#phone").val().length==11){
+                    $("#formSubmitBtn").attr("disabled","disabled");
+                    $.post("/toc/add", {  phone: $("#phone").val(),objid:'<%=objid%>' }, function (result) {
+                        if (result.code == 0) {
+                            window.location.replace("/toc/success");
+                        } else {
+                            weui.alert(result.msg);
+                        }
+                    });
+                }else{
+                    weui.alert("请正确填写手机号码");
+                    return;
+                }
+            }
+        });
         var signature = '<%=signature%>';
         var nonceStr = '<%=noncestr%>';
         var timestamp = '<%=timestamp%>';
@@ -56,23 +104,23 @@
             jsApiList: ['checkJsApi',
         'onMenuShareTimeline',
         'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-    });
-    wx.ready(function(){
-        // 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
-        wx.onMenuShareTimeline({
-            title: '30次公立医院妇科问诊免费送！星天使客户大回馈！让全国公立医院的妇科医生来帮您！', // 分享标题
-            link:"http://drshe.leanapp.cn/advise",
-            imgUrl: "http://ac-mxoopsat.clouddn.com/9633ea7c380c33e4be3c.jpg" // 分享图标
         });
-        // 获取“分享给朋友”按钮点击状态及自定义分享内容接口
-        wx.onMenuShareAppMessage({
-            title: '30次公立医院妇科问诊免费送！', // 分享标题
-            desc: "星天使客户大回馈！让全国公立医院的妇科医生来帮您！", // 分享描述
-            link:"http://drshe.leanapp.cn/advise",
-            imgUrl: "http://ac-mxoopsat.clouddn.com/9633ea7c380c33e4be3c.jpg", // 分享图标
-            type: 'link', // 分享类型,music、video或link，不填默认为link
+        wx.ready(function(){
+            // 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
+            wx.onMenuShareTimeline({
+                title: '公立医院妇科问诊积分限量大放送！星天使客户大回馈！让全国公立医院的妇科医生来帮您！', // 分享标题
+                link:"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1",
+                imgUrl: "http://ac-mxoopsat.clouddn.com/9633ea7c380c33e4be3c.jpg" // 分享图标
+            });
+            // 获取“分享给朋友”按钮点击状态及自定义分享内容接口
+            wx.onMenuShareAppMessage({
+                title: '公立医院妇科问诊积分限量大放送！', // 分享标题
+                desc: "星天使客户大回馈！让全国公立医院的妇科医生来帮您！", // 分享描述
+                link:"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1",
+                imgUrl: "http://ac-mxoopsat.clouddn.com/9633ea7c380c33e4be3c.jpg", // 分享图标
+                type: 'link', // 分享类型,music、video或link，不填默认为link
+            });
         });
-    });
     </script>
 </body>
 

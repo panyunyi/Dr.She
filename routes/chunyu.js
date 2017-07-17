@@ -387,9 +387,6 @@ function deleteProblem(user_id, problem_id, atime) {
     };
     return rp(options)
         .then(function (body) {
-            //result["error"]=0;
-            //result["content"]=body.content;
-            //console.log(result);
             return body;
             // POST succeeded...
         })

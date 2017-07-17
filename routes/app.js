@@ -20,6 +20,7 @@ var BusinessClient = AV.Object.extend('BusinessClient');
 var ClientFile = AV.Object.extend('ClientFile');
 var Donate = AV.Object.extend('Donate');
 var Goods = AV.Object.extend('Goods');
+var Advice = AV.Object.extend('Advice');
 var moment = require('moment');
 moment.locale('zh-cn');
 
@@ -632,6 +633,21 @@ router.post('/goods/add', function (req, res) {
     }, function (err, data) {
         res.jsonp(data.length);
     });
+});
+
+//我要求助
+router.post('/advice/add', function (req, res) {
+    let content = req.body.content;
+    let phone = req.body.phone;
+    let user_id = req.body.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let advice = new Advice();
+    advice.set('source', 'app');
+    advice.set('content', content);
+    advice.set('phone', phone);
+    advice.set('user', user);
+    advice.save();
+    res.jsonp({ error: 0 });
 });
 
 module.exports = router;

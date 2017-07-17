@@ -116,7 +116,7 @@
                         $("#tip").css("display", "none");
                         $(".qa-inquiry-wrap").append(msg.content);
                         if (msg.content.length > 0) {
-                            top();
+                            totheend();
                         }
                     }
                     if (msg.isclose) {
@@ -137,8 +137,9 @@
                 }
             });
         }
+        setInterval('showUnreadNews()', 1000);
         gallery();
-        function top() {
+        function totheend() {
             $(document).ready(function () {
                 var h = $(document).height() - $(window).height();
                 $(document).scrollTop(h);
@@ -224,7 +225,7 @@
                 });
             //}
         });
-        setInterval('showUnreadNews()', 1000);
+        
     </script>
 </body>
 
