@@ -273,13 +273,22 @@ router.get('/toc2', function (req, res) {
     let url = req.protocol + '://' + req.host + req.originalUrl; //获取当前url
     signature.sign(url, function (signatureMap) {
         signatureMap.appid = appid;
-        //signatureMap.objid="5965c0f1ac502e006cdaa8af";
+        signatureMap.objid="";
+        signatureMap.had = 0;
         res.render('toc', signatureMap);
     });
 });
 
+router.get('/toc3', function (req, res) {
+    res.redirect('https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1');
+});
+
 router.get('/toc/success', function (req, res) {
     res.render('tocsuccess');
+});
+
+router.get('/toc/use', function (req, res) {
+    res.render('toc2');
 });
 
 router.post('/toc/add', function (req, res) {
@@ -328,7 +337,8 @@ router.get('/toc', function (req, res) {
                                 donate.set('user', data);
                                 donate.save().then(function () {
                                     chunyu.login(data.id, time).then(function () {
-                                        let url = req.protocol + '://' + req.host + req.originalUrl; //获取当前url
+                                        let url = req.protocol + '://' + req.host + req.originalUrl;
+                                        //let url = "http://drshe.leanapp.cn/toc3"; //获取当前url
                                         signature.sign(url, function (signatureMap) {
                                             signatureMap.appid = appid;
                                             signatureMap.objid = data.id;
@@ -356,7 +366,8 @@ router.get('/toc', function (req, res) {
                                         donate.set('user', data);
                                         donate.save().then(function () {
                                             chunyu.login(data.id, time).then(function () {
-                                                let url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1";
+                                                let url = req.protocol + '://' + req.host + req.originalUrl;
+                                                //let url = "http://drshe.leanapp.cn/toc3";
                                                 signature.sign(url, function (signatureMap) {
                                                     signatureMap.appid = appid;
                                                     signatureMap.objid = data.id;
@@ -366,7 +377,8 @@ router.get('/toc', function (req, res) {
                                             });
                                         });
                                     } else {
-                                        let url ="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1";
+                                        let url = req.protocol + '://' + req.host + req.originalUrl;
+                                        //let url ="http://drshe.leanapp.cn/toc3";
                                         signature.sign(url, function (signatureMap) {
                                             signatureMap.appid = appid;
                                             signatureMap.objid = data.id;

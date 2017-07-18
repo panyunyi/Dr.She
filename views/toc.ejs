@@ -57,9 +57,10 @@
     <div id="block1">
 
         <img src="../toc.jpg" class="img-responsive">
-        <div class="weuicellbd "> <input id="phone" class="weui-input " type="number" required pattern="[0-9]*" maxlength="11" placeholder="输入手机号领取问医积分"
+        <div class="weuicellbd "> <input id="phone" class="weui-input " type="number" required pattern="[0-9]*" maxlength="11" placeholder="输入手机号"
                 emptytips="请输入手机号 " notmatchtips="请输入正确的手机号 "> </div>
         <div class="weuibtnarea"> <a id="formSubmitBtn" href="javascript:void(0) " class="weui-btn weui-btn_primary ">立即领取</a> </div>
+        <div><a style="color:#586c94;margin-left:2rem" href="/toc/use">查看如何使用</a></div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js "></script>
     <link rel="stylesheet " href="../weui.min.css ">
@@ -108,16 +109,16 @@
         wx.ready(function(){
             // 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
             wx.onMenuShareTimeline({
-                title: '公立医院妇科问诊积分限量大放送！星天使客户大回馈！让全国公立医院的妇科医生来帮您！', // 分享标题
-                link:"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1",
-                imgUrl: "http://ac-mxoopsat.clouddn.com/9633ea7c380c33e4be3c.jpg" // 分享图标
+                title: '足不出户，全国公立妇科医生免费看！“不舒服、自己看一看”女性妇科问题跟我说！为您解决私密之忧！', // 分享标题
+                link:"http://drshe.leanapp.cn/toc3",
+                imgUrl: "http://ac-d1soiele.clouddn.com/291f70344c6107fb8379.jpg" // 分享图标
             });
             // 获取“分享给朋友”按钮点击状态及自定义分享内容接口
             wx.onMenuShareAppMessage({
-                title: '公立医院妇科问诊积分限量大放送！', // 分享标题
-                desc: "星天使客户大回馈！让全国公立医院的妇科医生来帮您！", // 分享描述
-                link:"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1",
-                imgUrl: "http://ac-mxoopsat.clouddn.com/9633ea7c380c33e4be3c.jpg", // 分享图标
+                title: '足不出户，全国公立妇科医生免费看！', // 分享标题
+                desc: "“不舒服、自己看一看”女性妇科问题跟我说！为您解决私密之忧！", // 分享描述
+                link:"http://drshe.leanapp.cn/toc3",
+                imgUrl: "http://ac-d1soiele.clouddn.com/291f70344c6107fb8379.jpg", // 分享图标
                 type: 'link', // 分享类型,music、video或link，不填默认为link
             });
         });
