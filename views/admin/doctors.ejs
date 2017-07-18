@@ -3,7 +3,7 @@
             <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">用户</h1>
+                    <h1 class="page-header">医生</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -12,7 +12,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            问医用户表
+                            医生数据信息
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -20,11 +20,14 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
-                                        <th>昵称</th>
-                                        <th>性别</th>
-                                        <th>手机号</th>
-                                        <th>积分</th>
-                                        <th>城市</th>
+                                        <th>姓名</th>
+                                        <th>医院</th>
+                                        <th>医院等级</th>
+                                        <th>医生等级</th>
+                                        <th>职称</th>
+                                        <th>科室</th>
+                                        <th>擅长</th>
+                                        <!-- <th>教育背景</th> -->
                                         <th>创建时间</th>
                                     </tr>
                                 </thead>
@@ -69,14 +72,17 @@
     var table = $('#table').DataTable({
                 "processing": true,
                 stateSave: true,
-                "ajax": '../api/json/users',
+                "ajax": '../api/json/doctors',
                 "columns": [
                     { "data": null },
-                    { "data": "nickname" },
-                    { "data": "sex" },
-                    { "data": "phone" },
-                    { "data": "points" },
-                    { "data": "city" },
+                    { "data": "name" },
+                    { "data": "hospital" },
+                    { "data": "hospital_grade" },
+                    { "data": "level_title" },
+                    { "data": "title" },
+                    { "data": "clinic" },
+                    { "data": "good_at" },
+                    // { "data": "education_background" },
                     { "data": "createdAt" }
                 ],
                 select: true,

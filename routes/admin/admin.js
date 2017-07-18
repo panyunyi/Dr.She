@@ -64,4 +64,8 @@ router.get('/users', function (req, res) {
     res.render('admin/users', { title: "Dr.She" });
 });
 
+router.get('/doctors', function (req, res) {
+    res.render('admin/doctors', { title: "Dr.She" });
+});
+
 module.exports = router;
