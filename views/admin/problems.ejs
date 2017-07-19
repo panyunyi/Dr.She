@@ -20,11 +20,9 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
-                                        <th>昵称</th>
-                                        <th>性别</th>
-                                        <th>手机号</th>
-                                        <th>积分</th>
-                                        <th>城市</th>
+                                        <th>问题ID</th>
+                                        <th>用户</th>
+                                        <th>来源</th>
                                         <th>创建时间</th>
                                     </tr>
                                 </thead>
@@ -69,14 +67,12 @@
         var table = $('#table').DataTable({
             "processing": true,
             stateSave: true,
-            "ajax": '../api/json/users',
+            "ajax": '../api/json/problems',
             "columns": [
                 { "data": null },
-                { "data": "nickname" },
-                { "data": "sex" },
-                { "data": "phone" },
-                { "data": "points" },
-                { "data": "city" },
+                { "data": "problem_id" },
+                { "data": "user" },
+                { "data": "source" },
                 { "data": "createdAt" }
             ],
             select: true,
@@ -105,7 +101,6 @@
                 cell.innerHTML = i + 1;
             });
         }).draw();
-
     </script>
     </body>
 

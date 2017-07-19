@@ -61,11 +61,63 @@ router.post('/login', function (req, res, next) {
 });
 
 router.get('/users', function (req, res) {
-    res.render('admin/users', { title: "Dr.She" });
+    let sess = req.session;
+    if(sess.user){
+        res.render('admin/users', { title: "Dr.She" });
+    }else{
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
 });
 
 router.get('/doctors', function (req, res) {
-    res.render('admin/doctors', { title: "Dr.She" });
+    let sess = req.session;
+    if(sess.user){
+        res.render('admin/doctors', { title: "Dr.She" });
+    }else{
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
+router.get('/problems', function (req, res) {
+    let sess = req.session;
+    if(sess.user){
+        res.render('admin/problems', { title: "Dr.She" });
+    }else{
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
+router.get('/images', function (req, res) {
+    let sess = req.session;
+    if(sess.user){
+        res.render('admin/images', { title: "Dr.She" });
+    }else{
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
+router.get('/business', function (req, res) {
+    let sess = req.session;
+    if(sess.user){
+        res.render('admin/images', { title: "Dr.She" });
+    }else{
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
 });
 
 module.exports = router;
