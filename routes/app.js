@@ -18,9 +18,11 @@ var WxUser = AV.Object.extend('WxUser');
 var Business = AV.Object.extend('Business');
 var BusinessClient = AV.Object.extend('BusinessClient');
 var ClientFile = AV.Object.extend('ClientFile');
+var ClientAttachFile = AV.Object.extend('ClientAttachFile');
 var Donate = AV.Object.extend('Donate');
 var Goods = AV.Object.extend('Goods');
 var Advice = AV.Object.extend('Advice');
+var Commet = AV.Object.extend('Commet');
 var moment = require('moment');
 moment.locale('zh-cn');
 
@@ -135,7 +137,23 @@ router.get('/business/:user_id', function (req, res) {
         if (typeof (data) == "undefined") {
             res.jsonp({ count: 0 });
         } else {
-            res.jsonp({ count: 1, business_id: data.id });
+            res.jsonp({ count: 1, business_id: data.id, name: data.get('name') });
+        }
+    });
+});
+
+router.get('/business', function (req, res) {
+    let user_id = req.query.user_id;
+    let phone = req.query.phone;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let businessQuery = new AV.Query('Business');
+    businessQuery.equalTo('user', user);
+    businessQuery.equalTo('phone', phone);
+    businessQuery.count().then(function (count) {
+        if (count == 1) {
+            res.jsonp({ error: 0, msg: "" });
+        } else {
+            res.jsonp({ error: 1, msg: "手机号不正确" });
         }
     });
 });
@@ -271,6 +289,7 @@ router.get('/business/client/delete/:client_id', function (req, res) {
     let client = AV.Object.createWithoutData('BusinessClient', client_id);
     client.set('isDel', true);
     client.save().then(function () {
+        //附件未删除
         let fileQuery = new AV.Query('ClientFile');
         fileQuery.equalTo('isDel', false);
         fileQuery.equalTo('client', client);
@@ -295,6 +314,16 @@ router.get('/business/clientfile/:file_id', function (req, res) {
     });
 });
 
+router.get('/business/clientattachfile/:client_id', function (req, res) {
+    let client_id = req.params.client_id;
+    let client = AV.Object.createWithoutData('BusinessClient', client_id);
+    let query=new AV.Query('ClientAttachFile');
+    query.equalTo('client',client);
+    query.first().then(function(file){
+        res.jsonp({file:file});
+    });
+});
+
 router.get('/business/clientfile/delete/:file_id', function (req, res) {
     let file_id = req.params.file_id;
     let file = AV.Object.createWithoutData('ClientFile', file_id);
@@ -304,16 +333,64 @@ router.get('/business/clientfile/delete/:file_id', function (req, res) {
     });
 });
 
-router.post('/business/clientfile/add', function (req, res) {
+router.post('/business/clientattachfile/add', function (req, res) {
     let business_id = req.body.business_id;
     let client_id = req.body.client_id;
-    let checktime = new Date(req.body.checktime);
+    let client = AV.Object.createWithoutData('BusinessClient', client_id);
+    let business = AV.Object.createWithoutData('Business', business_id);
     let birthhistory = req.body.birthhistory;
     let abortionhistory = req.body.abortionhistory;
     let menstruationtime = new Date(req.body.menstruationtime);
     let secretion = req.body.secretion;
     let medicine = req.body.medicine;
     let feeling = req.body.feeling;
+    let file = new ClientAttachFile();
+    file.set('isDel', false);
+    file.set('client', client);
+    file.set('business', business);
+    file.set('birthhistory', birthhistory);
+    file.set('abortionhistory', abortionhistory);
+    file.set('menstruationtime', menstruationtime);
+    file.set('secretion', secretion);
+    file.set('medicine', medicine);
+    file.set('feeling', feeling);
+    file.save().then(function (data) {
+        res.jsonp({ error: 0, msg: "", file_id: data.id });
+    }, function (err) {
+        console.log(err);
+    });
+});
+
+router.post('/business/clientattachfile/update', function (req, res) {
+    let file_id = req.body.file_id;
+    let birthhistory = req.body.birthhistory;
+    let abortionhistory = req.body.abortionhistory;
+    let menstruationtime = new Date(req.body.menstruationtime);
+    let secretion = req.body.secretion;
+    let medicine = req.body.medicine;
+    let feeling = req.body.feeling;
+    let file = AV.Object.createWithoutData('ClientAttachFile', file_id);
+    file.set('birthhistory', birthhistory);
+    file.set('abortionhistory', abortionhistory);
+    file.set('menstruationtime', menstruationtime);
+    file.set('secretion', secretion);
+    file.set('medicine', medicine);
+    file.set('feeling', feeling);
+    file.save().then(function (data) {
+        res.jsonp({ error: 0, msg: "", file_id: data.id });
+    });
+});
+
+router.post('/business/clientfile/add', function (req, res) {
+    let business_id = req.body.business_id;
+    let client_id = req.body.client_id;
+    let checktime = new Date(req.body.checktime);
+    // let birthhistory = req.body.birthhistory;
+    // let abortionhistory = req.body.abortionhistory;
+    // let menstruationtime = new Date(req.body.menstruationtime);
+    // let secretion = req.body.secretion;
+    // let medicine = req.body.medicine;
+    // let feeling = req.body.feeling;
     let check = req.body.check;
     let images = req.body.images;
     let client = AV.Object.createWithoutData('BusinessClient', client_id);
@@ -322,14 +399,12 @@ router.post('/business/clientfile/add', function (req, res) {
     file.set('isDel', false);
     file.set('client', client);
     file.set('business', business);
-    file.set('birthhistory', birthhistory);
-    file.set('abortionhistory', abortionhistory);
-    file.set('menstruationtime', menstruationtime);
-    file.set('secretion', secretion);
-    //file.set('secretion', eval(secretion));
-    file.set('medicine', medicine);
-    file.set('feeling', feeling);
-    //file.set('feeling', eval(feeling));
+    // file.set('birthhistory', birthhistory);
+    // file.set('abortionhistory', abortionhistory);
+    // file.set('menstruationtime', menstruationtime);
+    // file.set('secretion', secretion);
+    // file.set('medicine', medicine);
+    // file.set('feeling', feeling);
     file.set('check', check);
     file.set('checktime', checktime);
     file.set('images', images);
@@ -343,23 +418,21 @@ router.post('/business/clientfile/add', function (req, res) {
 router.post('/business/clientfile/update', function (req, res) {
     let file_id = req.body.file_id;
     let checktime = new Date(req.body.checktime);
-    let birthhistory = req.body.birthhistory;
-    let abortionhistory = req.body.abortionhistory;
-    let menstruationtime = new Date(req.body.menstruationtime);
-    let secretion = req.body.secretion;
-    let medicine = req.body.medicine;
-    let feeling = req.body.feeling;
+    // let birthhistory = req.body.birthhistory;
+    // let abortionhistory = req.body.abortionhistory;
+    // let menstruationtime = new Date(req.body.menstruationtime);
+    // let secretion = req.body.secretion;
+    // let medicine = req.body.medicine;
+    // let feeling = req.body.feeling;
     let check = req.body.check;
     let images = req.body.images;
     let file = AV.Object.createWithoutData('ClientFile', file_id);
-    file.set('birthhistory', birthhistory);
-    file.set('abortionhistory', abortionhistory);
-    file.set('menstruationtime', menstruationtime);
-    //file.set('secretion', eval(secretion));
-    file.set('secretion', secretion);
-    file.set('medicine', medicine);
-    file.set('feeling', feeling);
-    //file.set('feeling', eval(feeling));
+    // file.set('birthhistory', birthhistory);
+    // file.set('abortionhistory', abortionhistory);
+    // file.set('menstruationtime', menstruationtime);
+    // file.set('secretion', secretion);
+    // file.set('medicine', medicine);
+    // file.set('feeling', feeling);
     file.set('check', check);
     file.set('checktime', checktime);
     file.set('images', images);
@@ -648,6 +721,52 @@ router.post('/advice/add', function (req, res) {
     advice.set('user', user);
     advice.save();
     res.jsonp({ error: 0 });
+});
+
+//评论
+router.post('/commet/add', function (req, res) {
+    let msg = req.body.msg;
+    let goods_id = req.body.goods_id;
+    let user_id = req.body.user_id;
+    let score = req.body.score * 1;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let goods = AV.Object.createWithoutData('Goods', goods_id);
+    let commet = new Commet();
+    commet.set('commet', msg);
+    commet.set('goods', goods);
+    commet.set('user', user);
+    commet.set('score', score);
+    commet.set('isDel', false);
+    commet.save();
+    res.jsonp({ error: 0 });
+});
+
+router.get('/commet', function (req, res) {
+    let goods_id = req.query.goods_id;
+    let goods = AV.Object.createWithoutData('Goods', goods_id);
+    let query = new AV.Query('Commet');
+    query.equalTo('isDel', false);
+    query.equalTo('goods', goods);
+    query.include('user');
+    query.find().then(function (commets) {
+        async.map(commets, function (commet, callback) {
+            let one = {
+                name: commet.get('user') ? commet.get('user').get('nickname') : "", headimgurl: commet.get('user') ? commet.get('user').get('headimgurl') : "",
+                score: commet.get('score') ? commet.get('score') : 0, commet: commet.get('commet') ? commet.get('commet') : "", createdAt: commet.get('createdAt')
+            };
+            callback(null, one);
+        }, function (err, results) {
+            res.jsonp({ commets: results });
+        });
+    });
+});
+
+router.get('/posts', function (req, res) {
+    let query = new AV.Query('Posts');
+    query.limit(1000);
+    query.find().then(function (posts) {
+        res.jsonp({ posts: posts });
+    });
 });
 
 module.exports = router;

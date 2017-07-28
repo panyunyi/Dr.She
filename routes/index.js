@@ -296,6 +296,7 @@ router.post('/toc/add', function (req, res) {
     let objid = req.body.objid;
     let user = AV.Object.createWithoutData('WxUser', objid);
     user.set('phone', phone);
+    user.set('password','123');
     user.save();
     res.jsonp({ code: 0, msg: "" });
 });

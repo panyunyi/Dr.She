@@ -7,6 +7,7 @@ var secret = process.env.wx_secret;
 var async = require('async');
 var Content = AV.Object.extend('Content');
 var Doctor = AV.Object.extend('Doctor');
+var Refund = AV.Object.extend('Refund');
 var chunyu = require('../routes/chunyu');
 var fs = require('fs');
 var file = "./public/city_list.json";
@@ -81,11 +82,14 @@ router.post('/reply', function (req, res) {
                     reply.set('askorreply', "d");
                     reply.set('text', line);
                     reply.set('problem', problem);
+                    reply.set('problem_id',problem_id.toString());
                     reply.set('user', problem.get('user'));
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
-                    reply.save();
-                    replyContent = line;
+                    reply.save().then(function(){
+                        replyContent = line;
+                        callback(null, one);
+                    });
                 }
                 if (one.type == "audio") {
                     let reply = new Content();
@@ -93,11 +97,14 @@ router.post('/reply', function (req, res) {
                     reply.set('askorreply', "d");
                     reply.set('audio', one.file);
                     reply.set('problem', problem);
+                    reply.set('problem_id',problem_id.toString());
                     reply.set('user', problem.get('user'));
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
-                    reply.save();
-                    replyContent = "一条语音消息";
+                    reply.save().then(function(){
+                        replyContent = "一条语音消息";
+                        callback(null, one);
+                    });
                 }
                 if (one.type == "image") {
                     let reply = new Content();
@@ -105,20 +112,23 @@ router.post('/reply', function (req, res) {
                     reply.set('askorreply', "d");
                     reply.set('image', one.file);
                     reply.set('problem', problem);
+                    reply.set('problem_id',problem_id.toString());
                     reply.set('user', problem.get('user'));
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
-                    reply.save();
-                    replyContent = "一张图片消息";
+                    reply.save().then(function(){
+                        replyContent = "一张图片消息";
+                        callback(null, one);
+                    });
                 }
-                callback(null, one);
+                
             }, function (err, oneres) {
-                if(problem.get('source')=="app"){
+                if (problem.get('source') == "app") {
                     push.push("医生有新的回复", replyContent, problem.get('user').id, problem_id);
                 }
                 let time = Math.round(new Date().getTime() / 1000).toString();
                 chunyu.problemDetail(problem.get('user_id'), problem_id, 1, time).then(function (data) {
-                    if (data.problem.status == "s"&&problem.get('source')=="wechat") {
+                    if (data.problem.status == "s" && problem.get('source') == "wechat") {
                         isView(problem.get('user').get('openid'), problem_id, data.problem.ask, replyContent, res);
                     } else {
                         res.jsonp(result);
@@ -157,7 +167,32 @@ router.post('/close', function (req, res) {
         "error": 0, // 0 代表成功,其它 代表异常
         "error_msg": "" //错误信息
     };
-    res.jsonp(result);
+    let problem_id = req.body.problem_id * 1;
+    let user_id = req.body.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let problem = AV.Object.createWithoutData('Problem', problem_id);
+    let msg = req.body.msg;
+    let status = req.body.status;
+    let price = 0;
+    if (typeof (req.body.price) != "undefined") {
+        price = req.body.price * 1;
+    }
+    let sign = req.body.sign;
+    let atime = req.body.atime * 1;
+    let refund = new Refund();
+    refund.set('problem_id', problem_id);
+    refund.set('user', user);
+    refund.set('msg', msg);
+    refund.set('status', status);
+    refund.set('price', price);
+    refund.set('sign', sign);
+    refund.set('atime', atime);
+    refund.save().then(function () {
+        problem.set('isrefund', true);
+        problem.save().then(function () {
+            res.jsonp(result);
+        });
+    });
 });
 
 router.get('/detail/:id/:purchase_num', function (req, res) {

@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">图片</h1>
+                    <h1 class="page-header">商户</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -12,7 +12,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            用户上传的图片
+                            商户注册表
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -20,8 +20,10 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
-                                        <th>名称</th>
-                                        <th>图片</th>
+                                        <th>活动</th>
+                                        <th>积分</th>
+                                        <th>来源</th>
+                                        <th>用户</th>
                                         <th>创建时间</th>
                                     </tr>
                                 </thead>
@@ -66,30 +68,20 @@
         var table = $('#table').DataTable({
             "processing": true,
             stateSave: true,
-            "ajax": '../api/json/images',
+            "ajax": '../api/json/donate',
             "columns": [
                 { "data": null },
-                { "data": "name" },
-                { "data": "url" },
+                { "data": "title" },
+                { "data": "points" },
+                { "data": "source" },
+                { "data": "user" },
                 { "data": "createdAt" }
             ],
             select: true,
-            "order": [[3, 'desc']],
+            "order": [[5, 'desc']],
             "language": {
                 "url": "../vendor/zh_CN.txt"
-            },
-            "columnDefs": [{
-                // "visible": false,
-                //"targets": 0
-            },
-            {
-                "render": function (data, type, row, meta) {
-                    //渲染 把数据源中的标题和url组成超链接
-                    return '<a href="' + data + '" target="_blank"><img style="width:30%" src="' + data + '"/></a>';
-                },
-                //指定是第三列
-                "targets": 2
-            }]
+            }
         });
         table.on('order.dt search.dt', function () {
             table.column(0, {

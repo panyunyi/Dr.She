@@ -20,6 +20,7 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
+                                        <th>头像</th>
                                         <th>昵称</th>
                                         <th>性别</th>
                                         <th>手机号</th>
@@ -72,6 +73,7 @@
             "ajax": '../api/json/users',
             "columns": [
                 { "data": null },
+                { "data": "headimgurl" },
                 { "data": "nickname" },
                 { "data": "sex" },
                 { "data": "phone" },
@@ -80,7 +82,7 @@
                 { "data": "createdAt" }
             ],
             select: true,
-            "order": [[1, 'asc']],
+            "order": [[7, 'desc']],
             "language": {
                 "url": "../vendor/zh_CN.txt"
             },
@@ -91,7 +93,7 @@
             {
                 "render": function (data, type, row, meta) {
                     //渲染 把数据源中的标题和url组成超链接
-                    return '<a href="../inquiry/query?id=' + data + '" target="_blank">' + row.problem_id + '</a>';
+                    return '<a href="' + data + '" target="_blank"><img style="width:15%" src="' + data + '"/></a>';
                 },
                 //指定是第三列
                 "targets": 1

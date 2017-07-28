@@ -20,7 +20,13 @@ router.get('/', function (req, res) {
 });
 
 router.get('/query', function (req, res) {
-    res.render('query', { id: req.query.id });
+    let sess = req.session;
+    sess.url = "inquiry/query?id=" + req.query.id;
+    if (sess.user) {
+        res.render('query', { id: req.query.id });
+    } else {
+        res.redirect('../admin/login');
+    }
 });
 
 router.get('/query/list', function (req, res) {

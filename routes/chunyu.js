@@ -97,6 +97,8 @@ function createFree(user_id, atime, ask, flag, source) {
                 problem.set('ask', ask.content);
                 problem.set('image', ask.image);
                 problem.set('source', source);
+                problem.set('is_collect',0);
+                problem.set('isrefund',false);
                 let user = AV.Object.createWithoutData('WxUser', user_id);
                 problem.set('user', user);
                 problem.save();
@@ -234,6 +236,7 @@ function problemAdd(user_id, problem_id, line, atime) {
             newContent.set('type', 'text');
             newContent.set('user', user);
             newContent.set('text', line);
+            newContent.set('problem_id',problem_id.toString());
             let problemQuery = new AV.Query('Problem');
             problemQuery.equalTo('problem_id', problem_id);
             problemQuery.first().then(function (problem) {
@@ -285,12 +288,14 @@ function problemImageAdd(user_id, problem_id, image_url, atime) {
             newContent.set('type', 'image');
             newContent.set('user', user);
             newContent.set('image', image_url);
+            newContent.set('problem_id',problem_id.toString());
             let problemQuery = new AV.Query('Problem');
             problemQuery.equalTo('problem_id', problem_id);
             problemQuery.first().then(function (problem) {
                 newContent.set('problem', problem);
-                newContent.save();
-                return body;
+                newContent.save().then(function(){
+                    return body;
+                });
             });
 
             // POST succeeded...
@@ -486,6 +491,8 @@ function successNotice(user_id, chunyu_order_id, atime, source) {
             // problem.set('ask', ask.content);
             // problem.set('image', ask.image);
             problem.set('source', source);
+            problem.set('isrefund',false);
+            problem.set('is_collect',0);
             let user = AV.Object.createWithoutData('WxUser', user_id);
             problem.set('user', user);
             problem.save();
