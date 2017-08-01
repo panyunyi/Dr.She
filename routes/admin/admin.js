@@ -214,7 +214,7 @@ router.get('/collect/go', function (req, res) {
             query.find().then(function (donates) {
                 async.map(donates, function (donate, callback1) {
                     if (typeof (donate) != "undefined") {
-                        
+
                         arr.push(one);
                     }
                     callback1(null, donate);
@@ -228,4 +228,75 @@ router.get('/collect/go', function (req, res) {
     });
 });
 
+router.get('/charts', function (req, res) {
+    let list=[];
+    function getContent(callback) {
+        let arr = [];
+        let query = new AV.Query('Content');
+        query.count().then(function (count) {
+            let num = Math.ceil(count / 1000);
+            async.times(num, function (n, callback) {
+                query.limit(1000);
+                query.skip(1000 * n);
+                query.find().then(function (contents) {
+                    async.map(contents, function (content, callback1) {
+                        if (typeof (content) != "undefined") {
+                            arr.push(content);
+                        }
+                        callback1(null, content);
+                    }, function (err, results) {
+                        callback(null, n);
+                    });
+                });
+            }, function (err, contents) {
+                callback(null, arr);
+            });
+        });
+    }
+
+    function getKeys(contents, callback) {
+        console.log(contents.length);
+        let keyQuery = new AV.Query('KeyWords');
+        keyQuery.equalTo('isDel', false);
+        keyQuery.limit(1000);
+        keyQuery.find().then(function (keys) {
+            async.map(keys, function (key, callback1) {
+                let arr = key.get('words').split(',');
+                let total = 0;
+                let one = {};
+                async.map(arr, function (a, callback2) {
+                    async.map(contents, function (content, callback3) {
+                        if (content.indexOf(a) >= 0) {
+                            total++;
+                            callback3(null, 1);
+                        } else {
+                            callback3(null, 0);
+                        }
+                    }, function (err, contents) {
+                        callback2(null,a);
+                    });
+                }, function (err, arr) {
+                    one['title'] = key.get('title');
+                    one['total'] = total;
+                    console.log(one);
+                    list.push(one);
+                    callback1(null, one);
+                });
+            }, function (err, results) {
+                callback(null, results);
+            });
+        });
+    }
+
+    async.waterfall([
+        function (callback) {
+            getContent(callback);
+        },
+        function (contents, callback) {
+            getKeys(contents, callback);
+        }
+    ], function (err, results) {
+        res.render('admin/charts', list);
+    });
+});
 module.exports = router;

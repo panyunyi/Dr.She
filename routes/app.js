@@ -113,6 +113,7 @@ router.post('/business', function (req, res) {
     let address = req.body.address;
     let area = req.body.area;
     let connecter = req.body.connecter;
+    let pwd = req.body.pwd;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     user.increment('points', 10);
     user.save();
@@ -123,8 +124,21 @@ router.post('/business', function (req, res) {
     business.set('address', address);
     business.set('area', area);
     business.set('connecter', connecter);
+    business.set('pwd', pwd);
     business.save().then(function (data) {
         res.jsonp({ error: 0, msg: "", business_id: data.id });
+    });
+});
+
+router.post('/business/pwd', function (req, res) {
+    let business_id = req.body.business_id;
+    let pwd = req.body.pwd;
+    let business = AV.Object.createWithoutData('Business', business_id);
+    business.set('pwd', pwd);
+    business.save().then(function () {
+        res.jsonp({ error: 0, msg: "" });
+    }, function (err) {
+        res.jsonp({ error: 1, msg: err });
     });
 });
 
@@ -137,7 +151,7 @@ router.get('/business/:user_id', function (req, res) {
         if (typeof (data) == "undefined") {
             res.jsonp({ count: 0 });
         } else {
-            res.jsonp({ count: 1, business_id: data.id, name: data.get('name') });
+            res.jsonp({ count: 1, business_id: data.id, name: data.get('name'), phone: data.get('phone') });
         }
     });
 });
@@ -145,15 +159,17 @@ router.get('/business/:user_id', function (req, res) {
 router.get('/business', function (req, res) {
     let user_id = req.query.user_id;
     let phone = req.query.phone;
+    let pwd = req.query.pwd;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     let businessQuery = new AV.Query('Business');
     businessQuery.equalTo('user', user);
     businessQuery.equalTo('phone', phone);
+    businessQuery.equalTo('pwd', pwd);
     businessQuery.count().then(function (count) {
         if (count == 1) {
             res.jsonp({ error: 0, msg: "" });
         } else {
-            res.jsonp({ error: 1, msg: "手机号不正确" });
+            res.jsonp({ error: 1, msg: "手机号或密码不正确" });
         }
     });
 });
@@ -317,10 +333,10 @@ router.get('/business/clientfile/:file_id', function (req, res) {
 router.get('/business/clientattachfile/:client_id', function (req, res) {
     let client_id = req.params.client_id;
     let client = AV.Object.createWithoutData('BusinessClient', client_id);
-    let query=new AV.Query('ClientAttachFile');
-    query.equalTo('client',client);
-    query.first().then(function(file){
-        res.jsonp({file:file});
+    let query = new AV.Query('ClientAttachFile');
+    query.equalTo('client', client);
+    query.first().then(function (file) {
+        res.jsonp({ file: file });
     });
 });
 
