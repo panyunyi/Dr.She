@@ -85,7 +85,7 @@ router.get('/json/problems', function (req, res, next) {
                         let time = new moment(problem.get('createdAt'));
                         let one = {
                             problem_id: problem.get('problem_id'), user: problem.get('user') ? problem.get('user').get('nickname') : "", source: problem.get('source') ? problem.get('source') : "",
-                            createdAt: time.format('YYYY-MM-DD HH:mm:ss')
+                            createdAt: time.format('YYYY-MM-DD HH:mm:ss'), DT_RowId: problem.id, select: problem.get('select'), title: problem.get('title')
                         };
                         arr.push(one);
                     }
@@ -98,6 +98,55 @@ router.get('/json/problems', function (req, res, next) {
             res.jsonp({ "data": arr });
         });
     });
+});
+
+router.put('/json/problems/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let problem = AV.Object.createWithoutData('Problem', id);
+    let select = arr['data[' + id + '][select]'] * 1;
+    problem.set('title', arr['data[' + id + '][title]']);
+    problem.set('select', select);
+    if (select == 1) {
+        problem.set('select', 1);
+        problem.save().then(function () {
+            let article = new Article();
+            article.set('isDel', false);
+            let section = AV.Object.createWithoutData('Section', '598c1cf4a22b9d0061023845');
+            article.set('section', section);
+            article.set('title', arr['data[' + id + '][title]']);
+            article.set('writer', ' ');
+            problem.fetch().then(function () {
+                article.set('url', 'http://drshe.leanapp.cn/inquiry/query?id=' + problem.get('problem_id'));
+                article.set('problem', problem);
+                article.save().then(function () {
+                    let data = [];
+                    problem.set('DT_RowId', problem.id);
+                    data.push(problem);
+                    res.jsonp({ "data": data });
+                });
+            });
+
+        });
+    } else if (select == 0) {
+        problem.set('select', 0);
+        problem.save().then(function () {
+            let query = new AV.Query('Article');
+            query.equalTo('problem', problem);
+            query.first().then(function (article) {
+                article.set('isDel', false);
+                article.save().then(function () {
+                    problem.fetch().then(function () {
+                        let data = [];
+                        problem.set('DT_RowId', problem.id);
+                        data.push(problem);
+                        res.jsonp({ "data": data });
+                    });
+                });
+            });
+
+        });
+    }
 });
 
 router.get('/json/images', function (req, res, next) {
@@ -160,6 +209,38 @@ router.get('/json/business', function (req, res, next) {
     });
 });
 
+router.get('/json/businessclient', function (req, res, next) {
+    let query = new AV.Query('BusinessClient');
+    let arr = [];
+    query.count().then(function (count) {
+        let num = Math.ceil(count / 1000);
+        async.times(num, function (n, callback) {
+            query.limit(1000);
+            query.skip(1000 * n);
+            query.include('business');
+            query.equalTo('isDel', false);
+            query.find().then(function (business) {
+                async.map(business, function (busines, callback1) {
+                    if (typeof (busines) != "undefined") {
+                        let time = new moment(busines.get('createdAt'));
+                        let one = {
+                            name: busines.get('name'), phone: busines.get('phone'), business: busines.get('business') ? busines.get('business').get('name') : "", area: busines.get('area') ? busines.get('area') : "",
+                            address: busines.get('address') ? busines.get('address') : "", age: busines.get('phone'),
+                            createdAt: time.format('YYYY-MM-DD HH:mm:ss')
+                        };
+                        arr.push(one);
+                    }
+                    callback1(null, busines);
+                }, function (err, results) {
+                    callback(null, n);
+                });
+            });
+        }, function (err, business) {
+            res.jsonp({ "data": arr });
+        });
+    });
+});
+
 router.get('/json/donate', function (req, res, next) {
     let query = new AV.Query('Donate');
     let arr = [];
@@ -185,6 +266,37 @@ router.get('/json/donate', function (req, res, next) {
                 });
             });
         }, function (err, donates) {
+            res.jsonp({ "data": arr });
+        });
+    });
+});
+
+router.get('/json/recharge', function (req, res, next) {
+    let query = new AV.Query('Recharge');
+    let arr = [];
+    query.count().then(function (count) {
+        let num = Math.ceil(count / 1000);
+        async.times(num, function (n, callback) {
+            query.limit(1000);
+            query.skip(1000 * n);
+            query.include('user');
+            query.equalTo('result',true);
+            query.find().then(function (recharges) {
+                async.map(recharges, function (recharge, callback1) {
+                    if (typeof (recharge) != "undefined") {
+                        let time = new moment(recharge.get('createdAt'));
+                        let one = {
+                            title: recharge.get('title'), price: recharge.get('price'), source: recharge.get('source'), user: recharge.get('user') ? recharge.get('user').get('nickname') : "",
+                            createdAt: time.format('YYYY-MM-DD HH:mm:ss'), orderid: recharge.get('orderid')
+                        };
+                        arr.push(one);
+                    }
+                    callback1(null, recharge);
+                }, function (err, results) {
+                    callback(null, n);
+                });
+            });
+        }, function (err, recharges) {
             res.jsonp({ "data": arr });
         });
     });
@@ -234,7 +346,7 @@ router.put('/json/keywords/edit/:id', function (req, res) {
         res.jsonp({ "data": data });
     });
 });
-//删除客户资料
+
 router.delete('/json/keywords/remove/:id', function (req, res) {
     let id = req.params.id;
     let keywords = AV.Object.createWithoutData('KeyWords', id);
@@ -244,9 +356,176 @@ router.delete('/json/keywords/remove/:id', function (req, res) {
     });
 });
 
-// 新增 Todo 项目
-router.post('/', function (req, res, next) {
+router.get('/json/article', function (req, res, next) {
+    let resdata = {};
+    function promise1(callback3) {
+        let query = new AV.Query('Article');
+        let arr = [];
+        query.count().then(function (count) {
+            let num = Math.ceil(count / 1000);
+            async.times(num, function (n, callback) {
+                query.limit(1000);
+                query.equalTo('isDel', false);
+                query.skip(1000 * n);
+                query.include('section');
+                query.find().then(function (articles) {
+                    async.map(articles, function (article, callback1) {
+                        if (typeof (article) != "undefined") {
+                            article.set('section', article.get('section').get('name'));
+                            let time = new moment(article.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+                            article.set('time', time);
+                            article.set('DT_RowId', article.id);
+                            arr.push(article);
+                        }
+                        callback1(null, article);
+                    }, function (err, articles) {
+                        callback(null, n);
+                    });
+                });
+            }, function (err, articles) {
+                resdata["data"] = arr;
+                callback3(null, arr);
+            });
+        });
+    }
 
+    function promise2(callback1) {
+        let query = new AV.Query('Section');
+        query.equalTo('isDel', false);
+        query.descending('createdAt');
+        query.find().then(function (results) {
+            async.map(results, function (result, callback) {
+                result.set('label', result.get('name'));
+                result.set('value', result.id);
+                callback(null, result);
+            }, function (err, data) {
+                callback1(null, data);
+            });
+        });
+    }
+    async.parallel([
+        function (callback) {
+            promise1(callback);
+        },
+        function (callback) {
+            promise2(callback);
+        }], function (err, results) {
+            resdata["options"] = Object.assign({ "section": results[1] });
+            res.jsonp(resdata);
+        });
+});
+
+var Article = AV.Object.extend('Article');
+router.post('/json/article/add', function (req, res) {
+    let arr = req.body;
+    let article = new Article();
+    article.set('title', arr['data[0][title]']);
+    article.set('url', arr['data[0][url]']);
+    article.set('writer', arr['data[0][writer]']);
+    let section = AV.Object.createWithoutData('Section', arr['data[0][section]']);
+    article.set('section', section);
+    article.set('isDel', false);
+    let data = [];
+    article.save().then(function (article) {
+        article.set('DT_RowId', article.id);
+        let time = new moment(article.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        article.set('time', time);
+        section.fetch().then(function (section) {
+            article.set('section', section.get('name'));
+            data.push(article);
+            res.jsonp({ data: data });
+        });
+    });
+});
+
+router.put('/json/article/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let article = AV.Object.createWithoutData('Article', id);
+    article.set('title', arr['data[' + id + '][title]']);
+    article.set('url', arr['data[' + id + '][url]']);
+    article.set('writer', arr['data[' + id + '][writer]']);
+    let section = AV.Object.createWithoutData('Section', arr['data[' + id + '][section]']);
+    article.set('section', section);
+    article.save().then(function (article) {
+        let data = [];
+        article.set('DT_RowId', article.id);
+        let time = new moment(article.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        article.set('time', time);
+        section.fetch().then(function (section) {
+            article.set('section', section.get('name'));
+            data.push(article);
+            res.jsonp({ data: data });
+        });
+    });
+});
+
+router.delete('/json/article/remove/:id', function (req, res) {
+    let id = req.params.id;
+    let article = AV.Object.createWithoutData('Article', id);
+    article.set('isDel', true);
+    article.save().then(function () {
+        article.fetch().then(function () {
+            article.get('problem').set('select', 0);
+            article.get('problem').save().then(function () {
+                res.jsonp({ "data": [] });
+            });
+        });
+    });
+});
+
+router.get('/json/section', function (req, res, next) {
+    let query = new AV.Query('Section');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (results) {
+        results.forEach(function (result) {
+            result.set('DT_RowId', result.id);
+            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            result.set('time', time);
+        });
+        res.jsonp({ data: results });
+    });
+});
+
+var Section = AV.Object.extend('Section');
+router.post('/json/section/add', function (req, res) {
+    let arr = req.body;
+    let section = new Section();
+    section.set('name', arr['data[0][name]']);
+    section.set('isDel', false);
+    let data = [];
+    section.save().then(function (section) {
+        section.set('DT_RowId', section.id);
+        let time = new moment(section.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        section.set('time', time);
+        data.push(section);
+        res.jsonp({ data: data });
+    });
+});
+
+router.put('/json/section/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let section = AV.Object.createWithoutData('Section', id);
+    section.set('name', arr['data[' + id + '][name]']);
+    section.save().then(function (section) {
+        let data = [];
+        section.set('DT_RowId', section.id);
+        let time = new moment(section.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        section.set('time', time);
+        data.push(section);
+        res.jsonp({ "data": data });
+    });
+});
+
+router.delete('/json/section/remove/:id', function (req, res) {
+    let id = req.params.id;
+    let section = AV.Object.createWithoutData('Section', id);
+    section.set('isDel', true);
+    section.save().then(function () {
+        res.jsonp({ "data": [] });
+    });
 });
 
 module.exports = router;

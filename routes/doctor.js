@@ -82,11 +82,11 @@ router.post('/reply', function (req, res) {
                     reply.set('askorreply', "d");
                     reply.set('text', line);
                     reply.set('problem', problem);
-                    reply.set('problem_id',problem_id.toString());
+                    reply.set('problem_id', problem_id.toString());
                     reply.set('user', problem.get('user'));
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
-                    reply.save().then(function(){
+                    reply.save().then(function () {
                         replyContent = line;
                         callback(null, one);
                     });
@@ -97,11 +97,11 @@ router.post('/reply', function (req, res) {
                     reply.set('askorreply', "d");
                     reply.set('audio', one.file);
                     reply.set('problem', problem);
-                    reply.set('problem_id',problem_id.toString());
+                    reply.set('problem_id', problem_id.toString());
                     reply.set('user', problem.get('user'));
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
-                    reply.save().then(function(){
+                    reply.save().then(function () {
                         replyContent = "一条语音消息";
                         callback(null, one);
                     });
@@ -112,16 +112,16 @@ router.post('/reply', function (req, res) {
                     reply.set('askorreply', "d");
                     reply.set('image', one.file);
                     reply.set('problem', problem);
-                    reply.set('problem_id',problem_id.toString());
+                    reply.set('problem_id', problem_id.toString());
                     reply.set('user', problem.get('user'));
                     reply.set('atime', req.body.atime);
                     reply.set('doctor', doctor_data);
-                    reply.save().then(function(){
+                    reply.save().then(function () {
                         replyContent = "一张图片消息";
                         callback(null, one);
                     });
                 }
-                
+
             }, function (err, oneres) {
                 if (problem.get('source') == "app") {
                     push.push("医生有新的回复", replyContent, problem.get('user').id, problem_id);
@@ -236,6 +236,7 @@ router.get('/list', function (req, res) {
                                 wxuser.set('province', body2.province);
                                 wxuser.set('country', body2.country);
                                 wxuser.set('headimgurl', body2.headimgurl);
+                                wxuser.set('unionid', body2.unionid);
                                 wxuser.set('points', 2);
                                 wxuser.save().then(function (data) {
                                     sess.objidid = data.id;
@@ -274,8 +275,18 @@ router.get('/list', function (req, res) {
                 res.render('doctorlist', { doctors: data.doctors, cities: city_list });
             });
         });
-
     }
 });
 
+router.get('/more', function (req, res) {
+    let sess = req.session;
+    let time = Math.round(new Date().getTime() / 1000).toString();
+    let province = req.query.province;
+    let city = req.query.city;
+    let clinic_no = req.query.clinic_no;
+    let start = req.query.start;
+    chunyu.doctorList(sess.objid, clinic_no, start, province, city, time).then(function (data) {
+        res.jsonp({ doctors: data.doctors });
+    });
+});
 module.exports = router;

@@ -15,7 +15,7 @@ moment.locale('zh-cn');
 
 router.get('/', function (req, res) {
     let sess = req.session;
-    //sess.objid = '590b18d52f301e00582f024a';
+    //sess.objid = '596d793ba22b9d006a38e5e4';
     let time = Math.round(new Date().getTime() / 1000).toString();
     //if (typeof (sess.objid) == "undefined") {
     let code = req.query.code;
@@ -93,8 +93,10 @@ function indexProblemList(req, res, service) {
     let sess = req.session;
     chunyu.problemList(sess.objid, time).then(function (data) {
         async.mapSeries(data, function (one, callback) {
-            if (typeof (one.problem) == "undefined") {
+            one.problem.created_time = new moment(one.problem.created_time).format('YYYY年MM月DD日 HH:mm');
+            if (typeof (one.problem.status) == "undefined") {
                 console.log(data);
+                callback(null,one);
             }
             switch (one.problem.status) {
                 case 'i':
@@ -122,7 +124,6 @@ function indexProblemList(req, res, service) {
                     one.problem.status = "已评价";
                     break;
             }
-            one.problem.created_time = new moment(one.problem.created_time).format('YYYY年MM月DD日 HH:mm');
             callback(null, one);
         }, function (err, problems) {
             res.render(service, { list: problems });

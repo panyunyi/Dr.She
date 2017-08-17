@@ -134,6 +134,19 @@ router.get('/business', function (req, res) {
     }
 });
 
+router.get('/businessclient', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/businessclient', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/businessclient";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
 router.get('/donate', function (req, res) {
     let sess = req.session;
     if (sess.user) {
@@ -228,8 +241,22 @@ router.get('/collect/go', function (req, res) {
     });
 });
 
+function contains(arr, obj) {
+    var i = arr.length;
+    while (i--) {
+        if (arr[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
+function down(x, y) {
+    return (x.total < y.total) ? 1 : -1
+
+}
 router.get('/charts', function (req, res) {
-    let list=[];
+    let list = [];
+    let tip = [];
     function getContent(callback) {
         let arr = [];
         let query = new AV.Query('Content');
@@ -238,6 +265,7 @@ router.get('/charts', function (req, res) {
             async.times(num, function (n, callback) {
                 query.limit(1000);
                 query.skip(1000 * n);
+                query.exists('text');
                 query.find().then(function (contents) {
                     async.map(contents, function (content, callback1) {
                         if (typeof (content) != "undefined") {
@@ -255,30 +283,37 @@ router.get('/charts', function (req, res) {
     }
 
     function getKeys(contents, callback) {
-        console.log(contents.length);
         let keyQuery = new AV.Query('KeyWords');
         keyQuery.equalTo('isDel', false);
         keyQuery.limit(1000);
         keyQuery.find().then(function (keys) {
             async.map(keys, function (key, callback1) {
                 let arr = key.get('words').split(',');
+                if (!contains(tip, key.get('tip'))) {
+                    tip.push(key.get('tip'));
+                }
                 let total = 0;
                 let one = {};
+                let problems = [];
                 async.map(arr, function (a, callback2) {
                     async.map(contents, function (content, callback3) {
-                        if (content.indexOf(a) >= 0) {
+                        if (content.get('text').indexOf(a) >= 0) {
                             total++;
+                            if(typeof(content.get('problem_id'))!="undefined"){
+                                problems.push(content.get('problem_id'));
+                            }
                             callback3(null, 1);
                         } else {
                             callback3(null, 0);
                         }
                     }, function (err, contents) {
-                        callback2(null,a);
+                        callback2(null, a);
                     });
                 }, function (err, arr) {
                     one['title'] = key.get('title');
+                    one['tip'] = key.get('tip');
                     one['total'] = total;
-                    console.log(one);
+                    one['problems'] = problems;
                     list.push(one);
                     callback1(null, one);
                 });
@@ -296,7 +331,46 @@ router.get('/charts', function (req, res) {
             getKeys(contents, callback);
         }
     ], function (err, results) {
-        res.render('admin/charts', list);
+        res.render('admin/charts', { list: list.sort(down), tip: tip });
     });
+});
+
+router.get('/article', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/article', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/article";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
+router.get('/section', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/section', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/section";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
+router.get('/recharge', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/recharge', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/recharge";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
 });
 module.exports = router;

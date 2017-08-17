@@ -9,7 +9,7 @@
     <meta name="MobileOptimized" content="320">
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-    <title>求助医生</title>
+    <title>问医生</title>
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
     <link rel="stylesheet" href="../stylesheets/cy1.css">
     <link rel="stylesheet" href="../stylesheets/cy2.css">
@@ -63,11 +63,11 @@
     <div class="partner-right">
         <header>
 
-            <a class="header-link free" style="background-image: url(&#39;../assets/i/kuaiwen.png&#39;)" href="#">
+            <a class="header-link free" style="background-image: url(../assets/i/head.png);" href="#">
                 <h6 class="kuaiwen">快问医生</h6>
-                <span class="kuaiwen header-link-tip">首次登录赠送2积分；每次问诊消耗2积分，</span>
+                <span class="kuaiwen header-link-tip">医生由系统指派，一般在5分钟内回复</span>
                 <br class="kuaiwen">
-                <span class="kuaiwen header-link-tip">回复医生由系统指派，应答时长约3-5分钟。</span>
+                <span class="kuaiwen header-link-tip">快问医生需用2个积分，首次登陆赠送2个积分</span>
                 <span class="next-icon"></span>
             </a>
 
@@ -187,7 +187,7 @@
         function addButton() {
             var count = $(".service-list").find("a").length;
             if (count == 0) {
-                $('.service-list').append('<div class="cy-btn-wrap"><button class="cy-btn cy-btn-look " style="font-size:.48rem;background-color:#ff8487" type="submit">快速提问</button></div>');
+                $('.service-list').append('<div class="cy-btn-wrap"><button class="cy-btn cy-btn-look " style="font-size:.48rem;background-color:#65bee5" type="submit">我要提问</button></div>');
             }
             $('body').css('background-color', '#e7e7e7');
             $('.cy-btn').on('click', function () {

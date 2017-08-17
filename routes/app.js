@@ -115,7 +115,7 @@ router.post('/business', function (req, res) {
     let connecter = req.body.connecter;
     let pwd = req.body.pwd;
     let user = AV.Object.createWithoutData('WxUser', user_id);
-    user.increment('points', 10);
+    user.increment('points', 60);
     user.save();
     let business = new Business();
     business.set('user', user);
@@ -125,6 +125,24 @@ router.post('/business', function (req, res) {
     business.set('area', area);
     business.set('connecter', connecter);
     business.set('pwd', pwd);
+    business.save().then(function (data) {
+        res.jsonp({ error: 0, msg: "", business_id: data.id });
+    });
+});
+
+router.post('/business/update', function (req, res) {
+    let business_id = req.body.business_id;
+    let name = req.body.name;
+    let phone = req.body.phone;
+    let address = req.body.address;
+    let area = req.body.area;
+    let connecter = req.body.connecter;
+    let business = AV.Object.createWithoutData('Business', business_id);
+    business.set('name', name);
+    business.set('phone', phone);
+    business.set('address', address);
+    business.set('area', area);
+    business.set('connecter', connecter);
     business.save().then(function (data) {
         res.jsonp({ error: 0, msg: "", business_id: data.id });
     });
@@ -151,7 +169,7 @@ router.get('/business/:user_id', function (req, res) {
         if (typeof (data) == "undefined") {
             res.jsonp({ count: 0 });
         } else {
-            res.jsonp({ count: 1, business_id: data.id, name: data.get('name'), phone: data.get('phone') });
+            res.jsonp({ count: 1, business_id: data.id, name: data.get('name'), phone: data.get('phone'), address: data.get('address'), connecter: data.get('connecter') });
         }
     });
 });
@@ -334,9 +352,24 @@ router.get('/business/clientattachfile/:client_id', function (req, res) {
     let client_id = req.params.client_id;
     let client = AV.Object.createWithoutData('BusinessClient', client_id);
     let query = new AV.Query('ClientAttachFile');
+    query.equalTo('isDel', false);
     query.equalTo('client', client);
     query.first().then(function (file) {
         res.jsonp({ file: file });
+    });
+});
+
+router.get('/business/allfile/:client_id/:file_id', function (req, res) {
+    let client_id = req.params.client_id;
+    let client = AV.Object.createWithoutData('BusinessClient', client_id);
+    let query = new AV.Query('ClientAttachFile');
+    query.equalTo('client', client);
+    query.first().then(function (attachfile) {
+        let file_id = req.params.file_id;
+        let file = AV.Object.createWithoutData('ClientFile', file_id);
+        file.fetch().then(function () {
+            res.jsonp({ attachfile: attachfile, file: file });
+        });
     });
 });
 
@@ -729,12 +762,14 @@ router.post('/advice/add', function (req, res) {
     let content = req.body.content;
     let phone = req.body.phone;
     let user_id = req.body.user_id;
+    let image = req.body.image;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     let advice = new Advice();
     advice.set('source', 'app');
     advice.set('content', content);
     advice.set('phone', phone);
     advice.set('user', user);
+    advice.set('image', image);
     advice.save();
     res.jsonp({ error: 0 });
 });
@@ -785,4 +820,23 @@ router.get('/posts', function (req, res) {
     });
 });
 
+router.get('/article', function (req, res) {
+    let query = new AV.Query('Article');
+    let name = req.query.name;
+    let sectionQuery = new AV.Query('Section');
+    sectionQuery.equalTo('name', name);
+    sectionQuery.first().then(function (data) {
+        if (typeof (data) != "undefined") {
+            query.equalTo('section', data);
+            query.descending('createdAt');
+            query.equalTo('isDel',false);
+            query.limit(1000);
+            query.find().then(function (article) {
+                res.jsonp({ article: article });
+            });
+        } else {
+            res.jsonp({ error: 1, msg: "未找到此版块" });
+        }
+    });
+});
 module.exports = router;

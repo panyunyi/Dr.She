@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <div class="row row-title">
                 <div class="col-lg-12">
-                    <h1 class="page-header">问诊</h1>
+                    <h1 class="page-header">商户的客户</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -12,7 +12,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            问医用户表
+                            商户的客户信息
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -20,10 +20,12 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
-                                        <th>问题ID</th>
-                                        <th>精选</th>
-                                        <th>用户</th>
-                                        <th>来源</th>
+                                        <th>商户</th>
+                                        <th>客户名称</th>
+                                        <th>手机</th>
+                                        <th>年龄</th>
+                                        <th>区域</th>
+                                        <th>地址</th>
                                         <th>创建时间</th>
                                     </tr>
                                 </thead>
@@ -65,63 +67,25 @@
     <script src="../dist/js/dataTables.editor.min.js"></script>
     <script src="../dist/js/editor.semanticui.min.js"></script>
     <script>
-        var editor;
-        $(document).ready(function () {
-            editor = new $.fn.dataTable.Editor({
-                ajax: {
-                    edit: {
-                        type: 'PUT',
-                        url: '../api/json/problems/edit/_id_'
-                    }
-                },
-                table: "#table",
-                fields: [
-                    { label: '标题', name: 'title' },
-                    { label: '精选', name: 'select',type:'select',options:[
-                    { label: "是",  value: 1 },
-                    { label: "否", value: 0},
-                ], def: 1 }
-                ], i18n: {
-                    edit: {
-                        button: "入选",
-                        title: "精选医嘱",
-                        submit: "提交"
-                    }
-                }
-            });
         var table = $('#table').DataTable({
             "processing": true,
             stateSave: true,
-            "dom": '<"top"Brf>t<"bottom"ilp>',
-            "ajax": '../api/json/problems',
+            "ajax": '../api/json/businessclient',
             "columns": [
                 { "data": null },
-                { "data": "problem_id" },
-                { "data": "select" ,render: function (data) { return data ? "精选" : "" }},
-                { "data": "user" },
-                { "data": "source" },
+                { "data": "business" },
+                { "data": "name" },
+                { "data": "phone" },
+                { "data": "age" },
+                { "data": "area" },
+                { "data": "address" },
                 { "data": "createdAt" }
             ],
             select: true,
-            buttons: [
-                { extend: "edit", editor: editor }
-            ],
-            "order": [[5, 'desc']],
+            "order": [[7, 'desc']],
             "language": {
                 "url": "../vendor/zh_CN.txt"
-            },
-            "columnDefs": [{
-                // "visible": false,
-                //"targets": 0
-            },
-            {
-                "render": function (data, type, row, meta) {
-                    //渲染 把数据源中的标题和url组成超链接
-                    return '<a href="../inquiry/query?id=' + data + '" target="_blank">' + row.problem_id + '</a>';
-                },
-                //指定是第三列
-                "targets": 1
-            }]
+            }
         });
         table.on('order.dt search.dt', function () {
             table.column(0, {
@@ -131,7 +95,6 @@
                 cell.innerHTML = i + 1;
             });
         }).draw();
-        });
     </script>
     </body>
 

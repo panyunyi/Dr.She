@@ -9,64 +9,27 @@
             </div>
             <!-- /.row -->
             <div class="row">
-                <div class="col-lg-6">
+                <% for(var j=0; j<tip.length; j++) {%>
+                <div class="col-lg-3">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            Area Chart Example
+                            <%=tip[j]%>
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
+                            
                             <div id="morris-area-chart">
-                                
+                                 <% for(var i=0; i<list.length; i++) {if(list[i].tip==tip[j]){%>
+                                    
+                                    <p data-id=><%=list[i].title%> <span style="color:#337ab7"><%=list[i].total%></span></p><%}}%> 
                             </div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
                     <!-- /.panel -->
                 </div>
-                <!-- /.col-lg-6 -->
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Bar Chart Example
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="morris-bar-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-6 -->
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Line Chart Example
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="morris-line-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-6 -->
-                <div class="col-lg-6">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Donut Chart Example
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="morris-donut-chart"></div>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-6 -->
+                <%}%>
+              
             </div>
             <!-- /.row -->
         </div>
@@ -99,7 +62,7 @@
     <script src="../dist/js/dataTables.editor.min.js"></script>
     <script src="../dist/js/editor.semanticui.min.js"></script>
     <script>
-        console.log(<%=list%>);
+        
     </script>
     </body>
 

@@ -22,11 +22,15 @@ router.get('/', function (req, res) {
 router.get('/query', function (req, res) {
     let sess = req.session;
     sess.url = "inquiry/query?id=" + req.query.id;
-    if (sess.user) {
-        res.render('query', { id: req.query.id });
-    } else {
-        res.redirect('../admin/login');
-    }
+    let query=new AV.Query('Problem');
+    query.equalTo('problem_id',req.query.id*1);
+    query.first().then(function(problem){
+        if (sess.user||problem.get('select')==1) {
+            res.render('query', { id: req.query.id });
+        } else{
+            res.redirect('../admin/login');
+        }
+    });
 });
 
 router.get('/query/list', function (req, res) {

@@ -16,6 +16,18 @@
 
     <link rel="stylesheet" href="../stylesheets/cy1.css">
     <link rel="stylesheet" href="../stylesheets/search_doctor.css">
+    <style>
+        /* .doctor-list .detail {
+            border-bottom: 0px solid #E7E7E7;
+        } */
+
+        .citylist {
+            display: block;
+            transform-origin: 0px 0px 0px;
+            opacity: 1;
+            transform: scale(1, 1);
+        }
+    </style>
 </head>
 
 <body class="">
@@ -71,9 +83,9 @@
                     </ul>
                 </li>
                 <li class="right">
-                    <ul></ul>
+                    <ul style="transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1); display: none;"></ul>
                     <%for(var i=0;i<cities.length;i++){%>
-                        <ul>
+                        <ul style="display:none">
                             <li data-city="">全部</li>
                             <%for(var j=0;j<cities[i].cities.length;j++){%>
                                 <li data-city="<%=cities[i].cities[j]%>">
@@ -87,12 +99,12 @@
             <ul class="win" id="win-clinic">
                 <li class="left">
                     <ul>
-                        <li data-cn="" class="">全部</li>
+                        <!-- <li data-cn="0" class="">全部</li> -->
                         <li data-cn="1" class="">妇科</li>
                         <li data-cn="4" class="">皮肤性病科</li>
                     </ul>
                 </li>
-                <li class="right">
+                <!-- <li class="right">
                     <ul style="display: none;"></ul>
 
                     <ul style="display: block; transform-origin: 0px 0px 0px; opacity: 1; transform: scale(1, 1);">
@@ -101,7 +113,7 @@
                     <ul style="display: none;">
                         <li data-scn="">全部科室</li>
                     </ul>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div id="mask" style="display: none;"></div>
@@ -111,8 +123,23 @@
     <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
     <script type="text/javascript" src="../weui.js"></script>
     <script type="text/javascript">
+        var province = "";
+        var city = "";
+        var clinic_no = 1;
+        var start = 10;
         $('#more').on("click", function () {
-
+            $.getJSON("more?province=" + province + "&city=" + city + "&clinic_no=" + clinic_no + "&start=" + start, function (result) {
+                for (var i = 0; i < result.doctors.length; i++) {
+                    var point = result.doctors[i].price / 500;
+                    if (point <= 5) { point = 5 } else if (point > 5 && point <= 10) { point = 10 } else if (point > 10) { point = 20 }
+                    var node = '<li><a href=detail/' + result.doctors[i].id + '/' + result.doctors[i].purchase_num + '><img src=' + result.doctors[i].image + '><div class="detail"><strong>'
+                        + result.doctors[i].name + '</strong>' + result.doctors[i].clinic_name + " " + result.doctors[i].title + '<p><span class="hospital">' +
+                        result.doctors[i].hospital_name + '</span></p><p class="good">' + result.doctors[i].good_at + '</p></div><div class="bottom"><i>需要' +
+                        point + '积分</i></div></a></li>';
+                    $("#list").append(node);
+                    start += 10;
+                }
+            });
         });
         $('#all').on("click", function () {
             $('#win-city').addClass('display-flex');
@@ -129,17 +156,102 @@
             $('#win-clinic').removeClass('display-flex');
             $('#mask').css('display', 'none');
         });
-        $('#win-city .left li').click(function(){
+        $('#win-city .left li').click(function () {
             $(this).siblings('li').removeClass('cur');
             $(this).addClass('cur');
+            $("#win-city .right ul").siblings().css('display', 'none');
+            var ind = $("#win-city .left li").index(this);
+            if (ind == 0) {
+                province = "";
+                city = "";
+                start = 0;
+                $.getJSON("more?province=" + province + "&city=" + city + "&clinic_no=" + clinic_no + "&start=" + start, function (result) {
+                    var node = "";
+                    for (var i = 0; i < result.doctors.length; i++) {
+                        var point = result.doctors[i].price / 500;
+                        if (point <= 5) { point = 5 } else if (point > 5 && point <= 10) { point = 10 } else if (point > 10) { point = 20 }
+                        node += '<li><a href=detail/' + result.doctors[i].id + '/' + result.doctors[i].purchase_num + '><img src=' + result.doctors[i].image + '><div class="detail"><strong>'
+                            + result.doctors[i].name + '</strong>' + result.doctors[i].clinic_name + " " + result.doctors[i].title + '<p><span class="hospital">' +
+                            result.doctors[i].hospital_name + '</span></p><p class="good">' + result.doctors[i].good_at + '</p></div><div class="bottom"><i>需要' +
+                            point + '积分</i></div></a></li>';
+                    }
+                    $("#list").html(node);
+                    start = 10;
+                    $('#win-city').removeClass('display-flex');
+                    $('#win-clinic').removeClass('display-flex');
+                    $('#mask').css('display', 'none');
+                });
+                return;
+            }
+            $("#win-city .right ul").eq(ind).addClass('citylist');
+            $("#win-city .right ul").eq(ind).css('display', 'block');
+            province = $(this).attr('data-province');
         });
-        $('#win-city .right li').click(function(){
+        $('#win-city .right li').click(function () {
             $(this).siblings('li').removeClass('cur');
             $(this).addClass('cur');
+            city = $(this).attr('data-city');
+            start = 0;
+            $.getJSON("more?province=" + province + "&city=" + city + "&clinic_no=" + clinic_no + "&start=" + start, function (result) {
+                var node = "";
+                if (result.doctors.length == 0) {
+                    $('#more').css('display', 'none');
+                    $('#no-data').css('display', 'block');
+                } else {
+                    $('#more').css('display', 'block');
+                    $('#no-data').css('display', 'none');
+                }
+                for (var i = 0; i < result.doctors.length; i++) {
+                    var point = result.doctors[i].price / 500;
+                    if (point <= 5) { point = 5 } else if (point > 5 && point <= 10) { point = 10 } else if (point > 10) { point = 20 }
+                    node += '<li><a href=detail/' + result.doctors[i].id + '/' + result.doctors[i].purchase_num + '><img src=' + result.doctors[i].image + '><div class="detail"><strong>'
+                        + result.doctors[i].name + '</strong>' + result.doctors[i].clinic_name + " " + result.doctors[i].title + '<p><span class="hospital">' +
+                        result.doctors[i].hospital_name + '</span></p><p class="good">' + result.doctors[i].good_at + '</p></div><div class="bottom"><i>需要' +
+                        point + '积分</i></div></a></li>';
+                }
+                start = 10;
+                $("#list").html(node);
+                $('#win-city').removeClass('display-flex');
+                $('#win-clinic').removeClass('display-flex');
+                $('#mask').css('display', 'none');
+            });
         });
-        $('#win-clinic li').click(function(){
+        $('#win-clinic li').click(function () {
             $(this).siblings('li').removeClass('cur');
             $(this).addClass('cur');
+            start = 0;
+            clinic_no=$(this).attr('data-cn');
+            if(!clinic_no){
+                return;
+            }
+            if(clinic_no==1){
+                $('#clinic span').html("妇科");
+            }else if(clinic_no==4){
+                $('#clinic span').html("皮肤性病科");
+            }
+            $.getJSON("more?province=" + province + "&city=" + city + "&clinic_no=" + clinic_no + "&start=" + start, function (result) {
+                var node = "";
+                if (result.doctors.length == 0) {
+                    $('#more').css('display', 'none');
+                    $('#no-data').css('display', 'block');
+                } else {
+                    $('#more').css('display', 'block');
+                    $('#no-data').css('display', 'none');
+                }
+                for (var i = 0; i < result.doctors.length; i++) {
+                    var point = result.doctors[i].price / 500;
+                    if (point <= 5) { point = 5 } else if (point > 5 && point <= 10) { point = 10 } else if (point > 10) { point = 20 }
+                    node += '<li><a href=detail/' + result.doctors[i].id + '/' + result.doctors[i].purchase_num + '><img src=' + result.doctors[i].image + '><div class="detail"><strong>'
+                        + result.doctors[i].name + '</strong>' + result.doctors[i].clinic_name + " " + result.doctors[i].title + '<p><span class="hospital">' +
+                        result.doctors[i].hospital_name + '</span></p><p class="good">' + result.doctors[i].good_at + '</p></div><div class="bottom"><i>需要' +
+                        point + '积分</i></div></a></li>';
+                }
+                start = 10;
+                $("#list").html(node);
+                $('#win-city').removeClass('display-flex');
+                $('#win-clinic').removeClass('display-flex');
+                $('#mask').css('display', 'none');
+            });
         });
     </script>
 </body>

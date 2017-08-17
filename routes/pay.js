@@ -43,8 +43,7 @@ router.post('/app/alipay', function (req, res) {
         client_ip: req.headers['x-real-ip'],
         app: { id: "app_urrbfHSGKuXLa90a" }
     }, function (err, charge) {
-        // YOUR CODE
-        console.log(err);
+        console.log(charge);
         res.jsonp(charge);
     });
 });
@@ -64,8 +63,6 @@ router.post('/app/wxpay', function (req, res) {
         client_ip: req.headers['x-real-ip'],
         app: { id: "app_urrbfHSGKuXLa90a" }
     }, function (err, charge) {
-        // YOUR CODE
-        console.log(err);
         res.jsonp(charge);
     });
 });
@@ -121,6 +118,7 @@ router.post('/recharge', function (req, res) {
 });
 
 router.post('/pingpp/notify', function (req, res) {
+    console.log(body);
     let body = req.body;
     let order_no = body.data.object.order_no;
     let recharge = AV.Object.createWithoutData('Recharge', order_no);
