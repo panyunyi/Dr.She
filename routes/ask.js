@@ -35,18 +35,25 @@ router.post('/add/free', function (req, res) {
     let sess = req.session;
     let num = req.body.num * 1;
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
-    user.increment('points', -num);
-    let order = new Order();
-    order.set('price', 10);
-    order.set('points', num);
-    order.set('user', user);
-    order.save();
-    let time = Math.round(new Date().getTime() / 1000).toString();
-    let imglist = req.body.imglist.split(',');
-    let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
-    chunyu.createFree(sess.objid, time, data, 0, "wechat").then(function (data) {
-        res.jsonp({ id: data });
+    user.fetch().then(function () {
+        if (user.get('points') < 2) {
+            res.jsonp({ id: 0 });
+        } else {
+            user.increment('points', -num);
+            let order = new Order();
+            order.set('price', 10);
+            order.set('points', num);
+            order.set('user', user);
+            order.save();
+            let time = Math.round(new Date().getTime() / 1000).toString();
+            let imglist = req.body.imglist.split(',');
+            let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
+            chunyu.createFree(sess.objid, time, data, 0, "wechat").then(function (data) {
+                res.jsonp({ id: data });
+            });
+        }
     });
+
 });
 
 router.post('/add/pay', function (req, res) {

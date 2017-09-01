@@ -5,6 +5,25 @@ var request = require('request-json');
 var Todo = AV.Object.extend('Todo');
 var async = require('async');
 var moment = require('moment');
+var appid = process.env.wx_appid;
+var secret = process.env.wx_secret;
+
+function getTokenAndSendMsg(data, msg, callback) {
+    let result = {
+        "error": 0, // 0 代表成功,其它 代表异常
+        "error_msg": "" //错误信息
+    };
+    let client = request.createClient('https://api.weixin.qq.com/cgi-bin/');
+    client.get('token?grant_type=client_credential&appid=' + appid + '&secret=' + secret, function (err, res, body) {
+        let token = body.access_token;
+        client = request.createClient('https://api.weixin.qq.com/cgi-bin/message/template/');
+        client.post('send?access_token=' + token, data, function (err, res, body) {
+            //response.jsonp(result);
+            console.log(msg);
+            callback(null, msg);
+        });
+    });
+}
 
 router.get('/json/users', function (req, res, next) {
     let query = new AV.Query('WxUser');
@@ -72,32 +91,64 @@ router.get('/json/doctors', function (req, res, next) {
 
 router.get('/json/problems', function (req, res, next) {
     let query = new AV.Query('Problem');
+    let resdata = {};
     let arr = [];
-    query.count().then(function (count) {
-        let num = Math.ceil(count / 1000);
-        async.times(num, function (n, callback) {
-            query.limit(1000);
-            query.include('user');
-            query.skip(1000 * n);
-            query.find().then(function (problems) {
-                async.map(problems, function (problem, callback1) {
-                    if (typeof (problem) != "undefined") {
-                        let time = new moment(problem.get('createdAt'));
-                        let one = {
-                            problem_id: problem.get('problem_id'), user: problem.get('user') ? problem.get('user').get('nickname') : "", source: problem.get('source') ? problem.get('source') : "",
-                            createdAt: time.format('YYYY-MM-DD HH:mm:ss'), DT_RowId: problem.id, select: problem.get('select'), title: problem.get('title')
-                        };
-                        arr.push(one);
-                    }
-                    callback1(null, problem);
-                }, function (err, results) {
-                    callback(null, n);
+    function promise1(callback2) {
+        query.count().then(function (count) {
+            let num = Math.ceil(count / 1000);
+            async.times(num, function (n, callback) {
+                query.limit(1000);
+                query.include('user');
+                query.include('illness');
+                query.skip(1000 * n);
+                query.find().then(function (problems) {
+                    async.map(problems, function (problem, callback1) {
+                        if (typeof (problem) != "undefined") {
+                            let time = new moment(problem.get('createdAt'));
+                            let one = {
+                                problem_id: problem.get('problem_id'), user: problem.get('user') ? problem.get('user').get('nickname') : "", source: problem.get('source') ? problem.get('source') : "",
+                                createdAt: time.format('YYYY-MM-DD HH:mm:ss'), DT_RowId: problem.id, select: problem.get('select'), title: problem.get('title'),
+                                illness_name: problem.get('illness') ? problem.get('illness').get('name') : "", illness: problem.get('illness') ? problem.get('illness').id : "",
+                                keywords: problem.get('keywords') ? problem.get('keywords') : ""
+                            };
+                            arr.push(one);
+                        }
+                        callback1(null, problem);
+                    }, function (err, results) {
+                        callback(null, n);
+                    });
                 });
+            }, function (err, problems) {
+                resdata["data"] = arr;
+                callback2(null, arr);
             });
-        }, function (err, problems) {
-            res.jsonp({ "data": arr });
         });
-    });
+    }
+    function promise2(callback1) {
+        let query = new AV.Query('Illness');
+        query.equalTo('isDel', false);
+        query.ascending('serial');
+        query.find().then(function (results) {
+            async.map(results, function (result, callback) {
+                result.set('label', result.get('name'));
+                result.set('value', result.id);
+                callback(null, result);
+            }, function (err, data) {
+                data = { "illness": data };
+                resdata["options"] = data;
+                callback1(null, data);
+            });
+        });
+    }
+    async.parallel([
+        function (callback) {
+            promise1(callback);
+        },
+        function (callback) {
+            promise2(callback);
+        }], function (err, results) {
+            res.jsonp(resdata);
+        });
 });
 
 router.put('/json/problems/edit/:id', function (req, res) {
@@ -105,28 +156,61 @@ router.put('/json/problems/edit/:id', function (req, res) {
     let id = req.params.id;
     let problem = AV.Object.createWithoutData('Problem', id);
     let select = arr['data[' + id + '][select]'] * 1;
+    let illness_id = arr['data[' + id + '][illness]'];
+    let illness = AV.Object.createWithoutData('Illness', illness_id);
+    problem.set('illness', illness);
     problem.set('title', arr['data[' + id + '][title]']);
     problem.set('select', select);
     if (select == 1) {
         problem.set('select', 1);
         problem.save().then(function () {
-            let article = new Article();
-            article.set('isDel', false);
-            let section = AV.Object.createWithoutData('Section', '598c1cf4a22b9d0061023845');
-            article.set('section', section);
-            article.set('title', arr['data[' + id + '][title]']);
-            article.set('writer', ' ');
-            problem.fetch().then(function () {
-                article.set('url', 'http://drshe.leanapp.cn/inquiry/query?id=' + problem.get('problem_id'));
-                article.set('problem', problem);
-                article.save().then(function () {
+            let articleQuery = new AV.Query('Article');
+            articleQuery.equalTo('isDel', false);
+            articleQuery.equalTo('problem', problem);
+            articleQuery.first().then(function (artobj) {
+                // console.log('%j',artobj);
+                if (typeof (artobj) == "undefined") {
+                    let article = new Article();
+                    article.set('isDel', false);
+                    let section = AV.Object.createWithoutData('Section', '598c1cf4a22b9d0061023845');
+                    article.set('section', section);
+                    article.set('title', arr['data[' + id + '][title]']);
+                    article.set('writer', ' ');
+                    article.set('illness', illness);
+                    problem.fetch({ include: 'illness,user' }).then(function () {
+                        article.set('url', 'http://drshe.leanapp.cn/inquiry/query?id=' + problem.get('problem_id'));
+                        article.set('problem', problem);
+                        article.save().then(function () {
+                            let data = [];
+                            let time = new moment(problem.get('createdAt'));
+                            problem.set('createdAt', time.format('YYYY-MM-DD HH:mm:ss'));
+                            problem.set('DT_RowId', problem.id);
+                            problem.set('illness_name', problem.get('illness').get('name'));
+                            problem.set('illness', problem.get('illness').id);
+                            problem.set('user', problem.get('user').get('nickname'));
+                            data.push(problem);
+                            res.jsonp({ "data": data });
+                        });
+                    });
+                } else {
                     let data = [];
-                    problem.set('DT_RowId', problem.id);
-                    data.push(problem);
-                    res.jsonp({ "data": data });
-                });
+                    problem.fetch({ include: 'illness,user' }).then(function () {
+                        let time = new moment(problem.get('createdAt'));
+                        problem.set('createdAt', time.format('YYYY-MM-DD HH:mm:ss'));
+                        problem.set('DT_RowId', problem.id);
+                        problem.set('illness_name', problem.get('illness').get('name'));
+                        problem.set('illness', problem.get('illness').id);
+                        problem.set('user', problem.get('user').get('nickname'));
+                        console.log('%j',problem);
+                        data.push(problem);
+                        artobj.set('illness', illness);
+                        artobj.save().then(function () {
+                            console.log(data);
+                            res.jsonp({ "data": data });
+                        });
+                    });
+                }
             });
-
         });
     } else if (select == 0) {
         problem.set('select', 0);
@@ -134,7 +218,7 @@ router.put('/json/problems/edit/:id', function (req, res) {
             let query = new AV.Query('Article');
             query.equalTo('problem', problem);
             query.first().then(function (article) {
-                article.set('isDel', false);
+                article.set('isDel', true);
                 article.save().then(function () {
                     problem.fetch().then(function () {
                         let data = [];
@@ -225,7 +309,7 @@ router.get('/json/businessclient', function (req, res, next) {
                         let time = new moment(busines.get('createdAt'));
                         let one = {
                             name: busines.get('name'), phone: busines.get('phone'), business: busines.get('business') ? busines.get('business').get('name') : "", area: busines.get('area') ? busines.get('area') : "",
-                            address: busines.get('address') ? busines.get('address') : "", age: busines.get('phone'),
+                            address: busines.get('address') ? busines.get('address') : "", age: busines.get('age'),
                             createdAt: time.format('YYYY-MM-DD HH:mm:ss')
                         };
                         arr.push(one);
@@ -280,7 +364,7 @@ router.get('/json/recharge', function (req, res, next) {
             query.limit(1000);
             query.skip(1000 * n);
             query.include('user');
-            query.equalTo('result',true);
+            query.equalTo('result', true);
             query.find().then(function (recharges) {
                 async.map(recharges, function (recharge, callback1) {
                     if (typeof (recharge) != "undefined") {
@@ -528,4 +612,174 @@ router.delete('/json/section/remove/:id', function (req, res) {
     });
 });
 
+router.get('/json/illness', function (req, res, next) {
+    let query = new AV.Query('Illness');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (results) {
+        results.forEach(function (result) {
+            result.set('DT_RowId', result.id);
+            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            result.set('time', time);
+        });
+        res.jsonp({ data: results });
+    });
+});
+
+var Illness = AV.Object.extend('Illness');
+router.post('/json/illness/add', function (req, res) {
+    let arr = req.body;
+    let illness = new Illness();
+    illness.set('name', arr['data[0][name]']);
+    illness.set('isDel', false);
+    let data = [];
+    illness.save().then(function (illness) {
+        illness.set('DT_RowId', illness.id);
+        let time = new moment(illness.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        illness.set('time', time);
+        data.push(illness);
+        res.jsonp({ data: data });
+    });
+});
+
+router.put('/json/illness/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let illness = AV.Object.createWithoutData('Illness', id);
+    illness.set('name', arr['data[' + id + '][name]']);
+    illness.save().then(function (illness) {
+        let data = [];
+        illness.set('DT_RowId', illness.id);
+        let time = new moment(illness.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        illness.set('time', time);
+        data.push(illness);
+        res.jsonp({ "data": data });
+    });
+});
+
+router.delete('/json/illness/remove/:id', function (req, res) {
+    let id = req.params.id;
+    let illness = AV.Object.createWithoutData('Illness', id);
+    illness.set('isDel', true);
+    illness.save().then(function () {
+        res.jsonp({ "data": [] });
+    });
+});
+
+router.post('/json/message/send', function (req, res) {
+    let title = req.body.title;
+    let type = req.body.type;
+    let time = new moment();
+    let creditChange = req.body.creditChange;
+    let creditName = req.body.creditName;
+    let remark = req.body.remark;
+    let number = req.body.number;
+    let userQuery = new AV.Query('WxUser');
+    userQuery.exists('openid');
+    userQuery.limit(1000);
+    userQuery.find().then(function (users) {
+        let count = 0;
+        async.map(users, function (user, callback) {
+            let account = user.get('nickname') ? user.get('nickname') : "亲爱的用户";
+            let amount = user.get('points') * 1;
+            let openid = user.get('openid');
+            let data = {
+                touser: openid, template_id: "TXq10kof3hw7w_6wJ-FeaEUVKVhlOu7m1nuhAuPv1qk", url: 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn&response_type=code&scope=snsapi_userinfo&state=1', "data": {
+                    "first": {
+                        "value": title,
+                        "color": "#173177"
+                    },
+                    "account": {
+                        "value": account,
+                        "color": "#173177"
+                    },
+                    "time": {
+                        "value": time.format('LLL'),
+                        "color": "#173177"
+                    },
+                    "type": {
+                        "value": type,
+                        "color": "#173177"
+                    },
+                    "creditChange": {
+                        "value": creditChange,
+                        "color": "#173177"
+                    },
+                    "creditName": {
+                        "value": creditName,
+                        "color": "#173177"
+                    },
+                    "number": {
+                        "value": number,
+                        "color": "#173177"
+                    },
+                    "amount": {
+                        "value": amount,
+                        "color": "#173177"
+                    },
+                    "remark": {
+                        "value": remark,
+                        "color": "#173177"
+                    }
+                }
+            };
+            count++;
+            let msg = count.toString() + ":" + account + " " + openid;
+            getTokenAndSendMsg(data, msg, callback);
+        }, function (err, results) {
+            res.jsonp(results);
+        });
+    });
+
+});
+
+router.post('/json/message/notify', function (req, res) {
+    let title = req.body.title;
+    let time = new moment();
+    //let openid="oY9WLjnY5tQYPIlQPquKXR9iAVKk";
+    let userQuery = new AV.Query('WxUser');
+    userQuery.exists('openid');
+    userQuery.limit(1000);
+    userQuery.find().then(function (users) {
+        let count = 0;
+        async.map(users, function (user, callback) {
+            let account = user.get('nickname') ? user.get('nickname') : "亲爱的用户";
+            let openid = user.get('openid');
+            let data = {
+                touser: openid, template_id: "g2ZZ3PhB5lP1ZtinX6e3X_46IsIniOfV2KsUomM5d1Y", url: 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1', "data": {
+                    "first": {
+                        "value": title,
+                        "color": "#173177"
+                    },
+                    "keyword1": {
+                        "value": account,
+                        "color": "#173177"
+                    },
+                    "keyword2": {
+                        "value": "问医积分等你领",
+                        "color": "#173177"
+                    },
+                    "keyword3": {
+                        "value": "8月31日-9月7日",
+                        "color": "#173177"
+                    },
+                    "keyword4": {
+                        "value": "星天使公众号",
+                        "color": "#173177"
+                    },
+                    "remark": {
+                        "value": "点击链接，即可领取5个问医积分！",
+                        "color": "#d20b31"
+                    }
+                }
+            };
+            count++;
+            let msg = count.toString() + ":" + account + " " + openid;
+            getTokenAndSendMsg(data, msg, callback);
+        }, function (err, results) {
+            res.jsonp(results);
+        });
+    });
+
+});
 module.exports = router;

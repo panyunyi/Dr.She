@@ -124,6 +124,7 @@ router.post('/reply', function (req, res) {
 
             }, function (err, oneres) {
                 if (problem.get('source') == "app") {
+                    console.log(problem.get('user').id+" "+problem_id);
                     push.push("医生有新的回复", replyContent, problem.get('user').id, problem_id);
                 }
                 let time = Math.round(new Date().getTime() / 1000).toString();

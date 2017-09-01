@@ -828,15 +828,93 @@ router.get('/article', function (req, res) {
     sectionQuery.first().then(function (data) {
         if (typeof (data) != "undefined") {
             query.equalTo('section', data);
-            query.descending('createdAt');
-            query.equalTo('isDel',false);
+            query.descending('updatedAt');
+            query.equalTo('isDel', false);
             query.limit(1000);
-            query.find().then(function (article) {
-                res.jsonp({ article: article });
+            query.find().then(function (articles) {
+                res.jsonp({ count: articles.length, article: articles });
             });
         } else {
             res.jsonp({ error: 1, msg: "未找到此版块" });
         }
     });
 });
+
+//推荐文章
+router.get('/recommend/words', function (req, res) {
+    let user_id = req.query.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let keysquery = new AV.Query('UserKeywordsMap');
+    keysquery.equalTo('user', user);
+    keysquery.equalTo('isDel', false);
+    keysquery.include('keywords');
+    keysquery.find().then(function (words) {
+        async.map(words, function (word, callback) {
+            let one = { key: word.get('keywords').id, word: word.get('keywords').get('title') };
+            callback(null, one);
+        }, function (err, results) {
+            res.jsonp({ count: results.length, words: results });
+        });
+    });
+});
+
+router.get('/recommend/article', function (req, res) {
+    let key = req.query.key;
+    if (key == 1) {
+        let articlequery = new AV.Query('Article');
+        articlequery.equalTo('isDel', false);
+        articlequery.descending('updatedAt');
+        articlequery.include('section');
+        articlequery.find().then(function (articles) {
+            async.map(articles, function (article, callback) {
+                let one = {
+                    title: article.get('title'), section: article.get('section').get('name'), url: article.get('url'), writer: article.get('writer') ? article.get('writer') : "",
+                    updatedAt: article.get('updatedAt')
+                };
+                callback(null, one);
+            }, function (err, results) {
+                res.jsonp({ count: results.length, articles: results });
+            });
+        });
+    } else {
+        let keywords = AV.Object.createWithoutData('KeyWords', key);
+        let query = new AV.Query('ArticleKeysMap');
+        query.equalTo('keywords', keywords);
+        query.equalTo('isDel', false);
+        query.include('article');
+        query.include('article.section');
+        query.find().then(function (articles) {
+            async.map(articles, function (article, callback) {
+                let one = {
+                    title: article.get('article').get('title'), section: article.get('article').get('section').get('name'), url: article.get('article').get('url'),
+                    writer: article.get('article').get('writer') ? article.get('article').get('writer') : "", updatedAt: article.get('article').get('updatedAt')
+                };
+                callback(null, one);
+            }, function (err, results) {
+                res.jsonp({ count: results.length, articles: results });
+            });
+        });
+    }
+});
+
+//精选医嘱病症类型
+router.get('/recommend/illness', function (req, res) {
+    let query = new AV.Query('Illness');
+    query.equalTo('isDel', false);
+    query.find().then(function (results) {
+        res.jsonp({ count: results.length, illness: results });
+    });
+});
+
+router.get('/recommend/article/ill', function (req, res) {
+    let illness_id = req.query.illness_id;
+    let illness = AV.Object.createWithoutData('Illness', illness_id);
+    let query = new AV.Query('Article');
+    query.equalTo('isDel', false);
+    query.equalTo('illness', illness);
+    query.find().then(function (results) {
+        res.jsonp({ count: results.length, articles: results });
+    });
+});
+
 module.exports = router;

@@ -44,6 +44,7 @@ router.get('/', function (req, res) {
                         } else if (count == 1) {
                             query.first().then(function (data) {
                                 sess.objid = data.id;
+                                data.set('openid', openid);
                                 data.set('unionid', body2.unionid);
                                 data.save();
                                 res.render('apply', { objid: data.id });

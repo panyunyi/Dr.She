@@ -267,7 +267,10 @@
                 $.post("/ask/add/free", { content: $("#description").val(), age: $("#age").val(), imglist: imglist, num: num }, function (result) {
                     if (result.id != 0) {
                         window.location.replace("inquiry?id=" + result.id);
-                    } else {
+                    } else if(result.id==0){
+                        window.location.replace("pay?points=" + num);
+                        return;
+                    }else{
                         weui.alert("创建问题失败，请联系客服。")
                     }
                 });
