@@ -155,11 +155,11 @@ router.put('/json/problems/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let problem = AV.Object.createWithoutData('Problem', id);
-    let select = arr['data[' + id + '][select]'] * 1;
-    let illness_id = arr['data[' + id + '][illness]'];
+    let select = arr['data'][id]['choice'] * 1;
+    let illness_id = arr['data'][id]['illness'];
     let illness = AV.Object.createWithoutData('Illness', illness_id);
     problem.set('illness', illness);
-    problem.set('title', arr['data[' + id + '][title]']);
+    problem.set('title', arr['data'][id]['title']);
     problem.set('select', select);
     if (select == 1) {
         problem.set('select', 1);
@@ -168,13 +168,12 @@ router.put('/json/problems/edit/:id', function (req, res) {
             articleQuery.equalTo('isDel', false);
             articleQuery.equalTo('problem', problem);
             articleQuery.first().then(function (artobj) {
-                // console.log('%j',artobj);
                 if (typeof (artobj) == "undefined") {
                     let article = new Article();
                     article.set('isDel', false);
                     let section = AV.Object.createWithoutData('Section', '598c1cf4a22b9d0061023845');
                     article.set('section', section);
-                    article.set('title', arr['data[' + id + '][title]']);
+                    article.set('title', arr['data'][id]['title']);
                     article.set('writer', ' ');
                     article.set('illness', illness);
                     problem.fetch({ include: 'illness,user' }).then(function () {
@@ -183,12 +182,12 @@ router.put('/json/problems/edit/:id', function (req, res) {
                         article.save().then(function () {
                             let data = [];
                             let time = new moment(problem.get('createdAt'));
-                            problem.set('createdAt', time.format('YYYY-MM-DD HH:mm:ss'));
-                            problem.set('DT_RowId', problem.id);
-                            problem.set('illness_name', problem.get('illness').get('name'));
-                            problem.set('illness', problem.get('illness').id);
-                            problem.set('user', problem.get('user').get('nickname'));
-                            data.push(problem);
+                            let one = {
+                                problem_id: problem.get('problem_id'), user: problem.get('user').get('nickname'), createdAt: time.format('YYYY-MM-DD HH:mm:ss'),
+                                source: problem.get('source'), title: problem.get('title'), DT_RowId: problem.id, select: problem.get('select'), illness_name: problem.get('illness').get('name'),
+                                illness: problem.get('illness').id
+                            };
+                            data.push(one);
                             res.jsonp({ "data": data });
                         });
                     });
@@ -196,16 +195,14 @@ router.put('/json/problems/edit/:id', function (req, res) {
                     let data = [];
                     problem.fetch({ include: 'illness,user' }).then(function () {
                         let time = new moment(problem.get('createdAt'));
-                        problem.set('createdAt', time.format('YYYY-MM-DD HH:mm:ss'));
-                        problem.set('DT_RowId', problem.id);
-                        problem.set('illness_name', problem.get('illness').get('name'));
-                        problem.set('illness', problem.get('illness').id);
-                        problem.set('user', problem.get('user').get('nickname'));
-                        console.log('%j',problem);
-                        data.push(problem);
+                        let one = {
+                            problem_id: problem.get('problem_id'), user: problem.get('user').get('nickname'), createdAt: time.format('YYYY-MM-DD HH:mm:ss'),
+                            source: problem.get('source'), title: problem.get('title'), DT_RowId: problem.id, select: problem.get('select'), illness_name: problem.get('illness').get('name'),
+                            illness: problem.get('illness').id
+                        };
+                        data.push(one);
                         artobj.set('illness', illness);
                         artobj.save().then(function () {
-                            console.log(data);
                             res.jsonp({ "data": data });
                         });
                     });
@@ -213,6 +210,7 @@ router.put('/json/problems/edit/:id', function (req, res) {
             });
         });
     } else if (select == 0) {
+        let data = [];
         problem.set('select', 0);
         problem.save().then(function () {
             let query = new AV.Query('Article');
@@ -220,10 +218,14 @@ router.put('/json/problems/edit/:id', function (req, res) {
             query.first().then(function (article) {
                 article.set('isDel', true);
                 article.save().then(function () {
-                    problem.fetch().then(function () {
-                        let data = [];
-                        problem.set('DT_RowId', problem.id);
-                        data.push(problem);
+                    problem.fetch({ include: 'illness,user' }).then(function () {
+                        let time = new moment(problem.get('createdAt'));
+                        let one = {
+                            problem_id: problem.get('problem_id'), user: problem.get('user').get('nickname'), createdAt: time.format('YYYY-MM-DD HH:mm:ss'),
+                            source: problem.get('source'), title: problem.get('title'), DT_RowId: problem.id, select: problem.get('select'), illness_name: problem.get('illness').get('name'),
+                            illness: problem.get('illness').id
+                        };
+                        data.push(one);
                         res.jsonp({ "data": data });
                     });
                 });
@@ -402,10 +404,10 @@ var KeyWords = AV.Object.extend('KeyWords');
 router.post('/json/keywords/add', function (req, res) {
     let arr = req.body;
     let keywords = new KeyWords();
-    keywords.set('title', arr['data[0][title]']);
-    keywords.set('words', arr['data[0][words]']);
-    keywords.set('tip', arr['data[0][tip]']);
-    keywords.set('des', arr['data[0][des]']);
+    keywords.set('title', arr['data'][0]['title']);
+    keywords.set('words', arr['data'][0]['words']);
+    keywords.set('tip', arr['data'][0]['tip']);
+    keywords.set('des', arr['data'][0]['des']);
     keywords.set('isDel', false);
     let data = [];
     keywords.save().then(function (keywords) {
@@ -419,10 +421,10 @@ router.put('/json/keywords/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let keywords = AV.Object.createWithoutData('KeyWords', id);
-    keywords.set('title', arr['data[' + id + '][title]']);
-    keywords.set('words', arr['data[' + id + '][words]']);
-    keywords.set('tip', arr['data[' + id + '][tip]']);
-    keywords.set('des', arr['data[' + id + '][des]']);
+    keywords.set('title', arr['data'][id]['title']);
+    keywords.set('words', arr['data'][id]['words']);
+    keywords.set('tip', arr['data'][id]['tip']);
+    keywords.set('des', arr['data'][id]['des']);
     keywords.save().then(function (keywords) {
         let data = [];
         keywords.set('DT_RowId', keywords.id);
@@ -503,10 +505,10 @@ var Article = AV.Object.extend('Article');
 router.post('/json/article/add', function (req, res) {
     let arr = req.body;
     let article = new Article();
-    article.set('title', arr['data[0][title]']);
-    article.set('url', arr['data[0][url]']);
-    article.set('writer', arr['data[0][writer]']);
-    let section = AV.Object.createWithoutData('Section', arr['data[0][section]']);
+    article.set('title', arr['data'][0]['title']);
+    article.set('url', arr['data'][0]['url']);
+    article.set('writer', arr['data'][0]['writer']);
+    let section = AV.Object.createWithoutData('Section', arr['data'][0]['section']);
     article.set('section', section);
     article.set('isDel', false);
     let data = [];
@@ -526,10 +528,10 @@ router.put('/json/article/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let article = AV.Object.createWithoutData('Article', id);
-    article.set('title', arr['data[' + id + '][title]']);
-    article.set('url', arr['data[' + id + '][url]']);
-    article.set('writer', arr['data[' + id + '][writer]']);
-    let section = AV.Object.createWithoutData('Section', arr['data[' + id + '][section]']);
+    article.set('title', arr['data'][id]['title']);
+    article.set('url', arr['data'][id]['url']);
+    article.set('writer', arr['data'][id]['writer']);
+    let section = AV.Object.createWithoutData('Section', arr['data'][id]['section']);
     article.set('section', section);
     article.save().then(function (article) {
         let data = [];
@@ -576,7 +578,7 @@ var Section = AV.Object.extend('Section');
 router.post('/json/section/add', function (req, res) {
     let arr = req.body;
     let section = new Section();
-    section.set('name', arr['data[0][name]']);
+    section.set('name', arr['data'][0]['name']);
     section.set('isDel', false);
     let data = [];
     section.save().then(function (section) {
@@ -592,7 +594,7 @@ router.put('/json/section/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let section = AV.Object.createWithoutData('Section', id);
-    section.set('name', arr['data[' + id + '][name]']);
+    section.set('name', arr['data'][id]['name']);
     section.save().then(function (section) {
         let data = [];
         section.set('DT_RowId', section.id);
@@ -630,7 +632,7 @@ var Illness = AV.Object.extend('Illness');
 router.post('/json/illness/add', function (req, res) {
     let arr = req.body;
     let illness = new Illness();
-    illness.set('name', arr['data[0][name]']);
+    illness.set('name', arr['data'][0]['name']);
     illness.set('isDel', false);
     let data = [];
     illness.save().then(function (illness) {
@@ -646,7 +648,7 @@ router.put('/json/illness/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let illness = AV.Object.createWithoutData('Illness', id);
-    illness.set('name', arr['data[' + id + '][name]']);
+    illness.set('name', arr['data'][id]['name']);
     illness.save().then(function (illness) {
         let data = [];
         illness.set('DT_RowId', illness.id);

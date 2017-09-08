@@ -563,6 +563,7 @@ router.get('/problemList/:user_id', function (req, res) {
 router.post('/upload', function (req, res) {
     let form = new multiparty.Form();
     form.parse(req, function (err, fields, files) {
+        console.log(files);
         var iconFile = files.iconImage[0];
         if (iconFile.size !== 0) {
             fs.readFile(iconFile.path, function (err, data) {
@@ -572,6 +573,7 @@ router.post('/upload', function (req, res) {
                 var theFile = new AV.File(iconFile.originalFilename, data);
                 theFile.save().then(function (theFile) {
                     theFile.fetch().then(function () {
+                        //res.jsonp({ img: theFile.get('url') });
                         res.send({ img: theFile.get('url') });
                     });
                 }).catch(console.error);
@@ -579,6 +581,18 @@ router.post('/upload', function (req, res) {
         } else {
             res.send('请选择一个文件。');
         }
+    });
+});
+
+router.post('/upload1', function (req, res) {
+    let stream = req.body.imageData;
+    let name = req.body.name;
+    let data = { base64: stream };
+    let file = new AV.File(name, data);
+    file.save().then(function (theFile) {
+        theFile.fetch().then(function () {
+            res.jsonp({ img: theFile.get('url') });
+        });
     });
 });
 
@@ -847,6 +861,7 @@ router.get('/recommend/words', function (req, res) {
     let keysquery = new AV.Query('UserKeywordsMap');
     keysquery.equalTo('user', user);
     keysquery.equalTo('isDel', false);
+    keysquery.limit(1000);
     keysquery.include('keywords');
     keysquery.find().then(function (words) {
         async.map(words, function (word, callback) {
@@ -863,6 +878,7 @@ router.get('/recommend/article', function (req, res) {
     if (key == 1) {
         let articlequery = new AV.Query('Article');
         articlequery.equalTo('isDel', false);
+        articlequery.limit(1000);
         articlequery.descending('updatedAt');
         articlequery.include('section');
         articlequery.find().then(function (articles) {
@@ -911,10 +927,20 @@ router.get('/recommend/article/ill', function (req, res) {
     let illness = AV.Object.createWithoutData('Illness', illness_id);
     let query = new AV.Query('Article');
     query.equalTo('isDel', false);
+    query.limit(1000);
     query.equalTo('illness', illness);
     query.find().then(function (results) {
         res.jsonp({ count: results.length, articles: results });
     });
 });
 
+//药
+router.get('/recommend/medicine', function (req, res) {
+    let query = new AV.Query('Medicine');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (results) {
+        res.jsonp({ count: results.length, medicine: results });
+    });
+});
 module.exports = router;
