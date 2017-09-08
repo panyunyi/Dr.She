@@ -551,12 +551,7 @@ router.delete('/json/article/remove/:id', function (req, res) {
     let article = AV.Object.createWithoutData('Article', id);
     article.set('isDel', true);
     article.save().then(function () {
-        article.fetch().then(function () {
-            article.get('problem').set('select', 0);
-            article.get('problem').save().then(function () {
-                res.jsonp({ "data": [] });
-            });
-        });
+        res.jsonp({ "data": [] });
     });
 });
 
