@@ -179,11 +179,32 @@ router.get('/pooling/:id/:content_id', function (req, res) {
     });
 });
 
+function getCount(content,res,data){
+    let query=new AV.Query('Medicine');
+    query.equalTo('isDel',false);
+    query.limit(1000);
+    query.find().then(function(results){
+        async.map(results,function(result,callback){
+            if(content.indexOf(result.get('name'))>0){
+                result.increment('recommend',1);
+                result.save().then(function(){
+                    callback(null,1);
+                });
+            }else{
+                callback(null,0);
+            }
+        },function(err,results){
+            res.send(data);
+        });
+    });
+}
+
 router.post('/add', function (req, res) {
     let time = Math.round(new Date().getTime() / 1000).toString();
     let sess = req.session;
     chunyu.problemAdd(sess.objid, req.body.id * 1, req.body.content, time).then(function (data) {
-        res.send({ error: typeof (data) != "undefined" ? data.error : 0 });
+        getCount(req.body.content,res,{ error: typeof (data) != "undefined" ? data.error : 0 });
+        //res.send({ error: typeof (data) != "undefined" ? data.error : 0 });
     });
 });
 

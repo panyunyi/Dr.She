@@ -31,6 +31,26 @@ router.get('/', function (req, res) {
     });
 });
 
+function getCount(content,res,data){
+    let query=new AV.Query('Medicine');
+    query.equalTo('isDel',false);
+    query.limit(1000);
+    query.find().then(function(results){
+        async.map(results,function(result,callback){
+            if(content.indexOf(result.get('name'))>0){
+                result.increment('recommend',1);
+                result.save().then(function(){
+                    callback(null,1);
+                });
+            }else{
+                callback(null,0);
+            }
+        },function(err,results){
+            res.jsonp(data);
+        });
+    });
+}
+
 router.post('/add/free', function (req, res) {
     let sess = req.session;
     let num = req.body.num * 1;
@@ -49,7 +69,8 @@ router.post('/add/free', function (req, res) {
             let imglist = req.body.imglist.split(',');
             let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
             chunyu.createFree(sess.objid, time, data, 0, "wechat").then(function (data) {
-                res.jsonp({ id: data });
+                getCount(req.body.content,res,{id:data});
+                //res.jsonp({ id: data });
             });
         }
     });

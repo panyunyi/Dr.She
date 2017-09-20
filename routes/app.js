@@ -536,7 +536,8 @@ router.post('/add', function (req, res) {
     }
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
     chunyu.createFree(user.id, time, data, flag, "app").then(function (data) {
-        res.jsonp({ error: 0, id: data });
+        getCount(req.body.content,res,{ error: 0, id: data });
+        //res.jsonp({ error: 0, id: data });
     });
 });
 
@@ -563,7 +564,6 @@ router.get('/problemList/:user_id', function (req, res) {
 router.post('/upload', function (req, res) {
     let form = new multiparty.Form();
     form.parse(req, function (err, fields, files) {
-        console.log(files);
         var iconFile = files.iconImage[0];
         if (iconFile.size !== 0) {
             fs.readFile(iconFile.path, function (err, data) {
@@ -671,7 +671,8 @@ router.post('/choice', function (req, res) {
     order.save().then(function (order) {
         chunyu.createPay(user_id, time, data, order.id, price).then(function (data) {
             chunyu.successNotice(user_id, data, time, "app").then(function (data) {
-                res.jsonp({ id: data.problems[0].problem_id });
+                getCount(req.body.content,res,{ id: data.problems[0].problem_id });
+                //res.jsonp({ id: data.problems[0].problem_id });
             });
         });
     }, function (err) {
@@ -679,13 +680,34 @@ router.post('/choice', function (req, res) {
     });
 });
 
+function getCount(content,res,data){
+    let query=new AV.Query('Medicine');
+    query.equalTo('isDel',false);
+    query.limit(1000);
+    query.find().then(function(results){
+        async.map(results,function(result,callback){
+            if(content.indexOf(result.get('name'))>0){
+                result.increment('recommend',1);
+                result.save().then(function(){
+                    callback(null,1);
+                });
+            }else{
+                callback(null,0);
+            }
+        },function(err,results){
+            res.jsonp(data);
+        });
+    });
+}
+
 router.post('/problem/add', function (req, res) {
     let user_id = req.body.user_id;
     let problem_id = req.body.problem_id;
     let content = req.body.content;
     let time = Math.round(new Date().getTime() / 1000).toString();
     chunyu.problemAdd(user_id, problem_id, content, time).then(function (data) {
-        res.jsonp(data);
+        getCount(content,res,data);
+        //res.jsonp(data);
     });
 });
 
@@ -879,13 +901,14 @@ router.get('/recommend/article', function (req, res) {
         let articlequery = new AV.Query('Article');
         articlequery.equalTo('isDel', false);
         articlequery.limit(1000);
-        articlequery.descending('updatedAt');
+        articlequery.descending('createdAt');
         articlequery.include('section');
+        articlequery.include('problem');
         articlequery.find().then(function (articles) {
             async.map(articles, function (article, callback) {
                 let one = {
                     title: article.get('title'), section: article.get('section').get('name'), url: article.get('url'), writer: article.get('writer') ? article.get('writer') : "",
-                    updatedAt: article.get('updatedAt')
+                    updatedAt: article.get('problem') ? article.get('problem').get('createdAt') : article.get('createdAt')
                 };
                 callback(null, one);
             }, function (err, results) {
@@ -903,7 +926,7 @@ router.get('/recommend/article', function (req, res) {
             async.map(articles, function (article, callback) {
                 let one = {
                     title: article.get('article').get('title'), section: article.get('article').get('section').get('name'), url: article.get('article').get('url'),
-                    writer: article.get('article').get('writer') ? article.get('article').get('writer') : "", updatedAt: article.get('article').get('updatedAt')
+                    writer: article.get('article').get('writer') ? article.get('article').get('writer') : "", updatedAt: article.get('article').get('createdAt')
                 };
                 callback(null, one);
             }, function (err, results) {
@@ -928,9 +951,20 @@ router.get('/recommend/article/ill', function (req, res) {
     let query = new AV.Query('Article');
     query.equalTo('isDel', false);
     query.limit(1000);
+    query.descending('createdAt');
+    query.include('problem');
+    query.include('section');
     query.equalTo('illness', illness);
-    query.find().then(function (results) {
-        res.jsonp({ count: results.length, articles: results });
+    query.find().then(function (articles) {
+        async.map(articles, function (article, callback) {
+            let one = {
+                title: article.get('title'), section: article.get('section').get('name'), url: article.get('url'), writer: article.get('writer') ? article.get('writer') : "",
+                updatedAt: article.get('problem') ? article.get('problem').get('createdAt') : article.get('createdAt')
+            };
+            callback(null, one);
+        }, function (err, results) {
+            res.jsonp({ count: results.length, articles: results });
+        });
     });
 });
 

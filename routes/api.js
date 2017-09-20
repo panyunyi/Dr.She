@@ -25,6 +25,38 @@ function getTokenAndSendMsg(data, msg, callback) {
     });
 }
 
+router.get('/json/advice', function (req, res, next) {
+    let query = new AV.Query('Advice');
+    let arr = [];
+    query.count().then(function (count) {
+        let num = Math.ceil(count / 1000);
+        async.times(num, function (n, callback) {
+            query.limit(1000);
+            query.skip(1000 * n);
+            query.include('user');
+            query.find().then(function (users) {
+                async.map(users, function (user, callback1) {
+                    if (typeof (user) != "undefined") {
+                        let time = new moment(user.get('createdAt'));
+                        let one = {
+                            nickname: user.get('user').get('nickname') ? user.get('user').get('nickname') : "", phone: user.get('phone') ? user.get('phone') : "",
+                            content: user.get('content')?user.get('content'):"", source: user.get('source') ? user.get('source') : "",
+                            image: user.get('image') ? user.get('image') : "",
+                            createdAt: time.format('YYYY-MM-DD HH:mm:ss')
+                        };
+                        arr.push(one);
+                    }
+                    callback1(null, user);
+                }, function (err, results) {
+                    callback(null, n);
+                });
+            });
+        }, function (err, users) {
+            res.jsonp({ "data": arr });
+        });
+    });
+});
+
 router.get('/json/users', function (req, res, next) {
     let query = new AV.Query('WxUser');
     let arr = [];

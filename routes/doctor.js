@@ -33,6 +33,26 @@ router.get('/test', function (req, res) {
     push.push("医生有新的回复", "啊哈", "5951c6f8ac502e006c9190cd", "547467188");
 });
 
+function getCount(content,callback1){
+    let query=new AV.Query('Medicine');
+    query.equalTo('isDel',false);
+    query.limit(1000);
+    query.find().then(function(results){
+        async.map(results,function(result,callback){
+            if(content.indexOf(result.get('name'))>0){
+                result.increment('recommend',1);
+                result.save().then(function(){
+                    callback(null,1);
+                });
+            }else{
+                callback(null,0);
+            }
+        },function(err,results){
+            callback1(null,1);
+        });
+    });
+}
+
 router.post('/reply', function (req, res) {
     let result = {
         "error": 0, // 0 代表成功,其它 代表异常
@@ -88,7 +108,8 @@ router.post('/reply', function (req, res) {
                     reply.set('doctor', doctor_data);
                     reply.save().then(function () {
                         replyContent = line;
-                        callback(null, one);
+                        getCount(line,callback);
+                        //callback(null, one);
                     });
                 }
                 if (one.type == "audio") {
@@ -124,7 +145,6 @@ router.post('/reply', function (req, res) {
 
             }, function (err, oneres) {
                 if (problem.get('source') == "app") {
-                    console.log(problem.get('user').id+" "+problem_id);
                     push.push("医生有新的回复", replyContent, problem.get('user').id, problem_id);
                 }
                 let time = Math.round(new Date().getTime() / 1000).toString();

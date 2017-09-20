@@ -82,6 +82,19 @@ router.get('/users', function (req, res) {
     }
 });
 
+router.get('/advice', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/advice', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/advice";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
 router.get('/doctors', function (req, res) {
     let sess = req.session;
     if (sess.user) {
