@@ -56,10 +56,10 @@ router.post('/add/free', function (req, res) {
     let num = req.body.num * 1;
     let user = AV.Object.createWithoutData('WxUser', sess.objid);
     user.fetch().then(function () {
-        if (user.get('points') < 2) {
-            res.jsonp({ id: 0 });
-        } else {
-            user.increment('points', -num);
+        // if (user.get('points') < 2) {
+        //     res.jsonp({ id: 0 });
+        // } else {
+        //     user.increment('points', -num);
             let order = new Order();
             order.set('price', 10);
             order.set('points', num);
@@ -72,7 +72,7 @@ router.post('/add/free', function (req, res) {
                 getCount(req.body.content,res,{id:data});
                 //res.jsonp({ id: data });
             });
-        }
+        // }
     });
 
 });

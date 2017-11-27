@@ -30,7 +30,8 @@ function getTokenAndSendMsg(data, response) {
 }
 
 router.get('/test', function (req, res) {
-    push.push("医生有新的回复", "啊哈", "5951c6f8ac502e006c9190cd", "547467188");
+    console.log("test");
+    push.push("医生有新的回复", "啊哈", "595ca1a2570c3500588ebee9", "598384274");
 });
 
 function getCount(content,callback1){

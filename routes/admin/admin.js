@@ -160,6 +160,19 @@ router.get('/businessclient', function (req, res) {
     }
 });
 
+router.get('/clientfile', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/clientfile', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/clientfile";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
 router.get('/donate', function (req, res) {
     let sess = req.session;
     if (sess.user) {

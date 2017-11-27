@@ -542,13 +542,41 @@ router.post('/add', function (req, res) {
 });
 
 router.get('/problem/:user_id/:problem_id/:content_id', function (req, res) {
+    let result = { error: 1 };
     let time = Math.round(new Date().getTime() / 1000).toString();
     let user_id = req.params.user_id;
     let problem_id = req.params.problem_id;
     let content_id = req.params.content_id
     chunyu.problemDetail(user_id, problem_id, content_id, time).then(function (data) {
         chunyu.problemView(user_id, problem_id, time).then(function (view) {
-            res.jsonp(data);
+            let query=new AV.Query('KeyWords2');
+            query.equalTo('isDel',false);
+            query.find().then(function(keys){
+                async.map(data.content,function(content,callback){
+                    let arr=JSON.parse(content.content);
+                    //console.log(arr);
+                    async.map(arr,function(line,callback1){
+                        if(line.text){
+                            keys.forEach(function(key){
+                                if(line.text.indexOf(key.get('name'))>0){
+                                    //console.log(line);
+                                    content["key"]=key.get('name');
+                                }
+                            });
+                        }
+                        callback1(null,1);
+                    },function(err,resline){
+                        callback(null,1);
+                    });
+                    //callback(null,1);
+                },function(err,rescontent){
+                    result["error"] = 0;
+                    result["content"] = data.content;
+                    result["doctor"] = data.doctor;
+                    result["problem"] = data.problem;
+                    res.jsonp(result);
+                });
+            });
         });
     });
 });
@@ -726,7 +754,7 @@ router.post('/problem/imageadd', function (req, res) {
     let url = req.body.url;
     let time = Math.round(new Date().getTime() / 1000).toString();
     chunyu.problemImageAdd(user_id, problem_id, url, time).then(function (data) {
-        res.jsonp(data);
+        res.jsonp({error:0});
     });
 });
 
@@ -975,6 +1003,14 @@ router.get('/recommend/medicine', function (req, res) {
     query.limit(1000);
     query.find().then(function (results) {
         res.jsonp({ count: results.length, medicine: results });
+    });
+});
+
+//版本号
+router.get('/version', function (req, res) {
+    let query = new AV.Query('Version');
+    query.first().then(function (version) {
+        res.jsonp({ name: version.get('name'), code: version.get('code') });
     });
 });
 module.exports = router;

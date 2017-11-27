@@ -96,7 +96,7 @@ function indexProblemList(req, res, service) {
             one.problem.created_time = new moment(one.problem.created_time).format('YYYY年MM月DD日 HH:mm');
             if (typeof (one.problem.status) == "undefined") {
                 console.log(data);
-                callback(null,one);
+                callback(null, one);
             }
             switch (one.problem.status) {
                 case 'i':
@@ -262,6 +262,15 @@ router.get('/phone', function (req, res) {
     res.render('phone');
 });
 
+router.get('/articles', function (req, res) {
+    let query = new AV.Query('Article');
+    query.equalTo('wx', 1);
+    query.find().then(function (results) {
+        res.render('articles', { list: results });
+    });
+
+});
+
 router.get('/advise', function (req, res) {
     let url = req.protocol + '://' + req.host + req.originalUrl; //获取当前url
     signature.sign(url, function (signatureMap) {
@@ -274,7 +283,7 @@ router.get('/toc2', function (req, res) {
     let url = req.protocol + '://' + req.host + req.originalUrl; //获取当前url
     signature.sign(url, function (signatureMap) {
         signatureMap.appid = appid;
-        signatureMap.objid="";
+        signatureMap.objid = "";
         signatureMap.had = 0;
         res.render('toc', signatureMap);
     });
@@ -297,7 +306,7 @@ router.post('/toc/add', function (req, res) {
     let objid = req.body.objid;
     let user = AV.Object.createWithoutData('WxUser', objid);
     user.set('phone', phone);
-    user.set('password','123');
+    user.set('password', '123');
     user.save();
     res.jsonp({ code: 0, msg: "" });
 });

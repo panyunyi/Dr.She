@@ -10,6 +10,7 @@ var product_url = process.env.product_url;
 var Problem = AV.Object.extend('Problem');
 var Order = AV.Object.extend('Order');
 var Content = AV.Object.extend('Content');
+var async=require('async');
 
 function chunyulogin(user_id, atime) {
     let sign = getSign(user_id, atime);
@@ -133,11 +134,13 @@ function problemDetail(user_id, problem_id, last, atime) {
     };
     return rp(options)
         .then(function (body) {
+
             result["error"] = 0;
             result["content"] = body.content;
             result["doctor"] = body.doctor;
             result["problem"] = body.problem;
             return result;
+
             // POST succeeded...
         })
         .catch(function (err) {
@@ -238,7 +241,7 @@ function problemAdd(user_id, problem_id, line, atime) {
             newContent.set('text', line);
             newContent.set('problem_id',problem_id.toString());
             let problemQuery = new AV.Query('Problem');
-            problemQuery.equalTo('problem_id', problem_id);
+            problemQuery.equalTo('problem_id', problem_id*1);
             problemQuery.first().then(function (problem) {
                 newContent.set('problem', problem);
                 newContent.save().then(function () {
@@ -290,12 +293,16 @@ function problemImageAdd(user_id, problem_id, image_url, atime) {
             newContent.set('image', image_url);
             newContent.set('problem_id',problem_id.toString());
             let problemQuery = new AV.Query('Problem');
-            problemQuery.equalTo('problem_id', problem_id);
+            problemQuery.equalTo('problem_id', problem_id*1);
             problemQuery.first().then(function (problem) {
                 newContent.set('problem', problem);
                 newContent.save().then(function(){
                     return body;
+                },function(err){
+                    console.log(err);
                 });
+            },function(err){
+                console.log(err);
             });
 
             // POST succeeded...

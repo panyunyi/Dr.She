@@ -139,7 +139,7 @@ router.get('/json/problems', function (req, res, next) {
                             let time = new moment(problem.get('createdAt'));
                             let one = {
                                 problem_id: problem.get('problem_id'), user: problem.get('user') ? problem.get('user').get('nickname') : "", source: problem.get('source') ? problem.get('source') : "",
-                                createdAt: time.format('YYYY-MM-DD HH:mm:ss'), DT_RowId: problem.id, select: problem.get('select'), title: problem.get('title'),
+                                createdAt: time.format('YYYY-MM-DD HH:mm:ss'), DT_RowId: problem.id, select: problem.get('select'), title: problem.get('title'),emp:problem.get('user') ? problem.get('user').get('emp') : "",
                                 illness_name: problem.get('illness') ? problem.get('illness').get('name') : "", illness: problem.get('illness') ? problem.get('illness').id : "",
                                 keywords: problem.get('keywords') ? problem.get('keywords') : ""
                             };
@@ -461,7 +461,7 @@ router.put('/json/keywords/edit/:id', function (req, res) {
         let data = [];
         keywords.set('DT_RowId', keywords.id);
         data.push(keywords);
-        res.jsonp({ "data": data });
+        res.jsonp({ "list": data });
     });
 });
 
