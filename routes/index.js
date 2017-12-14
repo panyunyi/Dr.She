@@ -293,7 +293,7 @@ router.get('/toc2', function (req, res) {
 
 router.get('/apply', function (req, res) {
     let city_list = JSON.parse(fs.readFileSync(file));
-    return res.render('apply', { cities: city_list,objid:"596d793ba22b9d006a38e5e4" });
+    //return res.render('apply', { cities: city_list,objid:"596d793ba22b9d006a38e5e4" });
     let sess = req.session;
     //if (typeof (sess.objid) == "undefined") {
     let code = req.query.code;
@@ -328,7 +328,16 @@ router.get('/apply', function (req, res) {
                         } else if (count == 1) {
                             query.first().then(function (data) {
                                 sess.objid = data.id;
-                                res.render('apply', { cities: city_list, objid:data.id});
+                                let o2oQuery=new AV.Query('O2O');
+                                o2oQuery.equalTo('isDel',false);
+                                o2oQuery.equalTo('user',data);
+                                o2oQuery.count().then(function(count){
+                                    if(count==0){
+                                        res.render('apply', { cities: city_list, objid:data.id});
+                                    }else{
+                                        res.render('success');
+                                    }
+                                });
                             });
                         } else {
                             res.send("用户信息有重复，为保证用户利益请及时联系客服。");
@@ -344,6 +353,10 @@ router.get('/apply', function (req, res) {
             res.send("已超时，请退出菜单重进。");
         }
     });
+});
+
+router.get('/service', function (req, res) {
+    res.render('service');
 });
 
 router.get('/toc/success', function (req, res) {

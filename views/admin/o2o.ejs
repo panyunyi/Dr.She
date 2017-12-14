@@ -1,0 +1,122 @@
+<% include header %>
+    <div id="page-wrapper">
+        <div class="container-fluid">
+            <div class="row row-title">
+                <div class="col-lg-12">
+                    <h1 class="page-header">客服管理</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            客户管理
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table id="table" class="ui celled table" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>手机</th>
+                                        <th>省份</th>
+                                        <th>城市</th>
+                                        <th>微信</th>
+                                        <th>创建时间</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="../vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="../dist/js/sb-admin-2.js"></script>
+    <script src="../dist/js/semantic.min.js"></script>
+    <script src="../dist/js/jquery.dataTables.min.js"></script>
+    <script src="../dist/js/dataTables.semanticui.min.js"></script>
+    <script src="../dist/js/dataTables.buttons.min.js"></script>
+    <script src="../dist/js/buttons.semanticui.min.js"></script>
+    <script src="../dist/js/dataTables.select.min.js"></script>
+    <script src="../dist/js/dataTables.editor.min.js"></script>
+    <script src="../dist/js/editor.semanticui.min.js"></script>
+    <script>
+        var editor;
+        $(document).ready(function () {
+            editor = new $.fn.dataTable.Editor({
+                ajax: {
+                    create: {
+                        type: 'POST',
+                        url: '../api/json/o2o/add'
+                    },
+                    edit: {
+                        type: 'PUT',
+                        url: '../api/json/o2o/edit/_id_'
+                    },
+                    remove: {
+                        type: 'DELETE',
+                        url: '../api/json/o2o/remove/_id_'
+                    }
+                },
+                table: "#table"
+            });
+            var table = $('#table').DataTable({
+                "processing": true,
+                stateSave: true,
+                "dom": '<"top"rf>t<"bottom"ilp>',
+                "ajax": '../api/json/o2o',
+                "columns": [
+                    { "data": null },
+                    { "data": "phone", render: function (data) { return data ? data : "" } },
+                    { "data": "province", render: function (data) { return data ? data : "" } },
+                    { "data": "city", render: function (data) { return data ? data : "" } },
+                    { "data": "wx", render: function (data) { return data ? data : "" } },
+                    { "data": "time", render: function (data) { return data ? data : "" } }
+                ],
+                select: true,
+                "columnDefs": [{
+                    "searchable": false,
+                    "orderable": false,
+                    "targets": 0
+                }],
+                "order": [[5, 'desc']],
+                "language": {
+                    "url": "../vendor/zh_CN.txt"
+                }
+            });
+            table.on('order.dt search.dt', function () {
+                table.column(0, {
+                    search: 'applied',
+                    order: 'applied'
+                }).nodes().each(function (cell, i) {
+                    cell.innerHTML = i + 1;
+                });
+            }).draw();
+        });
+
+    </script>
+    </body>
+
+    </html>

@@ -9,6 +9,7 @@ var Donate = AV.Object.extend('Donate');
 var appid = process.env.wx_appid;
 var secret = process.env.wx_secret;
 var WxUser = AV.Object.extend('WxUser');
+var O2O = AV.Object.extend('O2O');
 
 router.get('/', function (req, res) {
     let sess = req.session;
@@ -93,36 +94,27 @@ router.post('/verify', function (req, res) {
 router.post('/add', function (req, res) {
     let userid = req.body.objid;
     let user = AV.Object.createWithoutData('WxUser', userid);
-    let name = req.body.name;
     let phone = req.body.phone;
-    let address = req.body.address;
-    let company = req.body.company;
-    let donateQuery = new AV.Query('Donate');
-    donateQuery.equalTo('user', user);
-    donateQuery.equalTo('title',"商户注册领取");
-    donateQuery.count().then(function (count) {
+    let province = req.body.province;
+    let city = req.body.city;
+    let wx = req.body.wx;
+    let o2oQuery = new AV.Query('O2O');
+    o2oQuery.equalTo('user', user);
+    o2oQuery.count().then(function (count) {
         if (count == 0) {
-            let business = new Business();
-            business.set('name', company);
-            business.set('phone', phone);
-            business.set('address', address);
-            business.set('connecter', name);
-            business.set('user', user);
-            business.save().then(function () {
-                let donate = new Donate();
-                donate.set('user', user);
-                donate.set('points', 60);
-                donate.set('source', "wechat");
-                donate.set('title', "商户注册领取");
-                donate.save().then(function () {
-                    user.increment('points', 60);
-                    user.save().then(function () {
-                        res.jsonp({ code: 0 });
-                    });
-                });
+            let o2o=new O2O();
+            o2o.set('isDel',false);
+            o2o.set('user',user);
+            o2o.set('phone',phone);
+            o2o.set('province',province);
+            o2o.set('city',city);
+            o2o.set('wx',wx);
+            o2o.set('flag',0);
+            o2o.save().then(function(){
+                res.jsonp({ code: 0, msg: "" });
             });
         } else {
-            res.jsonp({ code: 1, msg: "您已领取过，无法重复领取。" });
+            res.jsonp({ code: 1, msg: "您已注册，请添加客服微信。" });
         }
     });
 });

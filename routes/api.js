@@ -587,6 +587,34 @@ router.delete('/json/article/remove/:id', function (req, res) {
     });
 });
 
+router.get('/json/o2o', function (req, res, next) {
+    let query = new AV.Query('O2O');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (results) {
+        results.forEach(function (result) {
+            result.set('DT_RowId', result.id);
+            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            result.set('time', time);
+        });
+        res.jsonp({ data: results });
+    });
+});
+
+router.get('/json/service', function (req, res, next) {
+    let query = new AV.Query('Service');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (results) {
+        results.forEach(function (result) {
+            result.set('DT_RowId', result.id);
+            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            result.set('time', time);
+        });
+        res.jsonp({ data: results });
+    });
+});
+
 router.get('/json/section', function (req, res, next) {
     let query = new AV.Query('Section');
     query.equalTo('isDel', false);

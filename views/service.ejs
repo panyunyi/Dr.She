@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+    <meta http-equiv="cleartype" content="on">
+    <title>
+        维修服务
+    </title>
+    <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
+
+    <style type="text/css">
+
+        .img-responsive {
+            display: inline-block;
+            height: auto;
+            max-width: 50%;
+
+        }
+
+        .weui-btn2 {
+            line-height: 2.3 !important;
+            margin-top: 2px !important;
+            margin-bottom: 1px !important;
+            margin-right: 1px !important;
+        }
+
+        .weui-navbar__item.weui-bar__item_on {
+            background-color: #2a84c3 !important;
+        }
+
+        .weui-btn_primary {
+            background-color: #2489cf !important;
+        }
+
+        .weui-navbar p{font-size: x-large;color:#2a84c3}
+        #title{margin-top: 8rem}
+        .weui-cells p{color:#2a84c3;    padding-left: 15px;}
+        .weui-cells__title{margin-top: 0 !important}
+    </style>
+</head>
+
+<body>
+    <div id="block1">
+        
+    </div>
+    <div id=" block2 ">
+        <div class="weui-tab">
+                <div class="weui-navbar">
+                    <div id="tab1" class="weui-navbar__item weui-bar__item_on" onclick="tab1(this)">
+                            <img src="../checkin.png" class="img-responsive">
+                            <p style="color:white">维修登记</p>
+                    </div>
+                    <div id="tab2" class="weui-navbar__item" onclick="tab2(this)">
+                            <img src="../query.png" class="img-responsive">
+                            <p>进度查询</p>
+                    </div>
+                </div>
+                <div id="panel1" class="weui-tab__panel">
+                    <div id="title">
+                        <p>维修流程：填写登记表（必须填写方可享受维修服务）→用户发回视检镜→等待厂商收货→自助查询进度→确认维修→回寄视检镜</p>
+                        <p>维修原则：非人为损坏，可享1年免费维修服务。</p>
+                        <p>申请客服1对1，了解维修细则立即申请></p>
+                        <p>维修运费：返厂运费由用户承担，回寄运费由厂商承担</p>
+                    </div>
+                    <div id="get">
+                        <p>收件人信息：</p>
+                        <p>姓名：姚小姐</p>
+                        <p>地址：江苏省太仓市北京西路6号东楼一层舜宇医疗</p>
+                        <p>收件及客服电话：0512-53371600/4006000414</p>
+                    </div>
+                    <div class="weui-cells">
+                        <div class="weui-cell weui-cell_select weui-cell_select-after">
+                            <div class="weui-cell__hd">
+                                <label for="" class="weui-label">购买渠道</label>
+                            </div>
+                            <div class="weui-cell__bd">
+                                <select class="weui-select" name="select2">
+                                    <option value="淘宝天猫京东">淘宝天猫京东</option>
+                                    <option value="经销商">经销商</option>
+                                    <option value="厂家">厂家</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="weui-cell ">
+                            <div class="weui-cell__hd ">
+                                <label class="weui-label ">产品ID</label>
+                            </div>
+                            <div class="weui-cell__bd ">
+                                <input id="productid" class="weui-input " type="text" required pattern="^\d{2}[a-zA-Z]{1}\d{4}$"  placeholder="请填写" emptytips="请填写 "
+                                    notmatchtips="请输入正确的ID号 "> </div>
+                            <div class="weui-cell__ft ">
+                                <i class="weui-icon-warn "></i>
+                            </div>
+                        </div>
+                        <p>故障原因</p>
+                        <div class="weui-cells__title">请如实选填，以免影响维修进程（可多选）</div>
+                        <div class="weui-cells weui-cells_checkbox">
+                                <label class="weui-cell weui-check__label" for="s11">
+                                    <div class="weui-cell__hd">
+                                        <input type="checkbox" class="weui-check" name="checkbox1" id="s11" checked="checked">
+                                        <i class="weui-icon-checked"></i>
+                                    </div>
+                                    <div class="weui-cell__bd">
+                                        <p>无法开机</p>
+                                    </div>
+                                </label>
+                                <label class="weui-cell weui-check__label" for="s12">
+                                    <div class="weui-cell__hd">
+                                        <input type="checkbox" name="checkbox2" class="weui-check" id="s12">
+                                        <i class="weui-icon-checked"></i>
+                                    </div>
+                                    <div class="weui-cell__bd">
+                                        <p>接口松动</p>
+                                    </div>
+                                </label>
+                                <label class="weui-cell weui-check__label" for="s13">
+                                        <div class="weui-cell__hd">
+                                            <input type="checkbox" name="checkbox3" class="weui-check" id="s13">
+                                            <i class="weui-icon-checked"></i>
+                                        </div>
+                                        <div class="weui-cell__bd">
+                                            <p>LED灯不亮</p>
+                                        </div>
+                                    </label>
+                                <label class="weui-cell weui-check__label" for="s14">
+                                        <div class="weui-cell__hd">
+                                            <input type="checkbox" name="checkbox4" class="weui-check" id="s14">
+                                            <i class="weui-icon-checked"></i>
+                                        </div>
+                                        <div class="weui-cell__bd">
+                                            <p>无法连接电脑</p>
+                                        </div>
+                                    </label>
+                                <label class="weui-cell weui-check__label" for="s15">
+                                        <div class="weui-cell__hd">
+                                            <input type="checkbox" name="checkbox5" class="weui-check" id="s15">
+                                            <i class="weui-icon-checked"></i>
+                                        </div>
+                                        <div class="weui-cell__bd">
+                                            <p>其他</p>
+                                        </div>
+                                    </label>
+                            </div>
+                            <div class="weui-cells__title">产品数量</div>
+                            <div class="weui-cells">
+                                    <div class="weui-cell">
+                                        <div class="weui-cell__bd">
+                                            <input class="weui-input" type="number" placeholder="请输入产品数量">
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                    <div class="weui-btn-area ">
+                        <a id="formSubmitBtn" href="javascript:void(0) " class="weui-btn weui-btn_primary " style="margin-top:10rem">提交</a>
+                    </div>
+                </div>
+                <div id="panel2" class="weui-tab__panel">
+                        
+                </div>
+        </div>
+  
+        
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js "></script>
+    <link rel="stylesheet " href="../weui.min.css ">
+    <script type="text/javascript " src="../weui.js "></script>
+    <script src="//cdn1.lncld.net/static/js/2.3.2/av-min.js "></script>
+    <script type="text/javascript ">
+        function tab1(obj){
+            $("#tab1").addClass('weui-bar__item_on');
+            $("#tab2").removeClass('weui-bar__item_on');
+            $("#tab1 p").css('color','white');
+            $("#tab2 p").css('color','#2a84c3');
+            $("#panel1").css('display','block');
+            $("#panel2").css('display','none');
+        }
+
+        function tab2(obj){
+            $("#tab2").addClass('weui-bar__item_on');
+            $("#tab1").removeClass('weui-bar__item_on');
+            $("#tab2 p").css('color','white');
+            $("#tab1 p").css('color','#2a84c3');
+            $("#panel1").css('display','none');
+            $("#panel2").css('display','block');
+        }
+
+        $("#formSubmitBtn").on("click", function () {
+            if($("#phone").val().length==11){
+                $("#formSubmitBtn").attr("disabled","disabled");
+                $.post("/service/add", { productid: $("#productid").val(), province: $("#select1").val(),city:$("#select2").val(),wx:$("#wx").val(),objid:objid }, function (result) {
+                    if (result.code == 0) {
+                        window.location.replace("/service/success");
+                    } else {
+                        weui.alert(result.msg);
+                    }
+                });
+            }else{
+                weui.alert("请正确填写信息");
+                return;
+            }
+        });
+
+        
+
+    </script>
+</body>
+
+</html>
