@@ -11,20 +11,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
     <meta http-equiv="cleartype" content="on">
     <title>
-        商户注册
+        登记信息
     </title>
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
 
     <style type="text/css">
         .title {
-            text-align: center;
-            font-size: 1.6em
+            color: white
+        }
+
+        .arrow {
+            color: black
+        }
+
+        .o2o {
+            background-color: white;
+            color: #2a84c3;
+            border-radius: 18%;
+            font-weight: 600
         }
 
         .img-responsive {
             display: inline-block;
             height: auto;
-            max-width: 100%;
+            max-width: 50%;
+
         }
 
         .weui-btn2 {
@@ -33,12 +44,44 @@
             margin-bottom: 1px !important;
             margin-right: 1px !important;
         }
+
+        .weui-btn_primary {
+            background-color: #2489cf !important;
+        }
+
+        #block1 {
+            background-color: #2489cf;
+            text-align: center;
+        }
+
+        img {
+            margin-top: 1rem;
+        }
+
+        .p1 {
+            margin-top: 1rem
+        }
+
+        .p2 {
+            margin-top: 0.5rem;
+            padding-bottom: 1.5rem;
+        }
     </style>
 </head>
 
 <body>
     <div id="block1">
-        <img src="../block2.jpg" class="img-responsive">
+        <img src="../o2o.png" class="img-responsive">
+        <p class="title p1">
+            注册信息
+            <span class="arrow">→</span>与
+            <span class="o2o">1对1</span>客服加好友
+            <span class="arrow">→</span>专享
+            <span class="o2o">1对1</span>服务
+        </p>
+        <p class="title p2">
+            1对1操作指导·免费延保维修·专业美疗知识
+        </p>
     </div>
     <div id=" block2 ">
         <p class="title ">
@@ -46,37 +89,59 @@
         </p>
         <div class="weui-cells weui-cells_form ">
             <div class="weui-cell ">
-                <div class="weui-cell__hd "><label class="weui-label ">姓名</label></div>
-                <div class="weui-cell__bd "> <input id="name" class="weui-input " type="text" required maxlength="11" placeholder="输入你的姓名" emptytips="请输入姓名">                    </div>
-                <div class="weui-cell__ft "> <i class="weui-icon-warn "></i> </div>
-            </div>
-            <div class="weui-cell ">
-                <div class="weui-cell__hd "><label class="weui-label ">手机号</label></div>
-                <div class="weui-cell__bd "> <input id="phone" class="weui-input " type="number" required pattern="[0-9]*" maxlength="11" placeholder="输入你现在的手机号"
-                        emptytips="请输入手机号 " notmatchtips="请输入正确的手机号 "> </div>
-                <div class="weui-cell__ft "> <i class="weui-icon-warn "></i> </div>
-            </div>
-            <div class="weui-cell weui-cell weui-cell_vcode ">
-                <div class="weui-cell__hd "><label class="weui-label ">验证码</label></div>
-                <div class="weui-cell__bd "> <input id="code" class="weui-input" maxlength="6" type="text " required placeholder="请输入验证码" tips="请输入验证码">                    </div>
-                <div class="weui-cell__ft "> <i class="weui-icon-warn "></i>
-                    <div class=" "> <a id="codebutton" class="weui-btn weui-btn_primary weui-btn2">获取验证码</a> </div>
+                <div class="weui-cell__hd ">
+                    <label class="weui-label ">手机号码</label>
+                </div>
+                <div class="weui-cell__bd ">
+                    <input id="phone" class="weui-input " type="number" required pattern="[0-9]*" maxlength="11" placeholder="输入你现在的手机号" emptytips="请输入手机号 "
+                        notmatchtips="请输入正确的手机号 "> </div>
+                <div class="weui-cell__ft ">
+                    <i class="weui-icon-warn "></i>
                 </div>
             </div>
-            <div class="weui-cell ">
-                <div class="weui-cell__hd "><label class="weui-label ">公司名称</label></div>
-                <div class="weui-cell__bd "> <input id="company" class="weui-input" type="text" required placeholder="输入公司名称
-            " emptytips="请输入公司名称 " notmatchtips=" "> </div>
-                <div class="weui-cell__ft "> <i class="weui-icon-warn "></i> </div>
+            <div class="weui-cell weui-cell weui-cell_vcode ">
+                <div class="weui-cell__hd ">
+                    <label class="weui-label ">短信验证码</label>
+                </div>
+                <div class="weui-cell__bd ">
+                    <input id="code" class="weui-input" maxlength="6" type="text " required placeholder="请输入验证码" tips="请输入验证码"> </div>
+                <div class="weui-cell__ft ">
+                    <i class="weui-icon-warn "></i>
+                    <div class=" ">
+                        <a id="codebutton" class="weui-btn weui-btn_primary weui-btn2">获取验证码</a>
+                    </div>
+                </div>
             </div>
-            <div class="weui-cell ">
-                <div class="weui-cell__hd "><label class="weui-label ">地址</label></div>
-                <div class="weui-cell__bd "> <input id="address" class="weui-input" type="text" required placeholder="输入公司地址
-            " emptytips="请输入公司地址 " notmatchtips=" "> </div>
-                <div class="weui-cell__ft "> <i class="weui-icon-warn "></i> </div>
+            <div class="weui-cells">
+                <div class="weui-cell weui-cell_select weui-cell_select-after">
+                    <div class="weui-cell__hd">
+                            <label for="" class="weui-label">城市</label>
+                        </div>
+                    <div class="weui-cell__bd">
+                        <select class="weui-select" name="select1">
+                            <option value="1">中国</option>
+                            <option value="2">美国</option>
+                            <option value="3">英国</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="weui-cell weui-cell_select weui-cell_select-after">
+                    <div class="weui-cell__hd">
+                        <label for="" class="weui-label">城市</label>
+                    </div>
+                    <div class="weui-cell__bd">
+                        <select class="weui-select" name="select2">
+                            <option value="1">中国</option>
+                            <option value="2">美国</option>
+                            <option value="3">英国</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="weui-btn-area "> <a id="formSubmitBtn" href="javascript:void(0) " class="weui-btn weui-btn_primary " style="margin-bottom:1rem">确认立即领取</a> <a href="/apply/success">查看使用方法</a></div>
+        <div class="weui-btn-area ">
+            <a id="formSubmitBtn" href="javascript:void(0) " class="weui-btn weui-btn_primary " style="margin-bottom:1rem">立即提交</a>
+        </div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js "></script>
     <link rel="stylesheet " href="../weui.min.css ">

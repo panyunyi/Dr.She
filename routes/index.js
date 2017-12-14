@@ -12,6 +12,8 @@ var async = require('async');
 var signature = require('../routes/signature');
 var moment = require('moment');
 moment.locale('zh-cn');
+var fs = require('fs');
+var file = "./public/city_list.json";
 
 router.get('/', function (req, res) {
     let sess = req.session;
@@ -271,13 +273,13 @@ router.get('/articles', function (req, res) {
 
 });
 
-router.get('/advise', function (req, res) {
-    let url = req.protocol + '://' + req.host + req.originalUrl; //获取当前url
-    signature.sign(url, function (signatureMap) {
-        signatureMap.appid = appid;
-        res.render('advise', signatureMap);
-    });
-});
+// router.get('/advise', function (req, res) {
+//     let url = req.protocol + '://' + req.host + req.originalUrl; //获取当前url
+//     signature.sign(url, function (signatureMap) {
+//         signatureMap.appid = appid;
+//         res.render('advise', signatureMap);
+//     });
+// });
 
 router.get('/toc2', function (req, res) {
     let url = req.protocol + '://' + req.host + req.originalUrl; //获取当前url
@@ -289,8 +291,59 @@ router.get('/toc2', function (req, res) {
     });
 });
 
-router.get('/toc3', function (req, res) {
-    res.redirect('https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/toc&response_type=code&scope=snsapi_userinfo&state=1');
+router.get('/apply', function (req, res) {
+    let city_list = JSON.parse(fs.readFileSync(file));
+    return res.render('apply', { cities: city_list,objid:"596d793ba22b9d006a38e5e4" });
+    let sess = req.session;
+    //if (typeof (sess.objid) == "undefined") {
+    let code = req.query.code;
+    let state = req.query.state;
+    let client = request.createClient('https://api.weixin.qq.com/sns/oauth2/');
+    client.get('access_token?appid=' + appid + '&secret=' + secret + '&code=' + code + '&grant_type=authorization_code', function (err, res1, body) {
+        if (body != "undefined" && typeof (body.openid) != "undefined") {
+            client = request.createClient('https://api.weixin.qq.com/sns/');
+            client.get('userinfo?access_token=' + body.access_token + '&openid=' + body.openid + '&lang=zh_CN', function (err2, res2, body2) {
+                if (body2 != "undefined" && typeof (body2.openid) != "undefined") {
+                    let openid = body2.openid;
+                    let query = new AV.Query('WxUser');
+                    query.equalTo('openid', openid);
+                    query.count().then(function (count) {
+                        if (count == 0) {
+                            let wxuser = new WxUser();
+                            wxuser.set('openid', openid);
+                            wxuser.set('nickname', body2.nickname);
+                            wxuser.set('sex', body2.sex == 1 ? "男" : "女");
+                            wxuser.set('city', body2.city);
+                            wxuser.set('province', body2.province);
+                            wxuser.set('country', body2.country);
+                            wxuser.set('headimgurl', body2.headimgurl);
+                            wxuser.set('points', 2);
+                            wxuser.set('unionid', body2.unionid);
+                            wxuser.save().then(function (data) {
+                                sess.objidid = data.id;
+                                res.render('apply', { cities: city_list,objid:data.id });
+                            }, function (err) {
+                                console.log(err);
+                            });
+                        } else if (count == 1) {
+                            query.first().then(function (data) {
+                                sess.objid = data.id;
+                                res.render('apply', { cities: city_list, objid:data.id});
+                            });
+                        } else {
+                            res.send("用户信息有重复，为保证用户利益请及时联系客服。");
+                        }
+                    });
+                } else {
+                    console.log(body);
+                    res.send("已超时，请退出菜单重进。");
+                }
+            });
+        } else {
+            console.log(body);
+            res.send("已超时，请退出菜单重进。");
+        }
+    });
 });
 
 router.get('/toc/success', function (req, res) {
