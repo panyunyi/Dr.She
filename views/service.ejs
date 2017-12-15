@@ -43,6 +43,10 @@
         #title{margin-top: 8rem}
         .weui-cells p{color:#2a84c3;    padding-left: 15px;}
         .weui-cells__title{margin-top: 0 !important}
+        .bold{font-weight: bold}
+        .p1rem{margin-bottom:1rem}
+        .label{color:#2a84c3;}
+        .p2rem{margin-top:1rem}
     </style>
 </head>
 
@@ -54,31 +58,31 @@
         <div class="weui-tab">
                 <div class="weui-navbar">
                     <div id="tab1" class="weui-navbar__item weui-bar__item_on" onclick="tab1(this)">
-                            <img src="../checkin.png" class="img-responsive">
+                            <img id="checkin" src="../checkin.png" class="img-responsive">
                             <p style="color:white">维修登记</p>
                     </div>
                     <div id="tab2" class="weui-navbar__item" onclick="tab2(this)">
-                            <img src="../query.png" class="img-responsive">
+                            <img id="query" src="../query.png" class="img-responsive">
                             <p>进度查询</p>
                     </div>
                 </div>
                 <div id="panel1" class="weui-tab__panel">
-                    <div id="title">
-                        <p>维修流程：填写登记表（必须填写方可享受维修服务）→用户发回视检镜→等待厂商收货→自助查询进度→确认维修→回寄视检镜</p>
-                        <p>维修原则：非人为损坏，可享1年免费维修服务。</p>
-                        <p>申请客服1对1，了解维修细则立即申请></p>
-                        <p>维修运费：返厂运费由用户承担，回寄运费由厂商承担</p>
+                    <div id="title" style="padding-left: 15px;padding-right:10px;border-bottom:1px solid #d9d9d9">
+                        <p class="p1rem"><span class="bold">维修流程：</span>填写登记表<span style="color:red">（必须填写方可享受维修服务）</span>→用户发回视检镜→等待厂商收货→自助查询进度→确认维修→回寄视检镜</p>
+                        <p><span class="bold">维修原则：</span>非人为损坏，可享1年免费维修服务。</p>
+                        <p class="p1rem"><span style="color:#2a84c3">申请客服1对1，了解维修细则 </span><a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/apply&response_type=code&scope=snsapi_userinfo&state=1" style="background-color:#2489cf;color:white;border-radius:8%;font-size:14px;">立即申请 > </a></p>
+                        <p class="p1rem"><span class="bold">维修运费：</span>返厂运费由用户承担，回寄运费由厂商承担</p>
                     </div>
-                    <div id="get">
-                        <p>收件人信息：</p>
+                    <div id="get" style="padding-left: 15px;padding-right:10px;margin-top:1rem">
+                        <p class="bold p1rem">收件人信息：</p>
                         <p>姓名：姚小姐</p>
-                        <p>地址：江苏省太仓市北京西路6号东楼一层舜宇医疗</p>
-                        <p>收件及客服电话：0512-53371600/4006000414</p>
+                        <p class="p1rem">地址：江苏省太仓市北京西路6号东楼一层舜宇医疗</p>
+                        <p><span class="bold">收件及客服电话：</span>/4006000414</p>
                     </div>
                     <div class="weui-cells">
                         <div class="weui-cell weui-cell_select weui-cell_select-after">
                             <div class="weui-cell__hd">
-                                <label for="" class="weui-label">购买渠道</label>
+                                <label for="" class="weui-label label">购买渠道</label>
                             </div>
                             <div class="weui-cell__bd">
                                 <select class="weui-select" name="select2">
@@ -91,16 +95,13 @@
                         </div>
                         <div class="weui-cell ">
                             <div class="weui-cell__hd ">
-                                <label class="weui-label ">产品ID</label>
+                                <label class="weui-label label">产品ID</label>
                             </div>
                             <div class="weui-cell__bd ">
                                 <input id="productid" class="weui-input " type="text" required pattern="^\d{2}[a-zA-Z]{1}\d{4}$"  placeholder="请填写" emptytips="请填写 "
                                     notmatchtips="请输入正确的ID号 "> </div>
-                            <div class="weui-cell__ft ">
-                                <i class="weui-icon-warn "></i>
-                            </div>
                         </div>
-                        <p>故障原因</p>
+                        <p class="p2rem">故障原因</p>
                         <div class="weui-cells__title">请如实选填，以免影响维修进程（可多选）</div>
                         <div class="weui-cells weui-cells_checkbox">
                                 <label class="weui-cell weui-check__label" for="s11">
@@ -149,21 +150,70 @@
                                         </div>
                                     </label>
                             </div>
-                            <div class="weui-cells__title">产品数量</div>
-                            <div class="weui-cells">
-                                    <div class="weui-cell">
-                                        <div class="weui-cell__bd">
-                                            <input class="weui-input" type="number" placeholder="请输入产品数量">
-                                        </div>
+                            <div class="weui-cell" style="border-top:0px !important">
+                                <div class="weui-cell__hd ">
+                                    <label class="weui-label label">寄回产品数量</label>
+                                </div>
+                                <div class="weui-cell__bd ">
+                                    <input id="count" class="weui-input " type="number" required  placeholder="请填写" emptytips="请填写 "
+                                        notmatchtips="请输入正确的数量 "> </div>
+                            </div>
+                            
+                            <p >快递公司和单号</p>
+                            <div class="weui-cells__title">请填写快递所属公司和单号</div>
+                            <div class="weui-cells ">
+                                <div class="weui-cell">
+                                    <div class="weui-cell__bd">
+                                        <input class="weui-input" type="text" placeholder="请输入单号">
                                     </div>
                                 </div>
+                            </div>
+
+                            <p >回寄人信息</p>
+                            <div class="weui-cells__title">请填写可以联络的电话号码</div>
+                            <div class="weui-cells ">
+                                <div class="weui-cell">
+                                    <div class="weui-cell__bd">
+                                        <input class="weui-input" type="text" placeholder="请输入电话号码">
+                                    </div>
+                                </div>
+                            </div>
+                            <p >回寄人地址</p>
+                            <div class="weui-cells__title">请具体到镇村、路、号、小区和居住单元</div>
+                            <div class="weui-cells ">
+                                <div class="weui-cell">
+                                    <div class="weui-cell__bd">
+                                        <input class="weui-input" type="text" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                            <p >备注</p>
+                            <div class="weui-cells__title">如有其他问题，请进行详细说明，例如收件时间仅限工作日等，如您有疑问，请咨询客服并按照要求填写。</div>
+                            <div class="weui-cells ">
+                                <div class="weui-cell">
+                                    <div class="weui-cell__bd">
+                                        <input class="weui-input" type="text" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
                     </div>
                     <div class="weui-btn-area ">
-                        <a id="formSubmitBtn" href="javascript:void(0) " class="weui-btn weui-btn_primary " style="margin-top:10rem">提交</a>
+                        <a id="formSubmitBtn" href="" class="weui-btn weui-btn_primary " style="margin-top:1rem">提交</a>
                     </div>
                 </div>
-                <div id="panel2" class="weui-tab__panel">
-                        
+                <div id="panel2" class="weui-tab__panel" style="display:none">
+                        <p style="margin-top:12rem;padding-left: 15px;color:#2a84c3">维修进度查询</p>
+                        <div class="weui-cells__title">寄件人手机号码</div>
+                        <div class="weui-cells ">
+                            <div class="weui-cell">
+                                <div class="weui-cell__bd">
+                                    <input class="weui-input" type="text" placeholder="请输入电话号码">
+                                </div>
+                            </div>
+                        </div>
+                    <div class="weui-btn-area " style="margin-top:1rem">
+                        <a id="formSubmitBtn2" href="" class="weui-btn weui-btn_primary " style="margin-top:1rem">查询</a>
+                    </div>
                 </div>
         </div>
   
@@ -181,6 +231,8 @@
             $("#tab2 p").css('color','#2a84c3');
             $("#panel1").css('display','block');
             $("#panel2").css('display','none');
+            $("#checkin").attr('src','../checkin.png'); 
+            $("#query").attr('src','../query.png'); 
         }
 
         function tab2(obj){
@@ -190,6 +242,8 @@
             $("#tab1 p").css('color','#2a84c3');
             $("#panel1").css('display','none');
             $("#panel2").css('display','block');
+            $("#query").attr('src','../query2.png'); 
+            $("#checkin").attr('src','../checkin2.png'); 
         }
 
         $("#formSubmitBtn").on("click", function () {

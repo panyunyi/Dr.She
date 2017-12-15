@@ -293,7 +293,7 @@ router.get('/toc2', function (req, res) {
 
 router.get('/apply', function (req, res) {
     let city_list = JSON.parse(fs.readFileSync(file));
-    //return res.render('apply', { cities: city_list,objid:"596d793ba22b9d006a38e5e4" });
+    return res.render('apply', { cities: city_list,objid:"596d793ba22b9d006a38e5e4" });
     let sess = req.session;
     //if (typeof (sess.objid) == "undefined") {
     let code = req.query.code;
