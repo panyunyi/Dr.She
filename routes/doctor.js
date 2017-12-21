@@ -24,7 +24,7 @@ function getTokenAndSendMsg(data, response) {
         client = request.createClient('https://api.weixin.qq.com/cgi-bin/message/template/');
         client.post('send?access_token=' + token, data, function (err, res, body) {
             response.jsonp(result);
-            console.log("body:" + JSON.stringify(body));
+            // console.log("body:" + JSON.stringify(body));
         });
     });
 }

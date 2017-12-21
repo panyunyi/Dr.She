@@ -46,6 +46,7 @@ app.use('/doctor',  require('./routes/doctor'));
 app.use('/app',  require('./routes/app'));
 app.use('/advice',  require('./routes/advice'));
 app.use('/apply',  require('./routes/apply'));
+app.use('/service',  require('./routes/service'));
 // 可以将一类的路由单独保存在一个文件中
 app.use('/todos', require('./routes/todos'));
 app.use('/api',  require('./routes/api'));

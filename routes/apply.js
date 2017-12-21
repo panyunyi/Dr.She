@@ -99,6 +99,7 @@ router.post('/add', function (req, res) {
     let city = req.body.city;
     let wx = req.body.wx;
     let o2oQuery = new AV.Query('O2O');
+    o2oQuery.equalTo('isDel',false);
     o2oQuery.equalTo('user', user);
     o2oQuery.count().then(function (count) {
         if (count == 0) {

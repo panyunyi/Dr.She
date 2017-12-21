@@ -23,6 +23,8 @@ var Donate = AV.Object.extend('Donate');
 var Goods = AV.Object.extend('Goods');
 var Advice = AV.Object.extend('Advice');
 var Commet = AV.Object.extend('Commet');
+var Thread = AV.Object.extend('Thread');
+var ThreadCommet = AV.Object.extend('ThreadCommet');
 var moment = require('moment');
 moment.locale('zh-cn');
 
@@ -169,7 +171,10 @@ router.get('/business/:user_id', function (req, res) {
         if (typeof (data) == "undefined") {
             res.jsonp({ count: 0 });
         } else {
-            res.jsonp({ count: 1, business_id: data.id, name: data.get('name'), phone: data.get('phone'), address: data.get('address'), connecter: data.get('connecter') });
+            res.jsonp({
+                count: 1, business_id: data.id, name: data.get('name'), phone: data.get('phone'), address: data.get('address'),
+                connecter: data.get('connecter')
+            });
         }
     });
 });
@@ -536,7 +541,7 @@ router.post('/add', function (req, res) {
     }
     let data = { "content": req.body.content, "image": imglist, "age": req.body.age + "岁", "sex": "女" };
     chunyu.createFree(user.id, time, data, flag, "app").then(function (data) {
-        getCount(req.body.content,res,{ error: 0, id: data });
+        getCount(req.body.content, res, { error: 0, id: data });
         //res.jsonp({ error: 0, id: data });
     });
 });
@@ -549,27 +554,27 @@ router.get('/problem/:user_id/:problem_id/:content_id', function (req, res) {
     let content_id = req.params.content_id
     chunyu.problemDetail(user_id, problem_id, content_id, time).then(function (data) {
         chunyu.problemView(user_id, problem_id, time).then(function (view) {
-            let query=new AV.Query('KeyWords2');
-            query.equalTo('isDel',false);
-            query.find().then(function(keys){
-                async.map(data.content,function(content,callback){
-                    let arr=JSON.parse(content.content);
+            let query = new AV.Query('KeyWords2');
+            query.equalTo('isDel', false);
+            query.find().then(function (keys) {
+                async.map(data.content, function (content, callback) {
+                    let arr = JSON.parse(content.content);
                     //console.log(arr);
-                    async.map(arr,function(line,callback1){
-                        if(line.text){
-                            keys.forEach(function(key){
-                                if(line.text.indexOf(key.get('name'))>0){
+                    async.map(arr, function (line, callback1) {
+                        if (line.text) {
+                            keys.forEach(function (key) {
+                                if (line.text.indexOf(key.get('name')) > 0) {
                                     //console.log(line);
-                                    content["key"]=key.get('name');
+                                    content["key"] = key.get('name');
                                 }
                             });
                         }
-                        callback1(null,1);
-                    },function(err,resline){
-                        callback(null,1);
+                        callback1(null, 1);
+                    }, function (err, resline) {
+                        callback(null, 1);
                     });
                     //callback(null,1);
-                },function(err,rescontent){
+                }, function (err, rescontent) {
                     result["error"] = 0;
                     result["content"] = data.content;
                     result["doctor"] = data.doctor;
@@ -699,7 +704,7 @@ router.post('/choice', function (req, res) {
     order.save().then(function (order) {
         chunyu.createPay(user_id, time, data, order.id, price).then(function (data) {
             chunyu.successNotice(user_id, data, time, "app").then(function (data) {
-                getCount(req.body.content,res,{ id: data.problems[0].problem_id });
+                getCount(req.body.content, res, { id: data.problems[0].problem_id });
                 //res.jsonp({ id: data.problems[0].problem_id });
             });
         });
@@ -708,21 +713,21 @@ router.post('/choice', function (req, res) {
     });
 });
 
-function getCount(content,res,data){
-    let query=new AV.Query('Medicine');
-    query.equalTo('isDel',false);
+function getCount(content, res, data) {
+    let query = new AV.Query('Medicine');
+    query.equalTo('isDel', false);
     query.limit(1000);
-    query.find().then(function(results){
-        async.map(results,function(result,callback){
-            if(content.indexOf(result.get('name'))>0){
-                result.increment('recommend',1);
-                result.save().then(function(){
-                    callback(null,1);
+    query.find().then(function (results) {
+        async.map(results, function (result, callback) {
+            if (content.indexOf(result.get('name')) > 0) {
+                result.increment('recommend', 1);
+                result.save().then(function () {
+                    callback(null, 1);
                 });
-            }else{
-                callback(null,0);
+            } else {
+                callback(null, 0);
             }
-        },function(err,results){
+        }, function (err, results) {
             res.jsonp(data);
         });
     });
@@ -734,7 +739,7 @@ router.post('/problem/add', function (req, res) {
     let content = req.body.content;
     let time = Math.round(new Date().getTime() / 1000).toString();
     chunyu.problemAdd(user_id, problem_id, content, time).then(function (data) {
-        getCount(content,res,data);
+        getCount(content, res, data);
         //res.jsonp(data);
     });
 });
@@ -754,7 +759,7 @@ router.post('/problem/imageadd', function (req, res) {
     let url = req.body.url;
     let time = Math.round(new Date().getTime() / 1000).toString();
     chunyu.problemImageAdd(user_id, problem_id, url, time).then(function (data) {
-        res.jsonp({error:0});
+        res.jsonp({ error: 0 });
     });
 });
 
@@ -935,7 +940,8 @@ router.get('/recommend/article', function (req, res) {
         articlequery.find().then(function (articles) {
             async.map(articles, function (article, callback) {
                 let one = {
-                    title: article.get('title'), section: article.get('section').get('name'), url: article.get('url'), writer: article.get('writer') ? article.get('writer') : "",
+                    title: article.get('title'), section: article.get('section').get('name'), url: article.get('url'),
+                    writer: article.get('writer') ? article.get('writer') : "",
                     updatedAt: article.get('problem') ? article.get('problem').get('createdAt') : article.get('createdAt')
                 };
                 callback(null, one);
@@ -986,7 +992,8 @@ router.get('/recommend/article/ill', function (req, res) {
     query.find().then(function (articles) {
         async.map(articles, function (article, callback) {
             let one = {
-                title: article.get('title'), section: article.get('section').get('name'), url: article.get('url'), writer: article.get('writer') ? article.get('writer') : "",
+                title: article.get('title'), section: article.get('section').get('name'), url: article.get('url'),
+                writer: article.get('writer') ? article.get('writer') : "",
                 updatedAt: article.get('problem') ? article.get('problem').get('createdAt') : article.get('createdAt')
             };
             callback(null, one);
@@ -1013,4 +1020,71 @@ router.get('/version', function (req, res) {
         res.jsonp({ name: version.get('name'), code: version.get('code') });
     });
 });
+
+//生意经
+router.get('/thread', function (req, res) {
+    let index = req.query.index * 1 - 1;
+    let query = new AV.Query('Thread');
+    query.include('user');
+    query.descending('createdAt');
+    query.limit(20);
+    query.skip(20 * index);
+    query.equalTo('isDel', false);
+    query.find().then(function (threads) {
+        async.map(threads, function (thread, callback) {
+            let commetQuery = new AV.Query('ThreadCommet');
+            commetQuery.equalTo('isDel', false);
+            commetQuery.equalTo('thread', thread);
+            commetQuery.include('user');
+            commetQuery.ascending('createdAt');
+            commetQuery.limit(1000);
+            commetQuery.find().then(function (commets) {
+                async.map(commets, function (commet, callback1) {
+                    let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
+                    callback1(null, one);
+                }, function (err, comments) {
+                    let one = {
+                        title: thread.get('title'), content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+                        headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
+                    };
+                    callback(null, one);
+                });
+            });
+        }, function (err, threads) {
+            res.jsonp({ index: req.query.index, threads: threads, count: threads.length });
+        });
+    });
+});
+
+router.post('/thread/add', function (req, res) {
+    let user_id = req.body.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let images = req.body.images;
+    let content = req.body.content;
+    let thread = new Thread();
+    thread.set('isDel', false);
+    thread.set('user', user);
+    thread.set('content', content);
+    thread.set('images', images);
+    thread.save().then(function () {
+        res.jsonp({ error: 0, msg: "" });
+    });
+});
+
+router.post('/thread/reply', function (req, res) {
+    let user_id = req.body.user_id;
+    let thread_id = req.body.thread_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let thread = AV.Object.createWithoutData('Thread', thread_id);
+    let content = req.body.content;
+    let threadCommet = new ThreadCommet();
+    threadCommet.set('isDel', false);
+    threadCommet.set('user', user);
+    threadCommet.set('thread', thread);
+    threadCommet.set('content', content);
+    threadCommet.save().then(function () {
+        res.jsonp({ error: 0, msg: "" });
+    });
+});
+
 module.exports = router;

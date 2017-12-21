@@ -40,7 +40,7 @@ router.get('/json/advice', function (req, res, next) {
                         let time = new moment(user.get('createdAt'));
                         let one = {
                             nickname: user.get('user').get('nickname') ? user.get('user').get('nickname') : "", phone: user.get('phone') ? user.get('phone') : "",
-                            content: user.get('content')?user.get('content'):"", source: user.get('source') ? user.get('source') : "",
+                            content: user.get('content') ? user.get('content') : "", source: user.get('source') ? user.get('source') : "",
                             image: user.get('image') ? user.get('image') : "",
                             createdAt: time.format('YYYY-MM-DD HH:mm:ss')
                         };
@@ -139,7 +139,7 @@ router.get('/json/problems', function (req, res, next) {
                             let time = new moment(problem.get('createdAt'));
                             let one = {
                                 problem_id: problem.get('problem_id'), user: problem.get('user') ? problem.get('user').get('nickname') : "", source: problem.get('source') ? problem.get('source') : "",
-                                createdAt: time.format('YYYY-MM-DD HH:mm:ss'), DT_RowId: problem.id, select: problem.get('select'), title: problem.get('title'),emp:problem.get('user') ? problem.get('user').get('emp') : "",
+                                createdAt: time.format('YYYY-MM-DD HH:mm:ss'), DT_RowId: problem.id, select: problem.get('select'), title: problem.get('title'), emp: problem.get('user') ? problem.get('user').get('emp') : "",
                                 illness_name: problem.get('illness') ? problem.get('illness').get('name') : "", illness: problem.get('illness') ? problem.get('illness').id : "",
                                 keywords: problem.get('keywords') ? problem.get('keywords') : ""
                             };
@@ -612,6 +612,62 @@ router.get('/json/service', function (req, res, next) {
             result.set('time', time);
         });
         res.jsonp({ data: results });
+    });
+});
+
+router.get('/json/serviceitem', function (req, res, next) {
+    let query = new AV.Query('ServiceItem');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (results) {
+        results.forEach(function (result) {
+            result.set('DT_RowId', result.id);
+            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            result.set('time', time);
+        });
+        res.jsonp({ data: results });
+    });
+});
+
+var ServiceItem = AV.Object.extend('ServiceItem');
+router.post('/json/serviceitem/add', function (req, res) {
+    let arr = req.body;
+    let serviceitem = new ServiceItem();
+    serviceitem.set('name', arr['data'][0]['name']);
+    serviceitem.set('price', arr['data'][0]['price'] * 1);
+    serviceitem.set('isDel', false);
+    let data = [];
+    serviceitem.save().then(function (serviceitem) {
+        serviceitem.set('DT_RowId', serviceitem.id);
+        let time = new moment(serviceitem.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        serviceitem.set('time', time);
+        data.push(serviceitem);
+        res.jsonp({ data: data });
+    });
+});
+
+router.put('/json/serviceitem/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let serviceitem = AV.Object.createWithoutData('ServiceItem', id);
+    serviceitem.set('name', arr['data'][id]['name']);
+    serviceitem.set('price', arr['data'][id]['price'] * 1);
+    serviceitem.save().then(function (serviceitem) {
+        let data = [];
+        serviceitem.set('DT_RowId', serviceitem.id);
+        let time = new moment(serviceitem.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        serviceitem.set('time', time);
+        data.push(serviceitem);
+        res.jsonp({ "data": data });
+    });
+});
+
+router.delete('/json/serviceitem/remove/:id', function (req, res) {
+    let id = req.params.id;
+    let serviceitem = AV.Object.createWithoutData('ServiceItem', id);
+    serviceitem.set('isDel', true);
+    serviceitem.save().then(function () {
+        res.jsonp({ "data": [] });
     });
 });
 

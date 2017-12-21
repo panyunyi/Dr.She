@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <div class="row row-title">
                 <div class="col-lg-12">
-                    <h1 class="page-header">客服管理</h1>
+                    <h1 class="page-header">维修项目</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -12,7 +12,7 @@
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            维修记录
+                            维修项目管理
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -20,19 +20,8 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
-                                        <th>维修单号</th>
-                                        <th>回寄人</th>
-                                        <th>手机</th>
-                                        <th>回寄地址</th>
-                                        <th>回寄单号</th>
-                                        <th>状态</th>
-                                        <th>购买渠道</th>
-                                        <th>产品ID</th>
-                                        <th>寄回数量</th>
-                                        <th>故障原因</th>
-                                        <th>快递</th>
-                                        <th>快递单号</th>
-                                        <th>备注</th>
+                                        <th>名称</th>
+                                        <th>价格</th>
                                         <th>创建时间</th>
                                     </tr>
                                 </thead>
@@ -78,55 +67,66 @@
                 ajax: {
                     create: {
                         type: 'POST',
-                        url: '../api/json/service/add'
+                        url: '../api/json/serviceitem/add'
                     },
                     edit: {
                         type: 'PUT',
-                        url: '../api/json/service/edit/_id_'
+                        url: '../api/json/serviceitem/edit/_id_'
                     },
                     remove: {
                         type: 'DELETE',
-                        url: '../api/json/service/remove/_id_'
+                        url: '../api/json/serviceitem/remove/_id_'
                     }
                 },
-                table: "#table"
+                table: "#table",
+                fields: [
+                    { label: '名称', name: 'name' },
+                    { label: '价格', name: 'price' },
+                ], i18n: {
+                    create: {
+                        button: "新增",
+                        title: "新建项目",
+                        submit: "创建"
+                    },
+                    edit: {
+                        button: "编辑",
+                        title: "编辑项目",
+                        submit: "更新"
+                    },
+                    remove: {
+                        button: "删除",
+                        title: "删除",
+                        submit: "删除",
+                        confirm: {
+                            _: "确定要删除 %d 条吗?",
+                            1: "确定要删除这个项目吗?"
+                        }
+                    }
+                }
             });
             var table = $('#table').DataTable({
                 "processing": true,
                 stateSave: true,
-                "dom": '<"top"rf>t<"bottom"ilp>',
-                "ajax": '../api/json/service',
+                "dom": '<"top"Brf>t<"bottom"ilp>',
+                "ajax": '../api/json/serviceitem',
                 "columns": [
                     { "data": null },
-                    { "data": "orderid", render: function (data) { return data ? data : "" } },
-                    { "data": "sender", render: function (data) { return data ? data : "" } },
-                    { "data": "phone", render: function (data) { return data ? data : "" } },
-                    { "data": "address", render: function (data) { return data ? data : "" } },
-                    { "data": "delivery", render: function (data) { return data ? data : "" } },
-                    { "data": "status", render: function (data) { if (data == 0) { return "待接收"; } } },
-                    { "data": "wheretobuy", render: function (data) { return data ? data : "" } },
-                    { "data": "productid", render: function (data) { return data ? data : "" } },
-                    { "data": "count", render: function (data) { return data ? data : "" } },
-                    { "data": "error", render: function (data) { return data ? data : "" } },
-                    { "data": "express", render: function (data) { return data ? data : "" } },
-                    { "data": "expressid", render: function (data) { return data ? data : "" } },
-                    { "data": "notice", render: function (data) { return data ? data : "" } },
+                    { "data": "name", render: function (data) { return data ? data : "" } },
+                    { "data": "price", render: function (data) { return data ? data : "" } },
                     { "data": "time", render: function (data) { return data ? data : "" } }
                 ],
                 select: true,
+                buttons: [
+                    { extend: "create", editor: editor },
+                    { extend: "edit", editor: editor },
+                    { extend: "remove", editor: editor }
+                ],
                 "columnDefs": [{
                     "searchable": false,
                     "orderable": false,
                     "targets": 0
                 }],
-                "createdRow": function (row, data, index) {
-                    if (data.status==0) {
-                        $('td', row).eq(6).css("color", "#e7505a");
-                    } else {
-                        $('td', row).eq(6).css("color", "#32c5d2");
-                    }
-                },
-                "order": [[12, 'desc']],
+                "order": [[3, 'desc']],
                 "language": {
                     "url": "../vendor/zh_CN.txt"
                 }
