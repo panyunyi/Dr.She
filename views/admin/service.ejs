@@ -31,7 +31,6 @@
                                         <th>寄回数量</th>
                                         <th>故障原因</th>
                                         <th>快递</th>
-                                        <th>快递单号</th>
                                         <th>备注</th>
                                         <th>创建时间</th>
                                     </tr>
@@ -108,8 +107,7 @@
                     { "data": "productid", render: function (data) { return data ? data : "" } },
                     { "data": "count", render: function (data) { return data ? data : "" } },
                     { "data": "error", render: function (data) { return data ? data : "" } },
-                    { "data": "express", render: function (data) { return data ? data : "" } },
-                    { "data": "expressid", render: function (data) { return data ? data : "" } },
+                    { "data": "express"},
                     { "data": "notice", render: function (data) { return data ? data : "" } },
                     { "data": "time", render: function (data) { return data ? data : "" } }
                 ],
@@ -117,7 +115,10 @@
                 "columnDefs": [{
                     "searchable": false,
                     "orderable": false,
-                    "targets": 0
+                    "render": function(data, type, row) {
+                        return data + row.express + row.expressid;
+                    },
+                    "targets": 11
                 }],
                 "createdRow": function (row, data, index) {
                     if (data.status==0) {
