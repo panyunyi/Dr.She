@@ -87,8 +87,9 @@ router.post('/add', function (req, res) {
     });
 });
 
-router.get('/success', function (req, res) {
-    res.render('success');
+router.get('/query', function (req, res) {
+    let phone=req.query.phone;
+    res.render('serviceprogress',{});
 });
 module.exports = router;
 

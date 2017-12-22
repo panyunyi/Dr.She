@@ -357,7 +357,7 @@ router.get('/apply', function (req, res) {
 
 router.get('/service', function (req, res) {
     let city_list = JSON.parse(fs.readFileSync(file));
-    //return res.render('service', { objid:"596d793ba22b9d006a38e5e4" });
+    return res.render('service', { objid:"596d793ba22b9d006a38e5e4" });
     let sess = req.session;
     //if (typeof (sess.objid) == "undefined") {
     let code = req.query.code;
@@ -421,6 +421,51 @@ router.get('/service', function (req, res) {
 
 router.get('/service/success', function (req, res) {
     res.render('servicesuccess');
+});
+
+router.get('/service/result', function (req, res) {
+    let phone = req.query.phone;
+    let query = new AV.Query('Service');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (services) {
+        async.map(services, function (service, callback) {
+            let one = {};
+            let itemstr = "";
+            let amount = 0;
+            let itemsMapQuery = new AV.Query('ServiceItemMap');
+            itemsMapQuery.equalTo('isDel', false);
+            itemsMapQuery.equalTo('service', service);
+            itemsMapQuery.include('item');
+            itemsMapQuery.find().then(function (items) {
+                async.map(items, function (item, callback1) {
+                    itemstr += item.get('item').get('name') + " " + item.get('item').get('price') + "元,"
+                    amount += item.get('item').get('price') * 1;
+                    callback1(null, 1);
+                }, function (err, items) {
+                    let status = "";
+                    if (service.get('status') == 0) {
+                        status = "待厂家收货";
+                    } else if (service.get('status') == 1) {
+                        status = "待维修";
+                    } else if (service.get('status') == 2) {
+                        status = "维修完成待厂家寄回"
+                    } else if (service.get('status') == 3) {
+                        status = "已寄出。快递：中通" + service.get('delivery');
+                    }
+                    one = { amount: amount, device: service.get('devicetype'), items: itemstr.substring(0, itemstr.length - 1), status: status };
+                    callback(null, one);
+                });
+            });
+        }, function (err, services) {
+            let o2oQuery = new AV.Query('O2O');
+            o2oQuery.equalTo('isDel', false);
+            o2oQuery.equalTo('phone', phone);
+            o2oQuery.count().then(function (count) {
+                res.render('serviceprogress', { services: services, flag: count });
+            });
+        });
+    });
 });
 
 router.get('/toc/success', function (req, res) {

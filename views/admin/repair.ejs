@@ -24,13 +24,11 @@
                                         <th>客户名称</th>
                                         <th>手机</th>
                                         <th>客户地址</th>
-                                        <th>回寄单号</th>
                                         <th>状态</th>
-                                        <th>购买渠道</th>
+                                        <th>维修情况</th>
                                         <th>产品ID</th>
                                         <th>寄回数量</th>
                                         <th>故障原因</th>
-                                        <th>快递</th>
                                         <th>备注</th>
                                         <th>创建时间</th>
                                     </tr>
@@ -75,53 +73,23 @@
         $(document).ready(function () {
             editor = new $.fn.dataTable.Editor({
                 ajax: {
-                    create: {
-                        type: 'POST',
-                        url: '../api/json/service/add'
-                    },
                     edit: {
                         type: 'PUT',
-                        url: '../api/json/service/edit/_id_'
-                    },
-                    remove: {
-                        type: 'DELETE',
-                        url: '../api/json/service/remove/_id_'
+                        url: '../api/json/repair/edit/_id_'
                     }
                 },
                 table: "#table",
                 fields: [
-                    { label: '客户名称', name: 'sender' },
-                    { label: '手机', name: 'phone' },
-                    { label: '客户地址', name: 'address' },
-                    { label: '设备型号', name: 'devicetype' },
-                    { label: '设备编号', name: 'productid' },
-                    { label: '寄回数量', name: 'count' },
-                    { label: '接收日期', name: 'receivingdate' },
-                    { label: '保修期', name: 'guarantee' },
-                    { label: '设备消毒', name: 'disinfection' },
-                    { label: '图片资料', name: 'haspic' },
-                    { label: '故障类型', name: 'error' },
-                    { label: '回寄单号', name: 'delivery' },
-                    { label: '订单状态', name: 'status' }
+                    { label: '处理情况', name: 'item', type: 'checkbox' },
+                    {
+                        label: '订单状态', name: 'status', type: 'checkbox', options: [
+                            { label: "维修完成", value: 1 }]
+                    }
                 ], i18n: {
-                    create: {
-                        button: "新增",
-                        title: "新建维修订单",
-                        submit: "创建"
-                    },
                     edit: {
-                        button: "编辑",
-                        title: "编辑订单",
+                        button: "维修",
+                        title: "维修订单",
                         submit: "更新"
-                    },
-                    remove: {
-                        button: "删除",
-                        title: "删除",
-                        submit: "删除",
-                        confirm: {
-                            _: "确定要删除 %d 条吗?",
-                            1: "确定要删除这条订单吗?"
-                        }
                     }
                 }
             });
@@ -129,50 +97,42 @@
                 "processing": true,
                 stateSave: true,
                 "dom": '<"top"Brf>t<"bottom"ilp>',
-                "ajax": '../api/json/service',
+                "ajax": '../api/json/repair',
                 "columns": [
                     { "data": null },
                     { "data": "orderid", render: function (data) { return data ? data : "" } },
                     { "data": "sender", render: function (data) { return data ? data : "" } },
                     { "data": "phone", render: function (data) { return data ? data : "" } },
                     { "data": "address", render: function (data) { return data ? data : "" } },
-                    { "data": "delivery", render: function (data) { return data ? data : "" } },
                     {
                         "data": "status", render: function (data) {
                             if (data == 0) { return "待接收"; } else if (data == 1) { return "待维修"; }
                             else if (data == 2) { return "维修完成"; } else if (data == 3) { return "已寄出"; }
-                        }                    
+                        }
                     },
-                    { "data": "wheretobuy", render: function (data) { return data ? data : "" } },
+                    { "data": "repair", render: function (data) { return data ? data : "" } },
                     { "data": "productid", render: function (data) { return data ? data : "" } },
                     { "data": "count", render: function (data) { return data ? data : "" } },
                     { "data": "error", render: function (data) { return data ? data : "" } },
-                    { "data": "express" },
                     { "data": "notice", render: function (data) { return data ? data : "" } },
                     { "data": "time", render: function (data) { return data ? data : "" } }
                 ],
                 select: true,
                 buttons: [
-                    { extend: "create", editor: editor },
-                    { extend: "edit", editor: editor },
-                    { extend: "remove", editor: editor }
+                    { extend: "edit", editor: editor }
                 ],
                 "columnDefs": [{
                     "searchable": false,
-                    "orderable": false,
-                    "render": function (data, type, row) {
-                        return data + row.express + row.expressid;
-                    },
-                    "targets": 11
+                    "orderable": false
                 }],
                 "createdRow": function (row, data, index) {
-                    if (data.status == 0) {
-                        $('td', row).eq(6).css("color", "#e7505a");
+                    if (data.status == 1) {
+                        $('td', row).eq(5).css("color", "#e7505a");
                     } else {
-                        $('td', row).eq(6).css("color", "#32c5d2");
+                        $('td', row).eq(5).css("color", "#32c5d2");
                     }
                 },
-                "order": [[12, 'desc']],
+                "order": [[11, 'desc']],
                 "language": {
                     "url": "../vendor/zh_CN.txt"
                 }

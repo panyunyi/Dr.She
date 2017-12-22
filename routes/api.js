@@ -671,6 +671,80 @@ router.delete('/json/serviceitem/remove/:id', function (req, res) {
     });
 });
 
+router.get('/json/repair', function (req, res) {
+    let resdata = {};
+    function promise1(callback1) {
+        let query = new AV.Query('Service');
+        query.equalTo('isDel', false);
+        query.equalTo('status',1);
+        query.limit(1000);
+        query.find().then(function (results) {
+            async.map(results, function (result, callback) {
+                result.set('DT_RowId', result.id);
+                let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+                result.set('time', time);
+                callback(null, result);
+            }, function (err, data) {
+                resdata["data"] = data;
+                callback1(null, data);
+            });
+        });
+    }
+    function promise2(callback1) {
+        let query = new AV.Query('ServiceItem');
+        query.equalTo('isDel', false);
+        query.find().then(function (results) {
+            async.map(results, function (result, callback) {
+                result.set('label', result.get('name'));
+                result.set('value', result.id);
+                callback(null, result);
+            }, function (err, data) {
+                data = { "item": data };
+                resdata["options"] = data;
+                callback1(null, data);
+            });
+        });
+    }
+    async.parallel([
+        function (callback) {
+            promise1(callback);
+        },
+        function (callback) {
+            promise2(callback);
+        }], function (err, results) {
+            res.jsonp(resdata);
+        });
+});
+
+var ServiceItemMap = AV.Object.extend('ServiceItemMap');
+router.put('/json/repair/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let service = AV.Object.createWithoutData('Service', id);
+    let status = arr['data'][id]['status']*1;
+    let items = arr['data'][id]['item'];
+    if(status){
+        service.set('status',2);
+    }else{
+        service.set('status',1);
+    }
+    service.save().then(function(result){
+        let repair="";
+        async.map(items,function(item,callback){
+            let serviceitem = AV.Object.createWithoutData('ServiceItem', item);
+            let si=new ServiceItemMap();
+            si.set('isDel',false);
+            si.set('service',service);
+            si.set('item',serviceitem);
+            callback(null,si);
+        },function(err,items){
+            AV.Object.saveAll(items).then(function () {
+                res.jsonp({ "data": [] });
+            });
+        });
+    });
+});
+
 router.get('/json/section', function (req, res, next) {
     let query = new AV.Query('Section');
     query.equalTo('isDel', false);

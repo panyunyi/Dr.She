@@ -426,6 +426,19 @@ router.get('/serviceitem', function (req, res) {
     }
 });
 
+router.get('/repair', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/repair', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/repair";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
 router.get('/illness', function (req, res) {
     let sess = req.session;
     if (sess.user) {

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+    <meta http-equiv="cleartype" content="on">
+    <title>
+        维修进度
+    </title>
+    <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
+
+    <style type="text/css">
+        
+    </style>
+</head>
+
+<body>
+    <div id="block1">
+
+    </div>
+    <div id=" block2 ">
+        <div class="page preview js_show">
+            <div class="page__hd" style="text-align:center">
+                <h1 class="page__title">维修清单</h1>
+                <p class="page__desc"></p>
+            </div>
+            <div class="page__bd">
+                <% for(var i=0; i<services.length; i++) {%>
+                <div class="weui-form-preview">
+                    <div class="weui-form-preview__hd">
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">付款金额</label>
+                            <em class="weui-form-preview__value">¥<%=services[i].amount%>.00</em>
+                        </div>
+                    </div>
+                    <div class="weui-form-preview__bd">
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">维修设备</label>
+                            <span class="weui-form-preview__value"><%=services[i].device%></span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">维修项目</label>
+                            <span class="weui-form-preview__value"><%=services[i].items%></span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">订单状态</label>
+                            <span class="weui-form-preview__value"><%=services[i].status%></span>
+                        </div>
+                    </div>
+                    <div class="weui-form-preview__ft">
+                        <a style="display:none" id="formSubmitBtn1" class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">已减免<%=services[i].amount%>元</a>
+                        <a id="formSubmitBtn2" class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">支付</a>
+                    </div>
+                </div>
+                <br>
+                <%}%>
+            </div>
+        </div>
+
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js "></script>
+    <link rel="stylesheet " href="../weui.min.css ">
+    <script type="text/javascript " src="../weui.js "></script>
+    <script src="//cdn1.lncld.net/static/js/2.3.2/av-min.js "></script>
+    <script type="text/javascript ">
+        var count=<%=flag%>;
+        if (count>0) {
+            $("#formSubmitBtn1").css("display","block");
+            $("#formSubmitBtn2").css("display","none");
+        }else{
+            $("#formSubmitBtn2").css("display","block");
+            $("#formSubmitBtn1").css("display","none");
+        }
+        $("#formSubmitBtn2").on("click", function () {
+            weui.alert("注册会员减免维修费用，现在前往注册");
+            // $.post("/service/add", { productid: $("#productid").val(), phone: $("#phone").val(),count:$("#count").val(),express:$("#express").val(),
+            // sender:$("#sender").val(),address:$("#address").val(),error:errorstr,expressid:$("#expressid").val(),buy:$("#select2").val(),notice:$("#notice").val(),
+            // objid:objid }, function (result) {
+            //     if (result.code == 0) {
+            //         window.location.replace("/service/success");
+            //     } else {
+            //         weui.alert(result.msg);
+            //     }
+            // });
+            
+        });
+
+        
+
+    </script>
+</body>
+
+</html>

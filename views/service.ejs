@@ -176,8 +176,8 @@
                         </label>
                     </div>
                     <div class="weui-cell" style="border-top:0px !important;border-bottom:1px solid #d9d9d9;margin-top:-1rem;margin-bottom:1rem">
-                        <div class="weui-cell__hd " style="margin-right: 4rem;">
-                            <label class="weui-label label" style="width:110px !important">寄回产品数量<span class="red">*</span></label>
+                        <div class="weui-cell__hd " style="margin-right: 3rem;">
+                            <label class="weui-label label" style="width:115px !important">寄回产品数量<span class="red">*</span></label>
                         </div>
                         <div class="weui-cell__bd ">
                             <input id="count" class="weui-input " type="number" required placeholder="请填写数量" emptytips="请填写数量" notmatchtips="请输入正确的数量 "> </div>
@@ -321,7 +321,9 @@
             }
         });
 
-        
+         $("#formSubmitBtn2").on("click", function () {
+            window.location.replace("/service/result?phone="+$('#phone2'));
+         });
 
     </script>
 </body>
