@@ -93,16 +93,36 @@
                     { label: '客户名称', name: 'sender' },
                     { label: '手机', name: 'phone' },
                     { label: '客户地址', name: 'address' },
-                    { label: '设备型号', name: 'devicetype' },
+                    {
+                        label: '设备型号', name: 'devicetype', type: 'checkbox', options: [
+                            { label: "FA1", value: "FA1" },
+                            { label: "FA2", value: "FA2" }]
+                    },
                     { label: '设备编号', name: 'productid' },
                     { label: '寄回数量', name: 'count' },
-                    { label: '接收日期', name: 'receivingdate' },
-                    { label: '保修期', name: 'guarantee' },
-                    { label: '设备消毒', name: 'disinfection' },
-                    { label: '图片资料', name: 'haspic' },
-                    { label: '故障类型', name: 'error' },
+                    {
+                        label: '接收日期', name: 'receivingdate', type: 'datetime',
+                        def: function () { return new Date(); }
+                    },
+                    {
+                        label: '保修期', name: 'guarantee', type: 'datetime',
+                        def: function () { return new Date(); }                    
+                    },
+                    { label: '设备消毒', name: 'disinfection' , type: 'select', options: [
+                            { label: "是", value: 1 },
+                            { label: "否", value: 0 }]},
+                    { label: '图片资料', name: 'haspic', type: 'select', options: [
+                            { label: "有", value: 1 },
+                            { label: "没有", value: 0 }] },
+                    { label: '故障类型', name: 'error' ,type: 'checkbox', options: [
+                            { label: "FA1", value: "FA1" },
+                            { label: "FA2", value: "FA2" }]},
                     { label: '回寄单号', name: 'delivery' },
-                    { label: '订单状态', name: 'status' }
+                    { label: '订单状态', name: 'status', type: 'select', options: [
+                            { label: "待接收", value: 0 },
+                            { label: "待维修", value: 1 },
+                            { label: "已维修", value: 2 },
+                            { label: "已寄出", value: 3 }] }
                 ], i18n: {
                     create: {
                         button: "新增",
@@ -141,7 +161,7 @@
                         "data": "status", render: function (data) {
                             if (data == 0) { return "待接收"; } else if (data == 1) { return "待维修"; }
                             else if (data == 2) { return "维修完成"; } else if (data == 3) { return "已寄出"; }
-                        }                    
+                        }
                     },
                     { "data": "wheretobuy", render: function (data) { return data ? data : "" } },
                     { "data": "productid", render: function (data) { return data ? data : "" } },
@@ -168,11 +188,16 @@
                 "createdRow": function (row, data, index) {
                     if (data.status == 0) {
                         $('td', row).eq(6).css("color", "#e7505a");
-                    } else {
+                    } else if (data.status == 1) {
+                        $('td', row).eq(6).css("color", "#fbbd08");
+                    }
+                    else if (data.status == 2) {
                         $('td', row).eq(6).css("color", "#32c5d2");
+                    } else if (data.status == 3) {
+                        $('td', row).eq(6).css("color", "seagreen");
                     }
                 },
-                "order": [[12, 'desc']],
+                "order": [[13, 'desc']],
                 "language": {
                     "url": "../vendor/zh_CN.txt"
                 }

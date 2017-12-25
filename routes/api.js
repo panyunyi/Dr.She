@@ -615,6 +615,48 @@ router.get('/json/service', function (req, res, next) {
     });
 });
 
+var Service = AV.Object.extend('Service');
+router.post('/json/service/add', function (req, res) {
+    let arr = req.body;
+    let service = new Service();
+    service.set('name', arr['data'][0]['name']);
+    service.set('price', arr['data'][0]['price'] * 1);
+    service.set('isDel', false);
+    let data = [];
+    service.save().then(function (service) {
+        service.set('DT_RowId', service.id);
+        let time = new moment(service.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        service.set('time', time);
+        data.push(service);
+        res.jsonp({ data: data });
+    });
+});
+
+router.put('/json/service/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let service = AV.Object.createWithoutData('Service', id);
+    service.set('name', arr['data'][id]['name']);
+    service.set('price', arr['data'][id]['price'] * 1);
+    service.save().then(function (service) {
+        let data = [];
+        service.set('DT_RowId', service.id);
+        let time = new moment(service.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        service.set('time', time);
+        data.push(service);
+        res.jsonp({ "data": data });
+    });
+});
+
+router.delete('/json/service/remove/:id', function (req, res) {
+    let id = req.params.id;
+    let service = AV.Object.createWithoutData('Service', id);
+    service.set('isDel', true);
+    service.save().then(function () {
+        res.jsonp({ "data": [] });
+    });
+});
+
 router.get('/json/serviceitem', function (req, res, next) {
     let query = new AV.Query('ServiceItem');
     query.equalTo('isDel', false);
@@ -676,7 +718,7 @@ router.get('/json/repair', function (req, res) {
     function promise1(callback1) {
         let query = new AV.Query('Service');
         query.equalTo('isDel', false);
-        query.equalTo('status',1);
+        query.equalTo('status', 1);
         query.limit(1000);
         query.find().then(function (results) {
             async.map(results, function (result, callback) {
@@ -721,23 +763,29 @@ router.put('/json/repair/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let service = AV.Object.createWithoutData('Service', id);
-    let status = arr['data'][id]['status']*1;
+    let status = arr['data'][id]['status'] * 1;
     let items = arr['data'][id]['item'];
-    if(status){
-        service.set('status',2);
-    }else{
-        service.set('status',1);
+    let price = arr['data'][id]['price'] * 1;
+    if (price > 0) {
+        service.set('price', price);
+    } else {
+        service.set('price', 0);
     }
-    service.save().then(function(result){
-        let repair="";
-        async.map(items,function(item,callback){
+    if (status) {
+        service.set('status', 2);
+    } else {
+        service.set('status', 1);
+    }
+    service.save().then(function (result) {
+        let repair = "";
+        async.map(items, function (item, callback) {
             let serviceitem = AV.Object.createWithoutData('ServiceItem', item);
-            let si=new ServiceItemMap();
-            si.set('isDel',false);
-            si.set('service',service);
-            si.set('item',serviceitem);
-            callback(null,si);
-        },function(err,items){
+            let si = new ServiceItemMap();
+            si.set('isDel', false);
+            si.set('service', service);
+            si.set('item', serviceitem);
+            callback(null, si);
+        }, function (err, items) {
             AV.Object.saveAll(items).then(function () {
                 res.jsonp({ "data": [] });
             });
@@ -750,7 +798,7 @@ router.get('/json/send', function (req, res) {
     function promise1(callback1) {
         let query = new AV.Query('Service');
         query.equalTo('isDel', false);
-        query.equalTo('status',2);
+        query.equalTo('status', 2);
         query.limit(1000);
         query.find().then(function (results) {
             async.map(results, function (result, callback) {
@@ -794,27 +842,12 @@ router.put('/json/send/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let service = AV.Object.createWithoutData('Service', id);
-    let status = arr['data'][id]['status']*1;
+    let delivery = arr['data'][id]['delivery'];
     let items = arr['data'][id]['item'];
-    if(status){
-        service.set('status',2);
-    }else{
-        service.set('status',1);
-    }
-    service.save().then(function(result){
-        let repair="";
-        async.map(items,function(item,callback){
-            let serviceitem = AV.Object.createWithoutData('ServiceItem', item);
-            let si=new ServiceItemMap();
-            si.set('isDel',false);
-            si.set('service',service);
-            si.set('item',serviceitem);
-            callback(null,si);
-        },function(err,items){
-            AV.Object.saveAll(items).then(function () {
-                res.jsonp({ "data": [] });
-            });
-        });
+    service.set('delivery',delivery);
+    service.set('status',3);
+    service.save().then(function(){
+        res.jsonp({ "data": [] });
     });
 });
 
