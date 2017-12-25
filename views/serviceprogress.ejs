@@ -54,7 +54,8 @@
                         </div>
                     </div>
                     <div class="weui-form-preview__ft">
-                        <a style="display:none" id="formSubmitBtn1" class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">已减免<%=services[i].amount%>元</a>
+                        <a style="display:none" id="formSubmitBtn1" class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">
+                            您是注册用户本次维修免费（减免<%=services[i].amount%>元）</a>
                         <a id="formSubmitBtn2" class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">支付</a>
                     </div>
                 </div>
@@ -79,15 +80,6 @@
         }
         $("#formSubmitBtn2").on("click", function () {
             weui.alert("注册会员减免维修费用，现在前往注册");
-            // $.post("/service/add", { productid: $("#productid").val(), phone: $("#phone").val(),count:$("#count").val(),express:$("#express").val(),
-            // sender:$("#sender").val(),address:$("#address").val(),error:errorstr,expressid:$("#expressid").val(),buy:$("#select2").val(),notice:$("#notice").val(),
-            // objid:objid }, function (result) {
-            //     if (result.code == 0) {
-            //         window.location.replace("/service/success");
-            //     } else {
-            //         weui.alert(result.msg);
-            //     }
-            // });
             
         });
 
