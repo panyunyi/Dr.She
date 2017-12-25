@@ -72,7 +72,7 @@
             "ajax": '../api/json/recharge',
             "columns": [
                 { "data": null },
-                { "data": "orderid" },
+                { "data": "orderid",render: function (data) { return data ? data : ""} },
                 { "data": "user" },
                 { "data": "source" },
                 { "data": "title" },

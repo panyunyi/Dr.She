@@ -118,7 +118,6 @@ router.post('/recharge', function (req, res) {
 });
 
 router.post('/pingpp/notify', function (req, res) {
-    console.log(body);
     let body = req.body;
     let order_no = body.data.object.order_no;
     let recharge = AV.Object.createWithoutData('Recharge', order_no);

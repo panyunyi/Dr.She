@@ -357,7 +357,7 @@ router.get('/apply', function (req, res) {
 
 router.get('/service', function (req, res) {
     let city_list = JSON.parse(fs.readFileSync(file));
-    return res.render('service', { objid:"596d793ba22b9d006a38e5e4" });
+    //return res.render('service', { objid:"596d793ba22b9d006a38e5e4" });
     let sess = req.session;
     //if (typeof (sess.objid) == "undefined") {
     let code = req.query.code;
@@ -427,6 +427,7 @@ router.get('/service/result', function (req, res) {
     let phone = req.query.phone;
     let query = new AV.Query('Service');
     query.equalTo('isDel', false);
+    query.equalTo('phone',phone);
     query.limit(1000);
     query.find().then(function (services) {
         async.map(services, function (service, callback) {
