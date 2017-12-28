@@ -25,8 +25,7 @@
                                         <th>手机</th>
                                         <th>客户地址</th>
                                         <th>状态</th>
-                                        <th>维修情况</th>
-                                        <th>产品ID</th>
+                                        <th>设备编号</th>
                                         <th>寄回数量</th>
                                         <th>故障原因</th>
                                         <th>备注</th>
@@ -111,10 +110,9 @@
                             else if (data == 2) { return "维修完成"; } else if (data == 3) { return "已寄出"; }
                         }
                     },
-                    { "data": "repair", render: function (data) { return data ? data : "" } },
                     { "data": "productid", render: function (data) { return data ? data : "" } },
                     { "data": "count", render: function (data) { return data ? data : "" } },
-                    { "data": "error", render: function (data) { return data ? data : "" } },
+                    { "data": "faulttype", render: function (data) { return data ? data : "" } },
                     { "data": "notice", render: function (data) { return data ? data : "" } },
                     { "data": "time", render: function (data) { return data ? data : "" } }
                 ],
@@ -133,7 +131,7 @@
                         $('td', row).eq(5).css("color", "#32c5d2");
                     }
                 },
-                "order": [[11, 'desc']],
+                "order": [[10, 'desc']],
                 "language": {
                     "url": "../vendor/zh_CN.txt"
                 }

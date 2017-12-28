@@ -58,35 +58,35 @@ router.post('/add', function (req, res) {
     service.set('express', express);
     service.set('address', address);
     service.set('status', 0);
-    service.set('price', 0);
     service.set('wheretobuy', buy);
     service.set('count', count);
     service.set('sender', sender);
     service.set('productid', productid);
     service.set('notice', notice);
     service.set('expressid', expressid);
-    let time = new moment();
-    service.set('orderid', time.unix());
+    let time=new moment();
+    service.set('orderid',time.unix());
     let o2oQuery = new AV.Query('O2O');
-    o2oQuery.equalTo('isDel', false);
+    o2oQuery.equalTo('isDel',false);
     o2oQuery.equalTo('user', user);
     o2oQuery.first().then(function (o2o) {
         if (typeof (o2o) != "undefined") {
             service.set('o2o', o2o);
             service.save().then(function () {
                 res.jsonp({ code: 0, msg: "" });
-            }, function (err) {
+            },function(err){
                 console.log(err);
             });
         } else {
             service.save().then(function () {
                 res.jsonp({ code: 0, msg: "" });
-            }, function (err) {
+            },function(err){
                 console.log(err);
             });
         }
     });
 });
+
 
 module.exports = router;
 

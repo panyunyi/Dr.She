@@ -591,10 +591,13 @@ router.get('/json/o2o', function (req, res, next) {
     let query = new AV.Query('O2O');
     query.equalTo('isDel', false);
     query.limit(1000);
+    query.include('user');
     query.find().then(function (results) {
         results.forEach(function (result) {
             result.set('DT_RowId', result.id);
             let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            result.set('nickname',result.get('user').get('nickname'));
+            result.set('headimgurl',result.get('user').get('headimgurl'));
             result.set('time', time);
         });
         res.jsonp({ data: results });
@@ -602,49 +605,179 @@ router.get('/json/o2o', function (req, res, next) {
 });
 
 router.get('/json/service', function (req, res, next) {
-    let query = new AV.Query('Service');
-    query.equalTo('isDel', false);
-    query.limit(1000);
-    query.find().then(function (results) {
-        results.forEach(function (result) {
-            result.set('DT_RowId', result.id);
-            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
-            result.set('time', time);
+    let resdata = {};
+    function promise1(callback) {
+        let query = new AV.Query('Service');
+        query.equalTo('isDel', false);
+        query.limit(1000);
+        query.find().then(function (results) {
+            async.map(results,function (result,callback1) {
+                result.set('DT_RowId', result.id);
+                let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+                result.set('time', time);
+                function type1(callback3){
+                    if(result.get('devicetype')==""||typeof(result.get('devicetype'))=="undefined"){
+                        result.set('types',"");
+                        //callback1(null,result);
+                        callback3(null,1);
+                    }else{
+                        let typesarr=result.get('devicetype').split('/');
+                        async.map(typesarr,function(type,callback2){
+                            callback2(null,type);
+                        },function(err,types){
+                            result.set('types',types);
+                            //callback1(null,result);
+                            callback3(null,1);
+                        });
+                    }
+                }
+                function type2(callback3){
+                    if(result.get('faulttype')==""||typeof(result.get('faulttype'))=="undefined"){
+                        result.set('faulttype',"");
+                        //callback1(null,result);
+                        callback3(null,2);
+                    }else{
+                        let typesarr=result.get('faulttype').split(',');
+                        async.map(typesarr,function(type,callback2){
+                            callback2(null,type);
+                        },function(err,types){
+                            result.set('faulttype',types);
+                            //callback1(null,result);
+                            callback3(null,2);
+                        });
+                    }
+                }
+                async.parallel([
+                    function (callback4) {
+                        type1(callback4);
+                    },
+                    function (callback4) {
+                        type2(callback4);
+                    }], function (err, typeresults) {
+                        callback1(null,result);
+                    });
+            },function(err,results){
+                resdata["data"] = results;
+                callback(null, results);
+            });
         });
-        res.jsonp({ data: results });
-    });
+    }
+    function promise2(callback) {
+        let types=[{label:"FA1",value:"FA1"},{label:"FA2",value:"FA2"}];
+        resdata["options"] = {types:types};
+        callback(null,1);
+    }
+    async.parallel([
+        function (callback) {
+            promise1(callback);
+        },
+        function (callback) {
+            promise2(callback);
+        }], function (err, results) {
+            res.jsonp(resdata);
+        });
 });
 
 var Service = AV.Object.extend('Service');
 router.post('/json/service/add', function (req, res) {
     let arr = req.body;
+    let devicetype = "";
+    let error = "";
+    if(typeof(arr['data'][0]['types'])=="undefined"){
+        devicetype="";
+    }else{
+        arr['data'][0]['types'].forEach(function (type) {
+            devicetype += type + "/";
+        });
+    }
+    if(typeof(arr['data'][0]['faulttype'])=="undefined"){
+        error="";
+    }else{
+        arr['data'][0]['faulttype'].forEach(function (err) {
+            error += err + ",";
+        });
+    }
+    let now = new moment();
     let service = new Service();
-    service.set('name', arr['data'][0]['name']);
-    service.set('price', arr['data'][0]['price'] * 1);
     service.set('isDel', false);
+    service.set('orderid', now.unix());
+    service.set('sender', arr['data'][0]['sender']);
+    service.set('phone', arr['data'][0]['phone']);
+    service.set('address', arr['data'][0]['address']);
+    service.set('devicetype', devicetype.substring(0, devicetype.length - 1));
+    service.set('productid', arr['data'][0]['productid']);
+    service.set('count', arr['data'][0]['count'] * 1);
+    service.set('express', arr['data'][0]['express']);
+    service.set('expressid', arr['data'][0]['expressid']);
+    service.set('receivingdate', new Date(arr['data'][0]['receivingdate']));
+    service.set('period', arr['data'][0]['period'] * 1);
+    service.set('disinfection', arr['data'][0]['disinfection'] * 1);
+    service.set('haspic', arr['data'][0]['haspic'] * 1);
+    service.set('error', error.substring(0, error.length - 1));
+    service.set('delivery', arr['data'][0]['delivery']);
+    service.set('status', arr['data'][0]['status'] * 1);
     let data = [];
     service.save().then(function (service) {
         service.set('DT_RowId', service.id);
         let time = new moment(service.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        let backdate = new moment(service.get('backdate')).format('YYYY-MM-DD HH:mm:ss');
         service.set('time', time);
+        service.set('backdate', backdate);
         data.push(service);
         res.jsonp({ data: data });
+    }, function (err) {
+        console.log(err);
     });
 });
 
 router.put('/json/service/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
+    let devicetype = "";
+    let error = "";
+    if(typeof(arr['data'][id]['types'])=="undefined"){
+        devicetype="";
+    }else{
+        arr['data'][id]['types'].forEach(function (type) {
+            devicetype += type + "/";
+        });
+    }
+    if(typeof(arr['data'][id]['faulttype'])=="undefined"){
+        error="";
+    }else{
+        arr['data'][id]['faulttype'].forEach(function (err) {
+            error += err + ",";
+        });
+    }
     let service = AV.Object.createWithoutData('Service', id);
-    service.set('name', arr['data'][id]['name']);
-    service.set('price', arr['data'][id]['price'] * 1);
+    service.set('orderid', arr['data'][id]['orderid']*1);
+    service.set('sender', arr['data'][id]['sender']);
+    service.set('phone', arr['data'][id]['phone']);
+    service.set('address', arr['data'][id]['address']);
+    service.set('devicetype', devicetype.substring(0, devicetype.length - 1));
+    service.set('productid', arr['data'][id]['productid']);
+    service.set('count', arr['data'][id]['count'] * 1);
+    service.set('express', arr['data'][id]['express']);
+    service.set('expressid', arr['data'][id]['expressid']);
+    service.set('receivingdate', new Date(arr['data'][id]['receivingdate']));
+    service.set('period', arr['data'][id]['period'] * 1);
+    service.set('disinfection', arr['data'][id]['disinfection'] * 1);
+    service.set('haspic', arr['data'][id]['haspic'] * 1);
+    service.set('faulttype', error.substring(0, error.length - 1));
+    service.set('error', arr['data'][id]['error']);
+    service.set('delivery', arr['data'][id]['delivery']);
+    service.set('status', arr['data'][id]['status'] * 1);
     service.save().then(function (service) {
         let data = [];
         service.set('DT_RowId', service.id);
         let time = new moment(service.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+        let backdate = new moment(service.get('backdate')).format('YYYY-MM-DD HH:mm:ss');
         service.set('time', time);
+        service.set('backdate', backdate);
         data.push(service);
         res.jsonp({ "data": data });
+    },function(err){
+        console.log(err);
     });
 });
 
@@ -804,8 +937,23 @@ router.get('/json/send', function (req, res) {
             async.map(results, function (result, callback) {
                 result.set('DT_RowId', result.id);
                 let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+                let backdate = new moment(result.get('backdate')).format('YYYY-MM-DD HH:mm:ss');
+                result.set('backdate', backdate);
                 result.set('time', time);
-                callback(null, result);
+                let repair = "";
+                let itemQuery = new AV.Query('ServiceItemMap');
+                itemQuery.equalTo('isDel', false);
+                itemQuery.equalTo('service', result);
+                itemQuery.include('item');
+                itemQuery.find().then(function (items) {
+                    async.map(items, function (item, callback2) {
+                        repair += item.get('item').get('name') + ",";
+                        callback2(null, item);
+                    }, function (err, items) {
+                        result.set('repair', repair.substring(0, repair.length - 1));
+                        callback(null, result);
+                    });
+                });
             }, function (err, data) {
                 resdata["data"] = data;
                 callback1(null, data);
@@ -843,10 +991,17 @@ router.put('/json/send/edit/:id', function (req, res) {
     let id = req.params.id;
     let service = AV.Object.createWithoutData('Service', id);
     let delivery = arr['data'][id]['delivery'];
-    let items = arr['data'][id]['item'];
-    service.set('delivery',delivery);
-    service.set('status',3);
-    service.save().then(function(){
+    let clean = arr['data'][id]['clean'] * 1;
+    let ensure = arr['data'][id]['clean'] * 1;
+    let price = arr['data'][id]['price'] * 1;
+    let date = arr['data'][id]['backdate'];
+    service.set('delivery', delivery);
+    service.set('clean', clean);
+    service.set('ensure', ensure);
+    service.set('price', price);
+    service.set('backdate', new Date(date));
+    service.set('status', 3);
+    service.save().then(function () {
         res.jsonp({ "data": [] });
     });
 });

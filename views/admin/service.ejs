@@ -16,7 +16,35 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <table id="table" class="ui celled table" cellspacing="0" width="100%">
+                                <div id="customForm">
+                                        <fieldset class="customer">
+                                            <legend>客户信息</legend>
+                                            <editor-field name="sender"></editor-field>
+                                            <editor-field name="phone"></editor-field>
+                                            <editor-field name="express"></editor-field>
+                                            <editor-field name="expressid"></editor-field>
+                                            <editor-field name="address"></editor-field>
+                                        </fieldset>
+                                        <fieldset class="device">
+                                            <legend>设备信息</legend>
+                                            <editor-field name="types"></editor-field>
+                                            <editor-field name="productid"></editor-field>
+                                            <editor-field name="count"></editor-field>
+                                            <editor-field name="receivingdate"></editor-field>
+                                            <editor-field name="period"></editor-field>
+                                            <editor-field name="disinfection"></editor-field>
+                                            <editor-field name="haspic"></editor-field>
+                                            <editor-field name="faulttype"></editor-field>
+                                            <editor-field name="orderid"></editor-field>
+                                            <editor-field name="error"></editor-field>
+                                        </fieldset>
+                                        <fieldset class="other">
+                                            <legend>其他</legend>
+                                            <editor-field name="delivery"></editor-field>
+                                            <editor-field name="status"></editor-field>
+                                        </fieldset>
+                                    </div>
+                            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th>序号</th>
@@ -24,12 +52,12 @@
                                         <th>客户名称</th>
                                         <th>手机</th>
                                         <th>客户地址</th>
-                                        <th>回寄单号</th>
+                                        <th>设备型号</th>
                                         <th>状态</th>
-                                        <th>购买渠道</th>
-                                        <th>产品ID</th>
+                                        <th>设备编号</th>
                                         <th>寄回数量</th>
-                                        <th>故障原因</th>
+                                        <th>客户描述故障</th>
+                                        <th>故障类型</th>
                                         <th>快递</th>
                                         <th>备注</th>
                                         <th>创建时间</th>
@@ -55,21 +83,22 @@
     <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-    <script src="../dist/js/semantic.min.js"></script>
+    <script src="../dist/js/popper.min.js"></script>
+    <script src="../dist/js/bootstrap.min.js"></script>
     <script src="../dist/js/jquery.dataTables.min.js"></script>
-    <script src="../dist/js/dataTables.semanticui.min.js"></script>
+    <script src="../dist/js/dataTables.bootstrap4.min.js"></script>
     <script src="../dist/js/dataTables.buttons.min.js"></script>
-    <script src="../dist/js/buttons.semanticui.min.js"></script>
+    <script src="../dist/js/buttons.bootstrap4.min.js"></script>
     <script src="../dist/js/dataTables.select.min.js"></script>
     <script src="../dist/js/dataTables.editor.min.js"></script>
-    <script src="../dist/js/editor.semanticui.min.js"></script>
+    <script src="../dist/js/editor.bootstrap4.min.js"></script>
     <script>
         var editor;
         $(document).ready(function () {
@@ -89,40 +118,65 @@
                     }
                 },
                 table: "#table",
+                template: '#customForm',
                 fields: [
+                    { name: 'orderid', type: 'hidden' },
+                    { name: 'error', type: 'hidden' },
                     { label: '客户名称', name: 'sender' },
                     { label: '手机', name: 'phone' },
                     { label: '客户地址', name: 'address' },
                     {
-                        label: '设备型号', name: 'devicetype', type: 'checkbox', options: [
+                        label: '设备型号', name: 'types', type: 'checkbox', options: [
                             { label: "FA1", value: "FA1" },
-                            { label: "FA2", value: "FA2" }]
+                            { label: "FA2单机", value: "FA2单机" },
+                            { label: "FA2高清屏", value: "FA2高清屏" },
+                            { label: "FA2WIFI屏", value: "FA2WIFI屏" }]
                     },
                     { label: '设备编号', name: 'productid' },
                     { label: '寄回数量', name: 'count' },
+                    { label: '快递公司', name: 'express' },
+                    { label: '快递单号', name: 'expressid' },
                     {
                         label: '接收日期', name: 'receivingdate', type: 'datetime',
                         def: function () { return new Date(); }
                     },
                     {
-                        label: '保修期', name: 'guarantee', type: 'datetime',
-                        def: function () { return new Date(); }                    
+                        label: '保修期', name: 'period', type: 'select', options: [
+                            { label: "内", value: 1 },
+                            { label: "外", value: 0 },
+                        ], def: 1
                     },
-                    { label: '设备消毒', name: 'disinfection' , type: 'select', options: [
-                            { label: "是", value: 1 },
-                            { label: "否", value: 0 }]},
-                    { label: '图片资料', name: 'haspic', type: 'select', options: [
+                    {
+                        label: '设备消毒', name: 'disinfection', type: 'select', options: [
+                            { label: "已消毒", value: 1 },
+                            { label: "未消毒", value: 0 }], def: 1
+                    },
+                    {
+                        label: '图片资料', name: 'haspic', type: 'select', options: [
                             { label: "有", value: 1 },
-                            { label: "没有", value: 0 }] },
-                    { label: '故障类型', name: 'error' ,type: 'checkbox', options: [
-                            { label: "FA1", value: "FA1" },
-                            { label: "FA2", value: "FA2" }]},
+                            { label: "没有", value: 0 }], def: 0
+                    },
+                    {
+                        label: '故障类型', name: 'faulttype', type: 'checkbox', options: [
+                            { label: "不开机", value: "不开机" },
+                            { label: "无法连接电脑", value: "无法连接电脑" },
+                            { label: "无视频输出", value: "无视频输出" },
+                            { label: "LED灯不亮", value: "LED灯不亮" },
+                            { label: "图像模糊", value: "图像模糊" },
+                            { label: "按键不良", value: "按键不良" },
+                            { label: "外壳损坏", value: "外壳损坏" },
+                            { label: "电池弹片不良", value: "电池弹片不良" },
+                            { label: "数据线不良", value: "数据线不良" },
+                            { label: "视频线不良", value: "视频线不良" }], className: 'list'
+                    },
                     { label: '回寄单号', name: 'delivery' },
-                    { label: '订单状态', name: 'status', type: 'select', options: [
+                    {
+                        label: '订单状态', name: 'status', type: 'select', options: [
                             { label: "待接收", value: 0 },
                             { label: "待维修", value: 1 },
                             { label: "已维修", value: 2 },
-                            { label: "已寄出", value: 3 }] }
+                            { label: "已寄出", value: 3 }]
+                    }
                 ], i18n: {
                     create: {
                         button: "新增",
@@ -156,17 +210,18 @@
                     { "data": "sender", render: function (data) { return data ? data : "" } },
                     { "data": "phone", render: function (data) { return data ? data : "" } },
                     { "data": "address", render: function (data) { return data ? data : "" } },
-                    { "data": "delivery", render: function (data) { return data ? data : "" } },
+                    { "data": "devicetype", render: function (data) { return data ? data : "" } },
                     {
                         "data": "status", render: function (data) {
                             if (data == 0) { return "待接收"; } else if (data == 1) { return "待维修"; }
                             else if (data == 2) { return "维修完成"; } else if (data == 3) { return "已寄出"; }
                         }
                     },
-                    { "data": "wheretobuy", render: function (data) { return data ? data : "" } },
+
                     { "data": "productid", render: function (data) { return data ? data : "" } },
                     { "data": "count", render: function (data) { return data ? data : "" } },
                     { "data": "error", render: function (data) { return data ? data : "" } },
+                    { "data": "faulttype", render: function (data) { return data ? data : "" } },
                     { "data": "express" },
                     { "data": "notice", render: function (data) { return data ? data : "" } },
                     { "data": "time", render: function (data) { return data ? data : "" } }
@@ -181,7 +236,7 @@
                     "searchable": false,
                     "orderable": false,
                     "render": function (data, type, row) {
-                        return data + row.express + row.expressid;
+                        return data + row.expressid;
                     },
                     "targets": 11
                 }],
@@ -213,6 +268,24 @@
         });
 
     </script>
+    <style>
+        .list .eight {
+            height: 200px;
+            overflow-y: scroll;
+        }
+        .DTE_Field_Name_sender{
+            float: left;
+            margin-left: 11.2rem !important;
+        }
+        .DTE_Field_Name_express{
+            float: left;
+            margin-left: 11.2rem !important;
+        }
+        .DTE_Field_Name_types div{
+            display: inline
+        }
+        
+    </style>
     </body>
 
     </html>

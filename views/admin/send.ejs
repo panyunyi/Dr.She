@@ -26,7 +26,7 @@
                                         <th>客户地址</th>
                                         <th>状态</th>
                                         <th>维修情况</th>
-                                        <th>产品ID</th>
+                                        <th>设备编号</th>
                                         <th>寄回数量</th>
                                         <th>故障原因</th>
                                         <th>备注</th>
@@ -80,11 +80,28 @@
                 },
                 table: "#table",
                 fields: [
-                    { label: '发货单号', name: 'delivery' }
+                    {
+                        label: '设备清洁', name: 'clean', type: 'select', options: [
+                            { label: "已清洁", value: 1 },
+                            { label: "未清洁", value: 0 },
+                        ], def: 1
+                    },
+                    {
+                        label: '售后人员确认', name: 'ensure', type: 'select', options: [
+                            { label: "设备可正常使用", value: 1 },
+                            { label: "设备不能正常使用", value: 0 },
+                        ], def: 1
+                    },
+                    { label: '维修费用', name: 'price' },
+                    { label: '发货单号', name: 'delivery' },
+                    {
+                        label: '设备返回日期', name: 'backdate', type: 'datetime',
+                        def: function () { return new Date(); }
+                    },
                 ], i18n: {
                     edit: {
                         button: "发货",
-                        title: "维修订单",
+                        title: "寄回订单",
                         submit: "确定"
                     }
                 }
@@ -109,7 +126,7 @@
                     { "data": "repair", render: function (data) { return data ? data : "" } },
                     { "data": "productid", render: function (data) { return data ? data : "" } },
                     { "data": "count", render: function (data) { return data ? data : "" } },
-                    { "data": "error", render: function (data) { return data ? data : "" } },
+                    { "data": "faulttype", render: function (data) { return data ? data : "" } },
                     { "data": "notice", render: function (data) { return data ? data : "" } },
                     { "data": "time", render: function (data) { return data ? data : "" } }
                 ],

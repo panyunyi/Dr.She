@@ -225,7 +225,7 @@
                         </div>
                         <div class="weui-cell__bd">
                             <select id="select2" class="weui-select" name="select2">
-                                <option value="淘宝天猫京东">电商（淘宝天猫京东）</option>
+                                <option value="电商">电商（淘宝天猫京东）</option>
                                 <option value="经销商">经销商</option>
                                 <option value="厂家">厂家</option>
                                 <option value="其他">其他</option>
@@ -317,7 +317,7 @@
         });
 
          $("#formSubmitBtn2").on("click", function () {
-            if($("#phone").val().length==11){
+            if($("#phone2").val().length==11){
                 window.location.replace("/service/result?phone="+$('#phone2').val());
             }else {
                 weui.alert("请输入正确的手机号码");

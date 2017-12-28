@@ -24,6 +24,8 @@
                                         <th>省份</th>
                                         <th>城市</th>
                                         <th>微信</th>
+                                        <th>微信用户</th>
+                                        <th>头像</th>
                                         <th>创建时间</th>
                                     </tr>
                                 </thead>
@@ -93,6 +95,8 @@
                     { "data": "province", render: function (data) { return data ? data : "" } },
                     { "data": "city", render: function (data) { return data ? data : "" } },
                     { "data": "wx", render: function (data) { return data ? data : "" } },
+                    { "data": "nickname", render: function (data) { return data ? data : "" } },
+                    { "data": "headimgurl" },
                     { "data": "time", render: function (data) { return data ? data : "" } }
                 ],
                 select: true,
@@ -100,8 +104,16 @@
                     "searchable": false,
                     "orderable": false,
                     "targets": 0
+                },
+                {
+                "render": function (data, type, row, meta) {
+                    //渲染 把数据源中的标题和url组成超链接
+                    return '<a href="' + data + '" target="_blank"><img style="width:15%" src="' + data + '"/></a>';
+                },
+                //指定是第三列
+                "targets": 6
                 }],
-                "order": [[5, 'desc']],
+                "order": [[7, 'desc']],
                 "language": {
                     "url": "../vendor/zh_CN.txt"
                 }
