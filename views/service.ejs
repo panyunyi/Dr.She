@@ -318,7 +318,7 @@
 
          $("#formSubmitBtn2").on("click", function () {
             if($("#phone2").val().length==11){
-                window.location.replace("/service/result?phone="+$('#phone2').val());
+                window.location.replace("/service/result?phone="+$('#phone2').val()+"&objid="+objid);
             }else {
                 weui.alert("请输入正确的手机号码");
             }

@@ -425,6 +425,8 @@ router.get('/service/success', function (req, res) {
 
 router.get('/service/result', function (req, res) {
     let phone = req.query.phone;
+    let objid=req.query.objid;
+    let user = AV.Object.createWithoutData('WxUser', objid);
     let query = new AV.Query('Service');
     query.equalTo('isDel', false);
     query.equalTo('phone',phone);
@@ -461,7 +463,7 @@ router.get('/service/result', function (req, res) {
         }, function (err, services) {
             let o2oQuery = new AV.Query('O2O');
             o2oQuery.equalTo('isDel', false);
-            o2oQuery.equalTo('phone', phone);
+            o2oQuery.equalTo('user', user);
             o2oQuery.count().then(function (count) {
                 res.render('serviceprogress', { services: services, flag: count });
             });

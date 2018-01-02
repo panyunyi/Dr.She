@@ -79,8 +79,7 @@
             $("#formSubmitBtn1").css("display","none");
         }
         $("#formSubmitBtn2").on("click", function () {
-            weui.alert("注册会员减免维修费用，现在前往注册");
-            
+            weui.alert("注册会员减免维修费用，现在前往注册", function(){ window.location.replace("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/apply&response_type=code&scope=snsapi_userinfo&state=1"); });
         });
 
         

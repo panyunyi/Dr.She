@@ -20,6 +20,7 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
+                                        <th>审核状态</th>
                                         <th>商户名称</th>
                                         <th>联系人</th>
                                         <th>手机</th>
@@ -67,22 +68,90 @@
     <script src="../dist/js/dataTables.editor.min.js"></script>
     <script src="../dist/js/editor.semanticui.min.js"></script>
     <script>
+        var editor;
+        $(document).ready(function () {
+            editor = new $.fn.dataTable.Editor({
+                ajax: {
+                    create: {
+                        type: 'POST',
+                        url: '../api/json/business/add'
+                    },
+                    edit: {
+                        type: 'PUT',
+                        url: '../api/json/business/edit/_id_'
+                    },
+                    remove: {
+                        type: 'DELETE',
+                        url: '../api/json/business/remove/_id_'
+                    }
+                },
+                table: "#table",
+                fields: [
+                    { label: '商户名称', name: 'name',type:'readonly' },
+                    { label: '联系人', name: 'connecter',type:'readonly' },
+                    { label: '手机', name: 'phone',type:'readonly' },
+                    { label: '用户', name: 'user',type:'readonly' },
+                    { label: '区域', name: 'area',type:'readonly' },
+                    { label: '地址', name: 'address',type:'readonly' },
+                    { label: '审核结果', name: 'audit', type: 'select', options: [
+                            { label: "通过", value: 1 },
+                            { label: "不通过", value: 0 }],def:1
+                    },
+                    {name:'time',type:'hidden'}
+                ], i18n: {
+                    create: {
+                        button: "新增",
+                        title: "新建商户",
+                        submit: "创建"
+                    },
+                    edit: {
+                        button: "审核",
+                        title: "审核商户",
+                        submit: "确定"
+                    },
+                    remove: {
+                        button: "删除",
+                        title: "删除",
+                        submit: "删除",
+                        confirm: {
+                            _: "确定要删除 %d 条吗?",
+                            1: "确定要删除这个商户吗?"
+                        }
+                    }
+                }
+            });
         var table = $('#table').DataTable({
             "processing": true,
             stateSave: true,
+            "dom": '<"top"Brf>t<"bottom"ilp>',
             "ajax": '../api/json/business',
             "columns": [
                 { "data": null },
+                { "data": "audit",render:function(data){if(data==0){return "待审核";}else if(data==1){return "已通过";}else if(data==2){return "未通过";}} },
                 { "data": "name" },
                 { "data": "connecter" },
                 { "data": "phone" },
                 { "data": "user" },
                 { "data": "area" },
                 { "data": "address" },
-                { "data": "createdAt" }
+                { "data": "time" }
             ],
             select: true,
-            "order": [[7, 'desc']],
+            buttons: [
+                    { extend: "edit", editor: editor },
+                    { extend: "remove", editor: editor }
+                ],
+                "createdRow": function (row, data, index) {
+                    if (data.audit == 0) {
+                        $('td', row).eq(1).css("color", "#ff9800");
+                    } else if (data.audit == 1) {
+                        $('td', row).eq(1).css("color", "seagreen");
+                    }
+                    else if (data.audit == 2) {
+                        $('td', row).eq(1).css("color", "#777");
+                    } 
+                },
+            "order": [[8, 'desc']],
             "language": {
                 "url": "../vendor/zh_CN.txt"
             }
@@ -95,6 +164,7 @@
                 cell.innerHTML = i + 1;
             });
         }).draw();
+    });
     </script>
     </body>
 

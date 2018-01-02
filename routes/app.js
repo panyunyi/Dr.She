@@ -173,7 +173,7 @@ router.get('/business/:user_id', function (req, res) {
         } else {
             res.jsonp({
                 count: 1, business_id: data.id, name: data.get('name'), phone: data.get('phone'), address: data.get('address'),
-                connecter: data.get('connecter')
+                connecter: data.get('connecter'),audit:data.get('audit')
             });
         }
     });

@@ -312,7 +312,7 @@ router.get('/json/business', function (req, res, next) {
                         let one = {
                             name: busines.get('name'), phone: busines.get('phone'), connecter: busines.get('connecter'), area: busines.get('area') ? busines.get('area') : "",
                             address: busines.get('address') ? busines.get('address') : "", user: busines.get('user') ? busines.get('user').get('nickname') : "",
-                            createdAt: time.format('YYYY-MM-DD HH:mm:ss')
+                            time: time.format('YYYY-MM-DD HH:mm:ss'),audit:busines.get('audit'),DT_RowId: busines.id
                         };
                         arr.push(one);
                     }
@@ -324,6 +324,33 @@ router.get('/json/business', function (req, res, next) {
         }, function (err, business) {
             res.jsonp({ "data": arr });
         });
+    });
+});
+
+router.put('/json/business/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let business = AV.Object.createWithoutData('Business', id);
+    business.set('audit', arr['data'][id]['audit']*1);
+    business.save().then(function (business) {
+        let data = [];
+        let one = {
+            name: arr['data'][id]['name'], phone: arr['data'][id]['phone'], connecter: arr['data'][id]['connecter'], 
+            area: arr['data'][id]['area'] ? arr['data'][id]['area'] : "",
+            address: arr['data'][id]['address'] ? arr['data'][id]['address'] : "", user: arr['data'][id]['user'] ? arr['data'][id]['user'] : "",
+            time: arr['data'][id]['time'],audit:arr['data'][id]['audit']*1,DT_RowId: id
+        };
+        data.push(one);
+        res.jsonp({ "data": data });
+    });
+});
+
+router.delete('/json/business/remove/:id', function (req, res) {
+    let id = req.params.id;
+    let business = AV.Object.createWithoutData('Business', id);
+    business.set('isDel', true);
+    business.save().then(function () {
+        res.jsonp({ "data": [] });
     });
 });
 
@@ -663,7 +690,8 @@ router.get('/json/service', function (req, res, next) {
         });
     }
     function promise2(callback) {
-        let types=[{label:"FA1",value:"FA1"},{label:"FA2",value:"FA2"}];
+        let types=[{label:"FA1",value:"FA1"},{label:"FA2",value:"FA2"},{label:"FA1 WIFI套装",value:"FA1 WIFI套装"},{label:"FA2高清",value:"FA2高清"},
+        {label:"FA2 WIFI",value:"FA2 WIFI"}];
         resdata["options"] = {types:types};
         callback(null,1);
     }

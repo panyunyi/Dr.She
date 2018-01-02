@@ -1,4 +1,4 @@
-<% include header %>
+<% include header1 %>
     <div id="page-wrapper">
         <div class="container-fluid">
             <div class="row row-title">
@@ -90,15 +90,14 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
-    <script src="../dist/js/popper.min.js"></script>
     <script src="../dist/js/bootstrap.min.js"></script>
     <script src="../dist/js/jquery.dataTables.min.js"></script>
-    <script src="../dist/js/dataTables.bootstrap4.min.js"></script>
+    <script src="../dist/js/dataTables.bootstrap.min.js"></script>
     <script src="../dist/js/dataTables.buttons.min.js"></script>
-    <script src="../dist/js/buttons.bootstrap4.min.js"></script>
+    <script src="../dist/js/buttons.bootstrap.min.js"></script>
     <script src="../dist/js/dataTables.select.min.js"></script>
     <script src="../dist/js/dataTables.editor.min.js"></script>
-    <script src="../dist/js/editor.bootstrap4.min.js"></script>
+    <script src="../dist/js/editor.bootstrap.min.js"></script>
     <script>
         var editor;
         $(document).ready(function () {
@@ -126,11 +125,7 @@
                     { label: '手机', name: 'phone' },
                     { label: '客户地址', name: 'address' },
                     {
-                        label: '设备型号', name: 'types', type: 'checkbox', options: [
-                            { label: "FA1", value: "FA1" },
-                            { label: "FA2单机", value: "FA2单机" },
-                            { label: "FA2高清屏", value: "FA2高清屏" },
-                            { label: "FA2WIFI屏", value: "FA2WIFI屏" }]
+                        label: '设备型号', name: 'types', type: 'checkbox', options: []
                     },
                     { label: '设备编号', name: 'productid' },
                     { label: '寄回数量', name: 'count' },
@@ -272,17 +267,6 @@
         .list .eight {
             height: 200px;
             overflow-y: scroll;
-        }
-        .DTE_Field_Name_sender{
-            float: left;
-            margin-left: 11.2rem !important;
-        }
-        .DTE_Field_Name_express{
-            float: left;
-            margin-left: 11.2rem !important;
-        }
-        .DTE_Field_Name_types div{
-            display: inline
         }
         
     </style>
