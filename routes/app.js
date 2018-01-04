@@ -1087,4 +1087,40 @@ router.post('/thread/reply', function (req, res) {
     });
 });
 
+router.get('/thread/:user_id', function (req, res) {
+    let user_id = req.params.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let index = req.query.index * 1 - 1;
+    let query = new AV.Query('Thread');
+    query.include('user');
+    query.descending('createdAt');
+    query.limit(20);
+    query.skip(20 * index);
+    query.equalTo('isDel', false);
+    query.find().then(function (threads) {
+        async.map(threads, function (thread, callback) {
+            let commetQuery = new AV.Query('ThreadCommet');
+            commetQuery.equalTo('isDel', false);
+            commetQuery.equalTo('thread', thread);
+            commetQuery.include('user');
+            commetQuery.ascending('createdAt');
+            commetQuery.limit(1000);
+            commetQuery.find().then(function (commets) {
+                async.map(commets, function (commet, callback1) {
+                    let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
+                    callback1(null, one);
+                }, function (err, comments) {
+                    let one = {
+                        title: thread.get('title'), content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+                        headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
+                    };
+                    callback(null, one);
+                });
+            });
+        }, function (err, threads) {
+            res.jsonp({ index: req.query.index, threads: threads, count: threads.length });
+        });
+    });
+});
+
 module.exports = router;
