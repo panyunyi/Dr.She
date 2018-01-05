@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html class="no-js drshe_wap" style="font-size: 37.5px;">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="description" content="">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <title>服务评价</title>
+
+    <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
+    <link rel="stylesheet" href="../stylesheets/cy1.css">
+    <link rel="stylesheet" href="../stylesheets/feedback.css">
+</head>
+
+<body class="">
+
+    <div class="partner-right">
+        <div id="feedback" class="container">
+            <div class="head">维修服务评价</div>
+            <span>
+                <img id="star1" src="../0score.png" alt="">
+                <img id="star2" src="../0score.png" alt="">
+                <img id="star3" src="../0score.png" alt="">
+                <img id="star4" src="../0score.png" alt="">
+                <img id="star5" src="../0score.png" alt="">
+            </span>
+            <span id="title">小提示：点击星星就能打分</span>
+            <div class="content_box">
+                <textarea id="content" placeholder="请您填写对我们此次维修服务的评价和建议" class="content bg_white"></textarea>
+
+            </div>
+            <div class="btn feedback_btn">提交</div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/1.1.0/weui.min.css">
+    <script type="text/javascript" src="../weui.js"></script>
+    <script type="text/javascript">
+        var score = 0;
+        $("#star1").on("click", function () {
+            $("#star1").attr('src', "../score.png");
+            $("#star2").attr('src', "../0score.png");
+            $("#star3").attr('src', "../0score.png");
+            $("#star4").attr('src', "../0score.png");
+            $("#star5").attr('src', "../0score.png");
+            $("#title").html("1分 很不满意");
+            score = 1;
+        });
+        $("#star2").on("click", function () {
+            $("#star1").attr('src', "../score.png");
+            $("#star2").attr('src', "../score.png");
+            $("#star3").attr('src', "../0score.png");
+            $("#star4").attr('src', "../0score.png");
+            $("#star5").attr('src', "../0score.png");
+            $("#title").html("2分 不满意");
+            score = 2;
+        });
+        $("#star3").on("click", function () {
+            $("#star1").attr('src', "../score.png");
+            $("#star2").attr('src', "../score.png");
+            $("#star3").attr('src', "../score.png");
+            $("#star4").attr('src', "../0score.png");
+            $("#star5").attr('src', "../0score.png");
+            $("#title").html("3分 一般");
+            score = 3;
+        });
+        $("#star4").on("click", function () {
+            $("#star1").attr('src', "../score.png");
+            $("#star2").attr('src', "../score.png");
+            $("#star3").attr('src', "../score.png");
+            $("#star4").attr('src', "../score.png");
+            $("#star5").attr('src', "../0score.png");
+            $("#title").html("4分 满意");
+            score = 4;
+        });
+        $("#star5").on("click", function () {
+            $("#star1").attr('src', "../score.png");
+            $("#star2").attr('src', "../score.png");
+            $("#star3").attr('src', "../score.png");
+            $("#star4").attr('src', "../score.png");
+            $("#star5").attr('src', "../score.png");
+            $("#title").html("5分 很满意");
+            score = 5;
+        });
+
+        $(".feedback_btn").on("click", function () {
+            if (score == 0) {
+                weui.alert("请点击分数");
+                return;
+            }
+            $.post("/service/advice/add", { content: $("#content").val(), score: score, service_id: '<%=service_id%>' }, function (result) {
+                if (result == 1) {
+                    weui.toast('谢谢您的评价', {
+                        duration: 3000,
+                        className: 'custom-classname',
+                        callback: function () { window.location.replace("/service/result?phone=" + '<%=phone%>' + "&objid=" + '<%=objid%>') }
+                    });
+                } else {
+                    weui.alert("回复失败，请退出重试。", function () { window.location.replace("/service/result?phone=" + $('#phone2').val() + "&objid=" + objid); })
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

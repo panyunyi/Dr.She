@@ -53,11 +53,21 @@
                             <span class="weui-form-preview__value"><%=services[i].status%></span>
                         </div>
                     </div>
+                    <%if (services[i].flag==3){%>
                     <div class="weui-form-preview__ft">
                         <a style="display:none" id="formSubmitBtn1" class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">
                             您是注册用户，本次维修免费（减免<%=services[i].amount%>元）</a>
                         <a id="formSubmitBtn2" class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">支付</a>
+                        
                     </div>
+                    <div class="weui-form-preview__ft"></div>
+                        <%if (services[i].score==0){%>
+                            <a id="scoreBtn" data-id="<%=services[i].service_id%>" class="weui-form-preview__btn weui-form-preview__btn_primary" style="color:#FF9800" href="javascript:">点击评价服务</a>
+                        <%}else{%>
+                            <a data-id="<%=services[i].service_id%>" class="weui-form-preview__btn weui-form-preview__btn_primary" style="color:#FF9800" href="javascript:">已评价</a>
+                        <%}%>
+                    </div>
+                    <%}%>
                 </div>
                 <br>
                 <%}%>
@@ -81,7 +91,9 @@
         $("#formSubmitBtn2").on("click", function () {
             weui.alert("注册会员减免维修费用，现在前往注册", function(){ window.location.replace("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/apply&response_type=code&scope=snsapi_userinfo&state=1"); });
         });
-
+        $("#scoreBtn").on("click", function () {
+            window.location.replace("../service/score?service_id="+$("#scoreBtn").attr('data-id')+"&phone="+'<%=phone%>&objid='+'<%=objid%>');
+        });
         
 
     </script>

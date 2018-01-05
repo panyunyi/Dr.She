@@ -11,7 +11,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
-    <title>我的建议</title>
+    <title>产品建议</title>
 
     <link rel="shortcut icon" href="http://media2.chunyuyisheng.com/@/static/favicon.ico">
     <link rel="stylesheet" href="../stylesheets/cy1.css">
@@ -23,8 +23,10 @@
     <div class="partner-right">
         <div id="feedback" class="container">
             <div class="head">聆听，让我们做的更好...</div>
-            <div class="content_box"><textarea id="content" placeholder="如需咨询健康问题，请您到“快问医生”里向医生咨询。" class="content bg_white"></textarea>
-                <div class="up-img-btn"><img src="./assets/i/add_img_3d8621a.png" alt="" class="img_add" id="add-img">
+            <div class="content_box">
+                <textarea id="content" placeholder="请您填写对我们产品的建议" class="content bg_white"></textarea>
+                <div class="up-img-btn">
+                    <img src="./assets/i/add_img_3d8621a.png" alt="" class="img_add" id="add-img">
                     <input style="opacity: 0;width: 13%;margin-left: -2rem;margin-bottom: 1rem;" type="file" name="iconImage" id="Image" accept="image/jpeg,image/png,image/gif,image/bmp">
                 </div>
             </div>
@@ -67,11 +69,11 @@
             }
         });
         $(".feedback_btn").on("click", function () {
-            $.post("/advice/add", { content: $("#content").val(), image: imageurl }, function (result) {
+            $.post("/advice/add", { content: $("#content").val(), image: imageurl, source: '产品建议', objid: '<%=objid%>' }, function (result) {
                 if (result == 1) {
                     weui.toast('已提交', 3000);
                 } else {
-                    weui.alert("回复失败，请退出重试。")
+                    weui.alert("回复失败，请退出重试。", function () { window.location.replace("https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx0d482cfc691f30e5&redirect_uri=http://drshe.leanapp.cn/apply&response_type=code&scope=snsapi_userinfo&state=1"); })
                 }
             });
         });

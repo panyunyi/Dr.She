@@ -419,17 +419,25 @@ router.get('/service', function (req, res) {
     });
 });
 
+router.get('/service/score', function (req, res) {
+    let service_id = req.query.service_id;
+    let phone = req.query.phone;
+    let objid = req.query.objid;
+    res.render('servicescore', { service_id: service_id, phone: phone, objid: objid });
+});
+
 router.get('/service/success', function (req, res) {
     res.render('servicesuccess');
 });
 
 router.get('/service/result', function (req, res) {
     let phone = req.query.phone;
-    let objid=req.query.objid;
+    let objid = req.query.objid;
     let user = AV.Object.createWithoutData('WxUser', objid);
     let query = new AV.Query('Service');
     query.equalTo('isDel', false);
-    query.equalTo('phone',phone);
+    query.equalTo('phone', phone);
+    query.equalTo('user', user);
     query.limit(1000);
     query.find().then(function (services) {
         async.map(services, function (service, callback) {
@@ -456,7 +464,10 @@ router.get('/service/result', function (req, res) {
                     } else if (service.get('status') == 3) {
                         status = "已寄出。快递：中通" + service.get('delivery');
                     }
-                    one = { amount: amount, device: service.get('devicetype'), items: itemstr.substring(0, itemstr.length - 1), status: status };
+                    one = {
+                        amount: amount, device: service.get('devicetype'), items: itemstr.substring(0, itemstr.length - 1), status: status, service_id: service.id,
+                        score: service.get('score'), flag: service.get('status')
+                    };
                     callback(null, one);
                 });
             });
@@ -465,7 +476,7 @@ router.get('/service/result', function (req, res) {
             o2oQuery.equalTo('isDel', false);
             o2oQuery.equalTo('user', user);
             o2oQuery.count().then(function (count) {
-                res.render('serviceprogress', { services: services, flag: count });
+                res.render('serviceprogress', { services: services, flag: count, objid: objid, phone: phone, objid: objid });
             });
         });
     });
@@ -624,6 +635,7 @@ router.get('/toc', function (req, res) {
 router.get('/advice', function (req, res) {
     let sess = req.session;
     let time = Math.round(new Date().getTime() / 1000).toString();
+    //return res.render('advice',{objid:'596d793ba22b9d006a38e5e4'});
     //if (typeof (sess.objid) == "undefined") {
     let code = req.query.code;
     let state = req.query.state;
@@ -651,7 +663,7 @@ router.get('/advice', function (req, res) {
                             wxuser.save().then(function (data) {
                                 sess.objidid = data.id;
                                 chunyu.login(data.id, time).then(function () {
-                                    res.render('advice');
+                                    res.render('advice', { objid: data.id });
                                 });
                             }, function (err) {
                                 console.log(err);
@@ -661,7 +673,7 @@ router.get('/advice', function (req, res) {
                                 sess.objid = data.id;
                                 data.set('unionid', body2.unionid);
                                 data.save();
-                                res.render('advice');
+                                res.render('advice', { objid: data.id });
                             });
                         } else {
                             res.send("用户信息有重复，为保证用户利益请及时联系客服。");

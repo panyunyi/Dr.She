@@ -7,16 +7,16 @@ var moment = require('moment');
 var Advice = AV.Object.extend('Advice');
 
 router.post('/add', function (req, res) {
-    let sess = req.session;
-    let user = AV.Object.createWithoutData('WxUser', sess.objid);
+    let user = AV.Object.createWithoutData('WxUser', req.body.objid);
     let advice = new Advice();
     advice.set('image', req.body.image);
     advice.set('content', req.body.content);
     advice.set('user', user);
+    advice.set('source', req.body.source);
     advice.save().then(function () {
-        res.send(1);
+        res.jsonp(1);
     }, function (err) {
-        res.send(err);
+        res.jsonp(err);
     });
 });
 
