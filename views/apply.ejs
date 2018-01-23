@@ -100,35 +100,8 @@
                 </div>
             </div>
             <div class="weui-cells">
-                <div class="weui-cell weui-cell_select weui-cell_select-after">
-                    <div class="weui-cell__hd">
-                        <label for="" class="weui-label">省份</label>
-                    </div>
-                    <div class="weui-cell__bd">
-                        <select class="weui-select" name="select1" id="select1">
-                            <%for(var i=0;i<cities.length;i++){%>
-                                <option data-index=<%=i+1%> value="
-                                    <%=cities[i].province%>">
-                                        <%=cities[i].province%>
-                                </option>
-                                <%}%>
-                        </select>
-                    </div>
-                </div>
-                <div class="weui-cell weui-cell_select weui-cell_select-after">
-                    <div class="weui-cell__hd">
-                        <label for="" class="weui-label">城市</label>
-                    </div>
-                    <div class="weui-cell__bd">
-                        <select class="weui-select" name="select2" id="select2">
-                            <%for(var j=0;j<cities[0].cities.length;j++){%>
-                                <option value="<%=cities[0].cities[j]%>">
-                                    <%=cities[0].cities[j]%>
-                                </option>
-                                <%}%>
-                        </select>
-                    </div>
-                </div>
+
+
                 <div class="weui-cell">
                     <div class="weui-cell__hd">
                         <label class="weui-label">微信账号</label>
@@ -180,7 +153,7 @@
                         return;
                     }else{
                         $("#formSubmitBtn").attr("disabled","disabled");
-                        $.post("/apply/add", { phone: $("#phone").val(), province: $("#select1").val(),city:$("#select2").val(),wx:$("#wx").val(),objid:objid }, function (result) {
+                        $.post("/apply/add", { phone: $("#phone").val(), wx:$("#wx").val(),objid:objid }, function (result) {
                             if (result.code == 0) {
                                 window.location.replace("/apply/success");
                             } else {

@@ -631,6 +631,26 @@ router.get('/json/o2o', function (req, res, next) {
     });
 });
 
+router.put('/json/o2o/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let o2o = AV.Object.createWithoutData('O2O', id);
+    o2o.set('notice', arr['data'][id]['notice']);
+    o2o.set('flag', arr['data'][id]['flag'] * 1);
+    o2o.save().then(function () {
+        o2o.fetch({ include: 'user' }).then(function(){
+            let data = [];
+            o2o.set('DT_RowId', o2o.id);
+            let time = new moment(o2o.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            o2o.set('time', time);
+            o2o.set('nickname',o2o.get('user').get('nickname'));
+            o2o.set('headimgurl',o2o.get('user').get('headimgurl'));
+            data.push(o2o);
+            res.jsonp({ "data": data });
+        });
+    });
+});
+
 router.get('/json/service', function (req, res, next) {
     let resdata = {};
     function promise1(callback) {
@@ -691,7 +711,7 @@ router.get('/json/service', function (req, res, next) {
     }
     function promise2(callback) {
         let types=[{label:"FA1",value:"FA1"},{label:"FA2",value:"FA2"},{label:"FA1 WIFI套装",value:"FA1 WIFI套装"},{label:"FA2高清",value:"FA2高清"},
-        {label:"FA2 WIFI",value:"FA2 WIFI"}];
+        {label:"FA2 WIFI",value:"FA2 WIFI"},{label:"单屏",value:"单屏"}];
         resdata["options"] = {types:types};
         callback(null,1);
     }
@@ -742,6 +762,7 @@ router.post('/json/service/add', function (req, res) {
     service.set('disinfection', arr['data'][0]['disinfection'] * 1);
     service.set('haspic', arr['data'][0]['haspic'] * 1);
     service.set('error', error.substring(0, error.length - 1));
+    service.set('custom', arr['data'][0]['custom']);
     service.set('delivery', arr['data'][0]['delivery']);
     service.set('status', arr['data'][0]['status'] * 1);
     let data = [];
@@ -793,6 +814,7 @@ router.put('/json/service/edit/:id', function (req, res) {
     service.set('haspic', arr['data'][id]['haspic'] * 1);
     service.set('faulttype', error.substring(0, error.length - 1));
     service.set('error', arr['data'][id]['error']);
+    service.set('custom', arr['data'][id]['custom']);
     service.set('delivery', arr['data'][id]['delivery']);
     service.set('status', arr['data'][id]['status'] * 1);
     service.save().then(function (service) {
@@ -937,6 +959,7 @@ router.put('/json/repair/edit/:id', function (req, res) {
     } else {
         service.set('status', 1);
     }
+    service.set('repair', arr['data'][id]['custom']);
     service.save().then(function (result) {
         let repair = "";
         async.map(items, function (item, callback) {

@@ -24,7 +24,9 @@
                                         <th>省份</th>
                                         <th>城市</th>
                                         <th>微信</th>
-                                        <th>微信用户</th>
+                                        <th>微信用户名</th>
+                                        <th>备注</th>
+                                        <th>加好友</th>
                                         <th>头像</th>
                                         <th>创建时间</th>
                                     </tr>
@@ -82,12 +84,25 @@
                         url: '../api/json/o2o/remove/_id_'
                     }
                 },
-                table: "#table"
+                table: "#table",
+                fields: [
+                    { label: '备注', name: 'notice' },
+                    {
+                        label: '加好友', name: 'flag', type: 'select', options: [
+                            { label: "已加", value: 1 },{ label: "未加", value: 0 }]
+                    }
+                ], i18n: {
+                    edit: {
+                        button: "编辑",
+                        title: "编辑用户",
+                        submit: "更新"
+                    }
+                }
             });
             var table = $('#table').DataTable({
                 "processing": true,
                 stateSave: true,
-                "dom": '<"top"rf>t<"bottom"ilp>',
+                "dom": '<"top"Brf>t<"bottom"ilp>',
                 "ajax": '../api/json/o2o',
                 "columns": [
                     { "data": null },
@@ -96,10 +111,15 @@
                     { "data": "city", render: function (data) { return data ? data : "" } },
                     { "data": "wx", render: function (data) { return data ? data : "" } },
                     { "data": "nickname", render: function (data) { return data ? data : "" } },
+                    { "data": "notice", render: function (data) { return data ? data : "" } },
+                    { "data": "flag", render: function (data) { return data ? "已加" : "" } },
                     { "data": "headimgurl" },
                     { "data": "time", render: function (data) { return data ? data : "" } }
                 ],
                 select: true,
+                buttons: [
+                    { extend: "edit", editor: editor }
+                ],
                 "columnDefs": [{
                     "searchable": false,
                     "orderable": false,
@@ -111,9 +131,9 @@
                     return '<a href="' + data + '" target="_blank"><img style="width:15%" src="' + data + '"/></a>';
                 },
                 //指定是第三列
-                "targets": 6
+                "targets": 8
                 }],
-                "order": [[7, 'desc']],
+                "order": [[9, 'desc']],
                 "language": {
                     "url": "../vendor/zh_CN.txt"
                 }

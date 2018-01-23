@@ -437,7 +437,7 @@ router.get('/service/result', function (req, res) {
     let query = new AV.Query('Service');
     query.equalTo('isDel', false);
     query.equalTo('phone', phone);
-    query.equalTo('user', user);
+    //query.equalTo('user', user);
     query.limit(1000);
     query.find().then(function (services) {
         async.map(services, function (service, callback) {

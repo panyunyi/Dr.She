@@ -95,8 +95,8 @@ router.post('/add', function (req, res) {
     let userid = req.body.objid;
     let user = AV.Object.createWithoutData('WxUser', userid);
     let phone = req.body.phone;
-    let province = req.body.province;
-    let city = req.body.city;
+    // let province = req.body.province;
+    // let city = req.body.city;
     let wx = req.body.wx;
     let o2oQuery = new AV.Query('O2O');
     o2oQuery.equalTo('isDel',false);
@@ -107,8 +107,8 @@ router.post('/add', function (req, res) {
             o2o.set('isDel',false);
             o2o.set('user',user);
             o2o.set('phone',phone);
-            o2o.set('province',province);
-            o2o.set('city',city);
+            // o2o.set('province',province);
+            // o2o.set('city',city);
             o2o.set('wx',wx);
             o2o.set('flag',0);
             o2o.save().then(function(){

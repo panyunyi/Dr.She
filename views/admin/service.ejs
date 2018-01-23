@@ -37,6 +37,7 @@
                                             <editor-field name="faulttype"></editor-field>
                                             <editor-field name="orderid"></editor-field>
                                             <editor-field name="error"></editor-field>
+                                            <editor-field name="custom"></editor-field>
                                         </fieldset>
                                         <fieldset class="other">
                                             <legend>其他</legend>
@@ -151,6 +152,7 @@
                             { label: "有", value: 1 },
                             { label: "没有", value: 0 }], def: 0
                     },
+                    { label: '自定义故障', name: 'custom' },
                     {
                         label: '故障类型', name: 'faulttype', type: 'checkbox', options: [
                             { label: "不开机", value: "不开机" },
@@ -164,6 +166,7 @@
                             { label: "数据线不良", value: "数据线不良" },
                             { label: "视频线不良", value: "视频线不良" }], className: 'list'
                     },
+                    
                     { label: '回寄单号', name: 'delivery' },
                     {
                         label: '订单状态', name: 'status', type: 'select', options: [
