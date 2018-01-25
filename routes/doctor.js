@@ -192,27 +192,31 @@ router.post('/close', function (req, res) {
     let problem_id = req.body.problem_id * 1;
     let user_id = req.body.user_id;
     let user = AV.Object.createWithoutData('WxUser', user_id);
-    let problem = AV.Object.createWithoutData('Problem', problem_id);
-    let msg = req.body.msg;
-    let status = req.body.status;
-    let price = 0;
-    if (typeof (req.body.price) != "undefined") {
-        price = req.body.price * 1;
-    }
-    let sign = req.body.sign;
-    let atime = req.body.atime * 1;
-    let refund = new Refund();
-    refund.set('problem_id', problem_id);
-    refund.set('user', user);
-    refund.set('msg', msg);
-    refund.set('status', status);
-    refund.set('price', price);
-    refund.set('sign', sign);
-    refund.set('atime', atime);
-    refund.save().then(function () {
-        problem.set('isrefund', true);
-        problem.save().then(function () {
-            res.jsonp(result);
+    //let problem = AV.Object.createWithoutData('Problem', problem_id);
+    let problemQuery=new AV.Query('Problem');
+    problemQuery.equalTo('problem_id',problem_id);
+    problemQuery.first().then(function(problem){
+        let msg = req.body.msg;
+        let status = req.body.status;
+        let price = 0;
+        if (typeof (req.body.price) != "undefined") {
+            price = req.body.price * 1;
+        }
+        let sign = req.body.sign;
+        let atime = req.body.atime * 1;
+        let refund = new Refund();
+        refund.set('problem_id', problem_id);
+        refund.set('user', user);
+        refund.set('msg', msg);
+        refund.set('status', status);
+        refund.set('price', price);
+        refund.set('sign', sign);
+        refund.set('atime', atime);
+        refund.save().then(function () {
+            problem.set('isrefund', true);
+            problem.save().then(function () {
+                res.jsonp(result);
+            });
         });
     });
 });

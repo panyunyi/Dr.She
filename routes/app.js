@@ -527,12 +527,12 @@ function parseArray(arrStr) {
 router.post('/add', function (req, res) {
     let num = req.body.num;
     let user = AV.Object.createWithoutData('WxUser', req.body.user_id);
-    user.increment('points', -num);
-    let order = new Order();
-    order.set('price', 10);
-    order.set('points', num);
-    order.set('user', user);
-    order.save();
+    //user.increment('points', -num);
+    // let order = new Order();
+    // order.set('price', 10);
+    // order.set('points', num);
+    // order.set('user', user);
+    // order.save();
     let time = Math.round(new Date().getTime() / 1000).toString();
     let imglist = req.body.imglist.split(',');
     let flag = 1;
@@ -1102,32 +1102,56 @@ router.get('/thread/:user_id', function (req, res) {
         query.skip(20 * index);
         query.equalTo('isDel', false);
         query.find().then(function (threads) {
-            async.map(threads, function (thread, callback) {
-                let commetQuery = new AV.Query('ThreadCommet');
-                commetQuery.equalTo('isDel', false);
-                commetQuery.equalTo('thread', thread);
-                commetQuery.include('user');
-                commetQuery.ascending('createdAt');
-                commetQuery.limit(1000);
-                commetQuery.find().then(function (commets) {
-                    async.map(commets, function (commet, callback1) {
-                        let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
-                        callback1(null, one);
-                    }, function (err, comments) {
-                        let one = {
-                            content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                            headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
-                        };
-                        callback(null, one);
-                    });
-                });
-            }, function (err, threads) {
-                callback2(null, { index: req.query.index, threads: threads, count: threads.length });
-                //res.jsonp({ index: req.query.index, threads: threads, count: threads.length });
-            });
+            callback2(null,threads);
+            // async.map(threads, function (thread, callback) {
+            //     let commetQuery = new AV.Query('ThreadCommet');
+            //     commetQuery.equalTo('isDel', false);
+            //     commetQuery.equalTo('thread', thread);
+            //     commetQuery.include('user');
+            //     commetQuery.ascending('createdAt');
+            //     commetQuery.limit(1000);
+            //     commetQuery.find().then(function (commets) {
+            //         async.map(commets, function (commet, callback1) {
+            //             let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
+            //             callback1(null, one);
+            //         }, function (err, comments) {
+            //             let one = {
+            //                 content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+            //                 headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
+            //             };
+            //             callback(null, one);
+            //         });
+            //     });
+            // }, function (err, threads) {
+            //     callback2(null, { index: req.query.index, threads: threads, count: threads.length });
+            // });
         });
     }
-    function promise2(callback2) {
+    function promise2(threads,callback2){
+        async.map(threads, function (thread, callback) {
+            let commetQuery = new AV.Query('ThreadCommet');
+            commetQuery.equalTo('isDel', false);
+            commetQuery.equalTo('thread', thread);
+            commetQuery.include('user');
+            commetQuery.ascending('createdAt');
+            commetQuery.limit(1000);
+            commetQuery.find().then(function (commets) {
+                async.map(commets, function (commet, callback1) {
+                    let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
+                    callback1(null, one);
+                }, function (err, comments) {
+                    let one = {
+                        content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+                        headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
+                    };
+                    callback(null, one);
+                });
+            });
+        }, function (err, threads) {
+            callback2(null, { index: req.query.index, threads: threads, count: threads.length });
+        });
+    }
+    function promise3(callback2) {
         let query = new AV.Query('Thread');
         query.equalTo('isDel', false);
         query.equalTo('user', user);
@@ -1142,14 +1166,17 @@ router.get('/thread/:user_id', function (req, res) {
             });
         });
     }
-    async.parallel([function (callback) {
-        promise1(callback);
-    },
-    function (callback) {
-        promise2(callback);
-    }], function (err, results) {
-        res.jsonp({ list: results[0], count: results[1] });
-    });
+    async.waterfall([
+        function (callback) {
+            promise1(callback);
+        },
+        function (threads,callback) {
+            promise2(threads,callback);
+        },function (callback) {
+            promise3(callback);
+        }], function (err, results) {
+            res.jsonp({ list: results[0], count: results[1] });
+        });
 });
 
 router.get('/thread/unread/:user_id', function (req, res) {
