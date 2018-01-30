@@ -651,6 +651,53 @@ router.put('/json/o2o/edit/:id', function (req, res) {
     });
 });
 
+router.get('/json/thread', function (req, res, next) {
+    let query = new AV.Query('Thread');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.include('user');
+    query.find().then(function (results) {
+        results.forEach(function (result) {
+            result.set('DT_RowId', result.id);
+            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            result.set('nickname',result.get('user').get('nickname'));
+            result.set('headimgurl',result.get('user').get('headimgurl'));
+            result.set('comments',result.get('comments')?result.get('comments'):[]);
+            result.set('time', time);
+        });
+        res.jsonp({ data: results });
+    });
+});
+
+router.put('/json/thread/edit/:id', function (req, res) {
+    let arr = req.body;
+    let id = req.params.id;
+    let o2o = AV.Object.createWithoutData('Thread', id);
+    o2o.set('notice', arr['data'][id]['notice']);
+    o2o.set('flag', arr['data'][id]['flag'] * 1);
+    o2o.save().then(function () {
+        o2o.fetch({ include: 'user' }).then(function(){
+            let data = [];
+            o2o.set('DT_RowId', o2o.id);
+            let time = new moment(o2o.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            o2o.set('time', time);
+            o2o.set('nickname',o2o.get('user').get('nickname'));
+            o2o.set('headimgurl',o2o.get('user').get('headimgurl'));
+            data.push(o2o);
+            res.jsonp({ "data": data });
+        });
+    });
+});
+
+router.delete('/json/thread/remove/:id', function (req, res) {
+    let id = req.params.id;
+    let keywords = AV.Object.createWithoutData('Thread', id);
+    keywords.set('isDel', true);
+    keywords.save().then(function () {
+        res.jsonp({ "data": [] });
+    });
+});
+
 router.get('/json/service', function (req, res, next) {
     let resdata = {};
     function promise1(callback) {

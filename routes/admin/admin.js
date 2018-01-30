@@ -478,4 +478,17 @@ router.get('/recharge', function (req, res) {
     }
 });
 
+router.get('/thread', function (req, res) {
+    let sess = req.session;
+    if (sess.user) {
+        res.render('admin/thread', { title: "Dr.She" });
+    } else {
+        sess.url = "admin/thread";
+        res.render('admin/login', {
+            title: "登录失败",
+            errMsg: "帐号密码有误"
+        });
+    }
+});
+
 module.exports = router;
