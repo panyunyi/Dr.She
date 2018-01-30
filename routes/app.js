@@ -1032,24 +1032,12 @@ router.get('/thread', function (req, res) {
     query.equalTo('isDel', false);
     query.find().then(function (threads) {
         async.map(threads, function (thread, callback) {
-            let commetQuery = new AV.Query('ThreadCommet');
-            commetQuery.equalTo('isDel', false);
-            commetQuery.equalTo('thread', thread);
-            commetQuery.include('user');
-            commetQuery.ascending('createdAt');
-            commetQuery.limit(1000);
-            commetQuery.find().then(function (commets) {
-                async.map(commets, function (commet, callback1) {
-                    let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
-                    callback1(null, one);
-                }, function (err, comments) {
-                    let one = {
-                        content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                        headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
-                    };
-                    callback(null, one);
-                });
-            });
+            let one = {
+                content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+                headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [], objectid: thread.id,
+                createdAt: thread.get('createdAt')
+            };
+            callback(null, one);
         }, function (err, threads) {
             res.jsonp({ index: req.query.index, threads: threads, count: threads.length });
         });
@@ -1078,15 +1066,21 @@ router.post('/thread/reply', function (req, res) {
     let thread = AV.Object.createWithoutData('Thread', thread_id);
     thread.increment('count', 1);
     let content = req.body.content;
-    let threadCommet = new ThreadCommet();
-    threadCommet.set('isDel', false);
-    threadCommet.set('user', user);
-    threadCommet.set('thread', thread);
-    threadCommet.set('content', content);
-    threadCommet.save().then(function () {
-        res.jsonp({ error: 0, msg: "" });
-    }, function (err) {
-        console.log(err);
+    thread.fetch().then(function () {
+        let comments = thread.get('comments');
+        user.fetch().then(function () {
+            let comment = { content: content, user_id: user_id, name: user.get('nickname'), headimg: user.get('headimgurl'), time: new Date() };
+            if (typeof (comments) == "undefined") {
+                comments = [];
+            }
+            comments.push(comment);
+            thread.set('comments', comments);
+            thread.save().then(function () {
+                res.jsonp({ error: 0, msg: "" });
+            }, function (err) {
+                console.log(err);
+            });
+        });
     });
 });
 
@@ -1102,56 +1096,18 @@ router.get('/thread/:user_id', function (req, res) {
         query.skip(20 * index);
         query.equalTo('isDel', false);
         query.find().then(function (threads) {
-            callback2(null,threads);
-            // async.map(threads, function (thread, callback) {
-            //     let commetQuery = new AV.Query('ThreadCommet');
-            //     commetQuery.equalTo('isDel', false);
-            //     commetQuery.equalTo('thread', thread);
-            //     commetQuery.include('user');
-            //     commetQuery.ascending('createdAt');
-            //     commetQuery.limit(1000);
-            //     commetQuery.find().then(function (commets) {
-            //         async.map(commets, function (commet, callback1) {
-            //             let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
-            //             callback1(null, one);
-            //         }, function (err, comments) {
-            //             let one = {
-            //                 content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-            //                 headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
-            //             };
-            //             callback(null, one);
-            //         });
-            //     });
-            // }, function (err, threads) {
-            //     callback2(null, { index: req.query.index, threads: threads, count: threads.length });
-            // });
-        });
-    }
-    function promise2(threads,callback2){
-        async.map(threads, function (thread, callback) {
-            let commetQuery = new AV.Query('ThreadCommet');
-            commetQuery.equalTo('isDel', false);
-            commetQuery.equalTo('thread', thread);
-            commetQuery.include('user');
-            commetQuery.ascending('createdAt');
-            commetQuery.limit(1000);
-            commetQuery.find().then(function (commets) {
-                async.map(commets, function (commet, callback1) {
-                    let one = { content: commet.get('content'), name: commet.get('user').get('nickname') };
-                    callback1(null, one);
-                }, function (err, comments) {
-                    let one = {
-                        content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                        headimg: thread.get('user').get('headimgurl'), comments: comments, objectid: thread.id, createdAt: thread.get('createdAt')
-                    };
-                    callback(null, one);
-                });
+            async.map(threads, function (thread, callback) {
+                let one = {
+                    content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+                    headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [], objectid: thread.id, createdAt: thread.get('createdAt')
+                };
+                callback(null, one);
+            }, function (err, threads) {
+                callback2(null, { index: req.query.index, threads: threads, count: threads.length });
             });
-        }, function (err, threads) {
-            callback2(null, { index: req.query.index, threads: threads, count: threads.length });
         });
     }
-    function promise3(callback2) {
+    function promise2(callback2) {
         let query = new AV.Query('Thread');
         query.equalTo('isDel', false);
         query.equalTo('user', user);
@@ -1166,14 +1122,12 @@ router.get('/thread/:user_id', function (req, res) {
             });
         });
     }
-    async.waterfall([
+    async.parallel([
         function (callback) {
             promise1(callback);
         },
-        function (threads,callback) {
-            promise2(threads,callback);
-        },function (callback) {
-            promise3(callback);
+        function (threads, callback) {
+            promise2(threads, callback);
         }], function (err, results) {
             res.jsonp({ list: results[0], count: results[1] });
         });
@@ -1193,7 +1147,8 @@ router.get('/thread/unread/:user_id', function (req, res) {
         async.map(threads, function (thread, callback) {
             let one = {
                 content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                headimg: thread.get('user').get('headimgurl'), objectid: thread.id, createdAt: thread.get('createdAt')
+                headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [],
+                objectid: thread.id, createdAt: thread.get('createdAt')
             };
             callback(null, one);
         }, function (err, threads) {
@@ -1206,29 +1161,13 @@ router.get('/thread/comments/:thread_id', function (req, res) {
     let thread_id = req.params.thread_id;
     let thread = AV.Object.createWithoutData('Thread', thread_id);
     thread.set('count', 0);
-    thread.save();
-    let query = new AV.Query('ThreadCommet');
-    query.include('user');
-    query.descending('createdAt');
-    query.limit(1000);
-    query.equalTo('thread', thread);
-    query.find().then(function (comments) {
-        async.map(comments, function (comment, callback) {
-            let one = {
-                content: comment.get('content'), name: comment.get('user').get('nickname'),
-                headimg: comment.get('user').get('headimgurl'), objectid: comment.id, createdAt: comment.get('createdAt')
-            };
-            callback(null, one);
-        }, function (err, comments) {
-            thread.fetch({
-                include: ['user']
-            }).then(function () {
-                res.jsonp({
-                    content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                    headimg: thread.get('user').get('headimgurl'), objectid: thread.id, createdAt: thread.get('createdAt'),
-                    comments: comments, count: comments.length
-                });
-            })
+    thread.fetch({
+        include: ['user']
+    }).then(function () {
+        res.jsonp({
+            content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+            headimg: thread.get('user').get('headimgurl'), objectid: thread.id, createdAt: thread.get('createdAt'),
+            comments: thread.get('comments')
         });
     });
 });
