@@ -7,6 +7,7 @@ var secret = process.env.wx_secret;
 var WxUser = AV.Object.extend('WxUser');
 var Problem = AV.Object.extend('Problem');
 var Donate = AV.Object.extend('Donate');
+var AddUp = AV.Object.extend('AddUp');
 var chunyu = require('../routes/chunyu');
 var async = require('async');
 var signature = require('../routes/signature');
@@ -698,6 +699,24 @@ router.get('/advice', function (req, res) {
 
 router.get('/upgrade', function (req, res) {
     res.render('upgrade');
+});
+
+router.get('/business', function (req, res) {
+    let source=req.query.source;
+    let smsup = AV.Object.createWithoutData('AddUp','5a7fe2ded50eee0042dd1b3e');
+    let wxup=AV.Object.createWithoutData('AddUp','5a7fe2ff17d0090035154cb5');
+    let blankup=AV.Object.createWithoutData('AddUp','5a7fe55f0b616000381e53c5');
+    if(source=="sms"){
+        smsup.increment('count',1);
+        smsup.save();
+    }else if(source=="wx"){
+        wxup.increment('count',1);
+        wxup.save();
+    }else{
+        blankup.increment('count',1);
+        blankup.save();
+    }
+    res.render('business');
 });
 
 router.get('/index2', function (req, res) {

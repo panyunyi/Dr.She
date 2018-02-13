@@ -21,7 +21,10 @@
                                     <tr>
                                         <th>序号</th>
                                         <th>内容</th>
-                                        <th>评论</th>
+                                        <th>标题</th>
+                                        <th>标签</th>
+                                        <th>分类</th>
+                                        <th>点击率</th>
                                         <th>微信用户名</th>
                                         <th>创建时间</th>
                                     </tr>
@@ -81,7 +84,9 @@
                 },
                 table: "#table",
                 fields: [
-                    { label: '评论', name: 'comments' }
+                    { label: '标题', name: 'title' },
+                    { label: '标签', name: 'label' },
+                    { label: '分类', name: 'type' ,type:'select'},
                 ], i18n: {
                     edit: {
                         button: "编辑",
@@ -108,7 +113,10 @@
                     { "data": null },
                     { "data": "content", render: function (data) { return data ? data : "" } },
                     // { "data": "images", render: function (data) { return data ? data : "" } },
-                    { "data": "comments"},
+                    { "data": "title",render: function (data) { return data ? data : "" }},
+                    { "data": "label",render: function (data) { return data ? data : "" }},
+                    { "data": "type_name",render: function (data) { return data ? data : "" }},
+                    { "data": "views",render: function (data) { return data ? data : "" }},
                     { "data": "nickname", render: function (data) { return data ? data : "" } },
                     // { "data": "headimgurl" },
                     { "data": "time", render: function (data) { return data ? data : "" } }
@@ -122,19 +130,8 @@
                     "searchable": false,
                     "orderable": false,
                     "targets": 0
-                },
-                {
-                "render": function (data, type, row, meta) {
-                    //渲染 把数据源中的标题和url组成超链接
-                    var result="";
-                    for(var i=0;i<data.length;i++){
-                        result+=data[i].name+":"+data[i].content+"<br>";
-                    }
-                    return result;
-                },
-                "targets": 2
                 }],
-                "order": [[4, 'desc']],
+                "order": [[7, 'desc']],
                 "language": {
                     "url": "../vendor/zh_CN.txt"
                 }

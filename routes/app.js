@@ -24,7 +24,7 @@ var Goods = AV.Object.extend('Goods');
 var Advice = AV.Object.extend('Advice');
 var Commet = AV.Object.extend('Commet');
 var Thread = AV.Object.extend('Thread');
-var ThreadCommet = AV.Object.extend('ThreadCommet');
+var ThreadViewsMap = AV.Object.extend('ThreadViewsMap');
 var moment = require('moment');
 moment.locale('zh-cn');
 
@@ -74,6 +74,19 @@ router.post('/user/login', function (req, res) {
         }
     });
 
+});
+
+router.post('/user/login2', function (req, res) {
+    let phone = req.body.phone;
+    let query = new AV.Query('WxUser');
+    query.equalTo('phone', phone);
+    query.first().then(function(data){
+        if(typeof(data)=="undefined"){
+            res.jsonp({ error: 1, msg: "该手机未注册" });
+        }else{
+            res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id });
+            }
+    });
 });
 
 //app微信登录
@@ -1022,38 +1035,45 @@ router.get('/version', function (req, res) {
 });
 
 //生意经
-router.get('/thread', function (req, res) {
-    let index = req.query.index * 1 - 1;
-    let query = new AV.Query('Thread');
-    query.include('user');
-    query.descending('createdAt');
-    query.limit(20);
-    query.skip(20 * index);
-    query.equalTo('isDel', false);
-    query.find().then(function (threads) {
-        async.map(threads, function (thread, callback) {
-            let one = {
-                content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [], objectid: thread.id,
-                createdAt: thread.get('createdAt')
-            };
-            callback(null, one);
-        }, function (err, threads) {
-            res.jsonp({ index: req.query.index, threads: threads, count: threads.length });
-        });
-    });
-});
+// router.get('/thread', function (req, res) {
+//     let index = req.query.index * 1 - 1;
+//     let query = new AV.Query('Thread');
+//     query.include('user');
+//     query.descending('createdAt');
+//     query.limit(20);
+//     query.skip(20 * index);
+//     query.equalTo('isDel', false);
+//     query.find().then(function (threads) {
+//         async.map(threads, function (thread, callback) {
+//             let one = {
+//                 content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+//                 headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [], objectid: thread.id,
+//                 createdAt: thread.get('createdAt')
+//             };
+//             callback(null, one);
+//         }, function (err, threads) {
+//             res.jsonp({ index: req.query.index, threads: threads, count: threads.length });
+//         });
+//     });
+// });
 
 router.post('/thread/add', function (req, res) {
     let user_id = req.body.user_id;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     let images = req.body.images;
     let content = req.body.content;
+    let label = req.body.label;
+    let title = req.body.title;
+    let type_id = req.body.type_id;
+    let type = AV.Object.createWithoutData('ThreadType', type_id);
     let thread = new Thread();
     thread.set('isDel', false);
     thread.set('user', user);
     thread.set('content', content);
     thread.set('images', images);
+    thread.set('title', title);
+    thread.set('label', label);
+    thread.set('type', type);
     thread.save().then(function () {
         res.jsonp({ error: 0, msg: "" });
     });
@@ -1084,13 +1104,17 @@ router.post('/thread/reply', function (req, res) {
     });
 });
 
-router.get('/thread/:user_id', function (req, res) {
+router.get('/thread/:user_id/:type_id', function (req, res) {
     let user_id = req.params.user_id;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     let index = req.query.index * 1 - 1;
+    let type_id = req.params.type_id;
+    let type = AV.Object.createWithoutData('ThreadType', type_id);
     function promise1(callback2) {
         let query = new AV.Query('Thread');
         query.include('user');
+        query.include('type');
+        query.equalTo('type', type);
         query.descending('createdAt');
         query.limit(20);
         query.skip(20 * index);
@@ -1099,7 +1123,64 @@ router.get('/thread/:user_id', function (req, res) {
             async.map(threads, function (thread, callback) {
                 let one = {
                     content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                    headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [], objectid: thread.id, createdAt: thread.get('createdAt')
+                    headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [],
+                    objectid: thread.id, createdAt: thread.get('createdAt'), title: thread.get('title') ? thread.get('title') : '',
+                    label: thread.get('label') ? thread.get('label') : '', type: thread.get('type').get('name')
+                };
+                callback(null, one);
+            }, function (err, threads) {
+                callback2(null, { index: req.query.index, threads: threads, count: threads.length });
+            });
+        });
+    }
+    function promise2(callback2) {
+        let query = new AV.Query('Thread');
+        query.equalTo('isDel', false);
+        query.equalTo('user', user);
+        query.greaterThan('count', 0);
+        let count = 0;
+        query.find().then(function (threads) {
+            async.map(threads, function (thread, callback) {
+                count += thread.get('count');
+                callback(null, 1);
+            }, function (err, threads) {
+                callback2(null, count);
+            });
+        });
+    }
+    async.parallel([
+        function (callback) {
+            promise1(callback);
+        },
+        function (threads, callback) {
+            promise2(threads, callback);
+        }], function (err, results) {
+            res.jsonp({ list: results[0], count: results[1] });
+        });
+});
+
+router.get('/thread/:user_id', function (req, res) {
+    let user_id = req.params.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let index = req.query.index * 1 - 1;
+    // let type_id = req.query.type_id;
+    // let type = AV.Object.createWithoutData('ThreadType', type_id);
+    function promise1(callback2) {
+        let query = new AV.Query('Thread');
+        query.include('user');
+        query.include('type');
+        //query.equalTo('type', type);
+        query.descending('createdAt');
+        query.limit(20);
+        query.skip(20 * index);
+        query.equalTo('isDel', false);
+        query.find().then(function (threads) {
+            async.map(threads, function (thread, callback) {
+                let one = {
+                    content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+                    headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [],
+                    objectid: thread.id, createdAt: thread.get('createdAt'), title: thread.get('title') ? thread.get('title') : '',
+                    label: thread.get('label') ? thread.get('label') : '', type: thread.get('type') ? thread.get('type').get('name') : ''
                 };
                 callback(null, one);
             }, function (err, threads) {
@@ -1169,6 +1250,30 @@ router.get('/thread/comments/:thread_id', function (req, res) {
             headimg: thread.get('user').get('headimgurl'), objectid: thread.id, createdAt: thread.get('createdAt'),
             comments: thread.get('comments')
         });
+    });
+});
+
+router.get('/threadtype', function (req, res) {
+    let query = new AV.Query('ThreadType');
+    query.equalTo('isDel', false);
+    query.limit(1000);
+    query.find().then(function (types) {
+        res.jsonp(types);
+    });
+});
+
+router.get('/thread/views/:thread_id/:user_id', function (req, res) {
+    let thread_id = req.params.thread_id;
+    let thread = AV.Object.createWithoutData('Thread', thread_id);
+    let user_id = req.params.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    thread.increment('views', 1);
+    let threadViewsMap=new ThreadViewsMap();
+    threadViewsMap.set('user',user);
+    threadViewsMap.set('thread',thread);
+    threadViewsMap.set('isDel',false);
+    threadViewsMap.save().then(function(){
+        res.jsonp({error: 0, msg: ""});
     });
 });
 

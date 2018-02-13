@@ -7,6 +7,7 @@ var async = require('async');
 var moment = require('moment');
 var appid = process.env.wx_appid;
 var secret = process.env.wx_secret;
+var chunyu = require('../routes/chunyu');
 
 function getTokenAndSendMsg(data, msg, callback) {
     let result = {
@@ -19,7 +20,7 @@ function getTokenAndSendMsg(data, msg, callback) {
         client = request.createClient('https://api.weixin.qq.com/cgi-bin/message/template/');
         client.post('send?access_token=' + token, data, function (err, res, body) {
             //response.jsonp(result);
-            console.log(msg);
+            //console.log(msg);
             callback(null, msg);
         });
     });
@@ -190,6 +191,7 @@ router.put('/json/problems/edit/:id', function (req, res) {
     let select = arr['data'][id]['choice'] * 1;
     let illness_id = arr['data'][id]['illness'];
     let illness = AV.Object.createWithoutData('Illness', illness_id);
+    let time1 = Math.round(new Date().getTime() / 1000).toString();
     problem.set('illness', illness);
     problem.set('title', arr['data'][id]['title']);
     problem.set('select', select);
@@ -211,16 +213,19 @@ router.put('/json/problems/edit/:id', function (req, res) {
                     problem.fetch({ include: 'illness,user' }).then(function () {
                         article.set('url', 'http://drshe.leanapp.cn/inquiry/query?id=' + problem.get('problem_id'));
                         article.set('problem', problem);
-                        article.save().then(function () {
-                            let data = [];
-                            let time = new moment(problem.get('createdAt'));
-                            let one = {
-                                problem_id: problem.get('problem_id'), user: problem.get('user').get('nickname'), createdAt: time.format('YYYY-MM-DD HH:mm:ss'),
-                                source: problem.get('source'), title: problem.get('title'), DT_RowId: problem.id, select: problem.get('select'), illness_name: problem.get('illness').get('name'),
-                                illness: problem.get('illness').id
-                            };
-                            data.push(one);
-                            res.jsonp({ "data": data });
+                        chunyu.problemDetail(problem.get('user').id, problem.get('problem_id') * 1, 1, time1).then(function (data) {
+                            article.set('doctor', { name: data.doctor.name, level_title: data.doctor.level_title });
+                            article.save().then(function () {
+                                let data = [];
+                                let time = new moment(problem.get('createdAt'));
+                                let one = {
+                                    problem_id: problem.get('problem_id'), user: problem.get('user').get('nickname'), createdAt: time.format('YYYY-MM-DD HH:mm:ss'),
+                                    source: problem.get('source'), title: problem.get('title'), DT_RowId: problem.id, select: problem.get('select'), illness_name: problem.get('illness').get('name'),
+                                    illness: problem.get('illness').id
+                                };
+                                data.push(one);
+                                res.jsonp({ "data": data });
+                            });
                         });
                     });
                 } else {
@@ -234,8 +239,11 @@ router.put('/json/problems/edit/:id', function (req, res) {
                         };
                         data.push(one);
                         artobj.set('illness', illness);
-                        artobj.save().then(function () {
-                            res.jsonp({ "data": data });
+                        chunyu.problemDetail(problem.get('user').id, problem.get('problem_id') * 1, 1, time1).then(function (data) {
+                            artobj.set('doctor', { name: data.doctor.name, level_title: data.doctor.level_title });
+                            artobj.save().then(function () {
+                                res.jsonp({ "data": data });
+                            });
                         });
                     });
                 }
@@ -312,7 +320,7 @@ router.get('/json/business', function (req, res, next) {
                         let one = {
                             name: busines.get('name'), phone: busines.get('phone'), connecter: busines.get('connecter'), area: busines.get('area') ? busines.get('area') : "",
                             address: busines.get('address') ? busines.get('address') : "", user: busines.get('user') ? busines.get('user').get('nickname') : "",
-                            time: time.format('YYYY-MM-DD HH:mm:ss'),audit:busines.get('audit'),DT_RowId: busines.id
+                            time: time.format('YYYY-MM-DD HH:mm:ss'), audit: busines.get('audit'), DT_RowId: busines.id
                         };
                         arr.push(one);
                     }
@@ -331,14 +339,14 @@ router.put('/json/business/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
     let business = AV.Object.createWithoutData('Business', id);
-    business.set('audit', arr['data'][id]['audit']*1);
+    business.set('audit', arr['data'][id]['audit'] * 1);
     business.save().then(function (business) {
         let data = [];
         let one = {
-            name: arr['data'][id]['name'], phone: arr['data'][id]['phone'], connecter: arr['data'][id]['connecter'], 
+            name: arr['data'][id]['name'], phone: arr['data'][id]['phone'], connecter: arr['data'][id]['connecter'],
             area: arr['data'][id]['area'] ? arr['data'][id]['area'] : "",
             address: arr['data'][id]['address'] ? arr['data'][id]['address'] : "", user: arr['data'][id]['user'] ? arr['data'][id]['user'] : "",
-            time: arr['data'][id]['time'],audit:arr['data'][id]['audit']*1,DT_RowId: id
+            time: arr['data'][id]['time'], audit: arr['data'][id]['audit'] * 1, DT_RowId: id
         };
         data.push(one);
         res.jsonp({ "data": data });
@@ -623,8 +631,8 @@ router.get('/json/o2o', function (req, res, next) {
         results.forEach(function (result) {
             result.set('DT_RowId', result.id);
             let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
-            result.set('nickname',result.get('user').get('nickname'));
-            result.set('headimgurl',result.get('user').get('headimgurl'));
+            result.set('nickname', result.get('user').get('nickname'));
+            result.set('headimgurl', result.get('user').get('headimgurl'));
             result.set('time', time);
         });
         res.jsonp({ data: results });
@@ -638,13 +646,13 @@ router.put('/json/o2o/edit/:id', function (req, res) {
     o2o.set('notice', arr['data'][id]['notice']);
     o2o.set('flag', arr['data'][id]['flag'] * 1);
     o2o.save().then(function () {
-        o2o.fetch({ include: 'user' }).then(function(){
+        o2o.fetch({ include: 'user' }).then(function () {
             let data = [];
             o2o.set('DT_RowId', o2o.id);
             let time = new moment(o2o.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
             o2o.set('time', time);
-            o2o.set('nickname',o2o.get('user').get('nickname'));
-            o2o.set('headimgurl',o2o.get('user').get('headimgurl'));
+            o2o.set('nickname', o2o.get('user').get('nickname'));
+            o2o.set('headimgurl', o2o.get('user').get('headimgurl'));
             data.push(o2o);
             res.jsonp({ "data": data });
         });
@@ -652,38 +660,78 @@ router.put('/json/o2o/edit/:id', function (req, res) {
 });
 
 router.get('/json/thread', function (req, res, next) {
-    let query = new AV.Query('Thread');
-    query.equalTo('isDel', false);
-    query.limit(1000);
-    query.include('user');
-    query.find().then(function (results) {
-        results.forEach(function (result) {
-            result.set('DT_RowId', result.id);
-            let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
-            result.set('nickname',result.get('user').get('nickname'));
-            result.set('headimgurl',result.get('user').get('headimgurl'));
-            result.set('comments',result.get('comments')?result.get('comments'):[]);
-            result.set('time', time);
+    let resdata = {};
+    function promise1(callback) {
+        let query = new AV.Query('Thread');
+        query.equalTo('isDel', false);
+        query.limit(1000);
+        query.include('user');
+        query.include('type');
+        query.find().then(function (results) {
+            async.map(results, function (result, callback1) {
+                let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+                let one = {
+                    DT_RowId: result.id, time: time, nickname: result.get('user').get('nickname'), title: result.get('title') ? result.get('title') : '',
+                    label: result.get('label') ? result.get('label') : '', type_name: result.get('type') ? result.get('type').get('name') : '',
+                    headimgurl: result.get('user').get('headimgurl'), comments: result.get('comments') ? result.get('comments') : [],
+                    content: result.get('content'), views: result.get('views'), type: result.get('type') ? result.get('type').id : ''
+                };
+                callback1(null, one);
+            }, function (err, results) {
+                resdata["data"] = results;
+                callback(null, results);
+            });
         });
-        res.jsonp({ data: results });
-    });
+    }
+    function promise2(callback) {
+        let query = new AV.Query('ThreadType');
+        query.equalTo('isDel', false);
+        query.ascending('order');
+        query.limit(1000);
+        query.find().then(function (types) {
+            async.map(types, function (type, callback1) {
+                let one = { label: type.get('name'), value: type.id };
+                callback1(null, one);
+            }, function (err, types) {
+                resdata["options"] = { type: types };
+                callback(null, types);
+            });
+        });
+    }
+    async.parallel([
+        function (callback) {
+            promise1(callback);
+        },
+        function (callback) {
+            promise2(callback);
+        }], function (err, results) {
+            res.jsonp(resdata);
+        });
 });
 
 router.put('/json/thread/edit/:id', function (req, res) {
     let arr = req.body;
     let id = req.params.id;
-    let o2o = AV.Object.createWithoutData('Thread', id);
-    o2o.set('notice', arr['data'][id]['notice']);
-    o2o.set('flag', arr['data'][id]['flag'] * 1);
-    o2o.save().then(function () {
-        o2o.fetch({ include: 'user' }).then(function(){
+    let thread = AV.Object.createWithoutData('Thread', id);
+    let type = AV.Object.createWithoutData('ThreadType', arr['data'][id]['type']);
+    thread.set('title', arr['data'][id]['title']);
+    thread.set('label', arr['data'][id]['label']);
+    thread.set('type', type);
+    thread.save().then(function () {
+        thread.fetch({ include: ['user', 'type'] }).then(function () {
             let data = [];
-            o2o.set('DT_RowId', o2o.id);
-            let time = new moment(o2o.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
-            o2o.set('time', time);
-            o2o.set('nickname',o2o.get('user').get('nickname'));
-            o2o.set('headimgurl',o2o.get('user').get('headimgurl'));
-            data.push(o2o);
+            thread.set('DT_RowId', thread.id);
+            let time = new moment(thread.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
+            thread.set('time', time);
+            thread.set('title', thread.get('title') ? thread.get('title') : '');
+            thread.set('label', thread.get('label') ? thread.get('label') : '');
+            thread.set('content', thread.get('content') ? thread.get('content') : '');
+            thread.set('views', thread.get('views'));
+            thread.set('type_name', thread.get('type').get('name'));
+            thread.set('type', thread.get('type').id);
+            thread.set('comments', thread.get('comments') ? thread.get('comments') : []);
+            thread.set('nickname', thread.get('user').get('name'));
+            data.push(thread);
             res.jsonp({ "data": data });
         });
     });
@@ -705,39 +753,39 @@ router.get('/json/service', function (req, res, next) {
         query.equalTo('isDel', false);
         query.limit(1000);
         query.find().then(function (results) {
-            async.map(results,function (result,callback1) {
+            async.map(results, function (result, callback1) {
                 result.set('DT_RowId', result.id);
                 let time = new moment(result.get('createdAt')).format('YYYY-MM-DD HH:mm:ss');
                 result.set('time', time);
-                function type1(callback3){
-                    if(result.get('devicetype')==""||typeof(result.get('devicetype'))=="undefined"){
-                        result.set('types',"");
+                function type1(callback3) {
+                    if (result.get('devicetype') == "" || typeof (result.get('devicetype')) == "undefined") {
+                        result.set('types', "");
                         //callback1(null,result);
-                        callback3(null,1);
-                    }else{
-                        let typesarr=result.get('devicetype').split('/');
-                        async.map(typesarr,function(type,callback2){
-                            callback2(null,type);
-                        },function(err,types){
-                            result.set('types',types);
+                        callback3(null, 1);
+                    } else {
+                        let typesarr = result.get('devicetype').split('/');
+                        async.map(typesarr, function (type, callback2) {
+                            callback2(null, type);
+                        }, function (err, types) {
+                            result.set('types', types);
                             //callback1(null,result);
-                            callback3(null,1);
+                            callback3(null, 1);
                         });
                     }
                 }
-                function type2(callback3){
-                    if(result.get('faulttype')==""||typeof(result.get('faulttype'))=="undefined"){
-                        result.set('faulttype',"");
+                function type2(callback3) {
+                    if (result.get('faulttype') == "" || typeof (result.get('faulttype')) == "undefined") {
+                        result.set('faulttype', "");
                         //callback1(null,result);
-                        callback3(null,2);
-                    }else{
-                        let typesarr=result.get('faulttype').split(',');
-                        async.map(typesarr,function(type,callback2){
-                            callback2(null,type);
-                        },function(err,types){
-                            result.set('faulttype',types);
+                        callback3(null, 2);
+                    } else {
+                        let typesarr = result.get('faulttype').split(',');
+                        async.map(typesarr, function (type, callback2) {
+                            callback2(null, type);
+                        }, function (err, types) {
+                            result.set('faulttype', types);
                             //callback1(null,result);
-                            callback3(null,2);
+                            callback3(null, 2);
                         });
                     }
                 }
@@ -748,19 +796,19 @@ router.get('/json/service', function (req, res, next) {
                     function (callback4) {
                         type2(callback4);
                     }], function (err, typeresults) {
-                        callback1(null,result);
+                        callback1(null, result);
                     });
-            },function(err,results){
+            }, function (err, results) {
                 resdata["data"] = results;
                 callback(null, results);
             });
         });
     }
     function promise2(callback) {
-        let types=[{label:"FA1",value:"FA1"},{label:"FA2",value:"FA2"},{label:"FA1 WIFI套装",value:"FA1 WIFI套装"},{label:"FA2高清",value:"FA2高清"},
-        {label:"FA2 WIFI",value:"FA2 WIFI"},{label:"单屏",value:"单屏"}];
-        resdata["options"] = {types:types};
-        callback(null,1);
+        let types = [{ label: "FA1", value: "FA1" }, { label: "FA2", value: "FA2" }, { label: "FA1 WIFI套装", value: "FA1 WIFI套装" }, { label: "FA2高清", value: "FA2高清" },
+        { label: "FA2 WIFI", value: "FA2 WIFI" }, { label: "单屏", value: "单屏" }];
+        resdata["options"] = { types: types };
+        callback(null, 1);
     }
     async.parallel([
         function (callback) {
@@ -778,16 +826,16 @@ router.post('/json/service/add', function (req, res) {
     let arr = req.body;
     let devicetype = "";
     let error = "";
-    if(typeof(arr['data'][0]['types'])=="undefined"){
-        devicetype="";
-    }else{
+    if (typeof (arr['data'][0]['types']) == "undefined") {
+        devicetype = "";
+    } else {
         arr['data'][0]['types'].forEach(function (type) {
             devicetype += type + "/";
         });
     }
-    if(typeof(arr['data'][0]['faulttype'])=="undefined"){
-        error="";
-    }else{
+    if (typeof (arr['data'][0]['faulttype']) == "undefined") {
+        error = "";
+    } else {
         arr['data'][0]['faulttype'].forEach(function (err) {
             error += err + ",";
         });
@@ -831,22 +879,22 @@ router.put('/json/service/edit/:id', function (req, res) {
     let id = req.params.id;
     let devicetype = "";
     let error = "";
-    if(typeof(arr['data'][id]['types'])=="undefined"){
-        devicetype="";
-    }else{
+    if (typeof (arr['data'][id]['types']) == "undefined") {
+        devicetype = "";
+    } else {
         arr['data'][id]['types'].forEach(function (type) {
             devicetype += type + "/";
         });
     }
-    if(typeof(arr['data'][id]['faulttype'])=="undefined"){
-        error="";
-    }else{
+    if (typeof (arr['data'][id]['faulttype']) == "undefined") {
+        error = "";
+    } else {
         arr['data'][id]['faulttype'].forEach(function (err) {
             error += err + ",";
         });
     }
     let service = AV.Object.createWithoutData('Service', id);
-    service.set('orderid', arr['data'][id]['orderid']*1);
+    service.set('orderid', arr['data'][id]['orderid'] * 1);
     service.set('sender', arr['data'][id]['sender']);
     service.set('phone', arr['data'][id]['phone']);
     service.set('address', arr['data'][id]['address']);
@@ -873,7 +921,7 @@ router.put('/json/service/edit/:id', function (req, res) {
         service.set('backdate', backdate);
         data.push(service);
         res.jsonp({ "data": data });
-    },function(err){
+    }, function (err) {
         console.log(err);
     });
 });

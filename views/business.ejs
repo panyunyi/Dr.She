@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"
+    />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>互动生意经</title>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../stylesheets/business.css" />
+    <style>
+        html,
+        body {
+            background-color: #fff;
+        }
+
+        #hasmsg {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 14px;
+        }
+
+        footer {
+            background-color: #3c92c6;
+        }
+
+        .fixed-bottom {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 45px;
+            opacity: 0.7;
+            text-align: center
+        }
+        footer a{
+            color: #fff;
+            font-size: 25px
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <img src="../33.png" id="fengjing">
+    </div>
+
+
+    <div id="list">
+        <ul id="ul">
+
+        </ul>
+    </div>
+    <footer class="fixed-bottom">
+        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.drshe"><span>发布、查看更多生意经</span></a>
+    </footer>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+    // $(function () {
+    //     function footerPosition() {
+    //         $("footer").removeClass("fixed-bottom");
+    //         var contentHeight = document.body.scrollHeight,//网页正文全文高度
+    //             winHeight = window.innerHeight;//可视窗口高度，不包括浏览器顶部工具栏
+    //         if (!(contentHeight > winHeight)) {
+    //             //当网页正文高度小于可视窗口高度时，为footer添加类fixed-bottom
+    //             $("footer").addClass("fixed-bottom");
+    //         } else {
+    //             $("footer").removeClass("fixed-bottom");
+    //         }
+    //     }
+    //     footerPosition();
+    //     $(window).resize(footerPosition);
+    // });
+    var index = 1;
+    var imageBrowser;
+    var UIChatBox;
+    fninit(false);
+    function isEmpty(val) {
+        if (val == null || val == "") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    function getJsonLength(jsonData) {
+        var jsonLength = 0;
+        for (var item in jsonData) {
+            jsonLength++;
+        }
+        return jsonLength;
+    }
+    function show(obj) {
+        var objectId = $(obj).attr("objectId");
+
+
+        $(obj).parents("p").append($(obj).attr("_con"));
+        $(obj).parent().parent().parent().find(".show").css("display", "");
+        $(obj).remove();
+    }
+
+
+    function fninit(flg) {
+
+        // console.log(getURL() + "thread/" + $api.getStorage('objectId') + "?index=" + index);
+        $.getJSON("app/thread/5a6170191b69e60066e23541?index=1", function (ret) {
+
+            if (ret) {
+                // 新消息数
+                var newmsgCount = ret.count;
+                if (newmsgCount > 0) {
+                    $("#hasmsg").show();
+                    $("#msg").html(newmsgCount + "条新消息")
+                } else {
+                    $("#hasmsg").hide();
+                }
+
+                var count = ret.list.count;
+
+                var html = "";
+                for (var i = 0; i < 10; i++) {
+                    var thread = ret.list.threads[i];
+                    var imageHtml = "";
+                    if (!isEmpty(thread.images)) {
+                        var image = thread.images.split(',');
+                        switch (image.length) {
+                            case 1:
+                                imageHtml += '<div class="aui-row">';
+                                imageHtml += '<div class="aui-col-xs-4">';
+                                imageHtml += '<img url="' + thread.images + '" src="' + thread.images + '" onclick="openImg(this,0)">';
+                                imageHtml += '</div>';
+                                imageHtml += '</div>';
+                                break;
+                            default:
+                                imageHtml += '<div class="aui-row">';
+                                for (var k = 0; k < image.length; k++) {
+                                    imageHtml += '<div class="aui-col-xs-4">';
+                                    imageHtml += '<img src="' + image[k] + '" url="' + thread.images + '" style="padding:.2rem;width:25vw;height:25vw;" onclick="openImg(this,' + k + ')">';
+                                    imageHtml += '</div>';
+                                }
+                                imageHtml += '</div>';
+                        }
+                    }
+
+                    // 自定义标签
+                    var label = thread.label;
+                    if (!isEmpty(label)) {
+                        label = "#" + label;
+                    } else {
+                        label = "";
+                    }
+                    // 内容分类
+                    var thread_type = thread.type;
+                    if (!isEmpty(thread_type)) {
+                        thread_type = "#" + thread_type;
+                    } else {
+                        thread_type = "";
+                    }
+
+                    var tag = '<div style="padding-top:.4rem"><span style="color:#3c92c6">' + label + thread_type + '</span></div>';
+
+                    // 标题
+                    var title = thread.title;
+                    if (!isEmpty(thread_type)) {
+                        var titleHtml = '<span style="font-weight:bold;font-size:16px">' + title + '</span></br>';
+                    } else {
+                        titleHtml = "";
+                    }
+
+                    // var content = thread.content.split('br /')[0];
+                    // if (content.length > 20) {
+                    //     content = content.substring(0, 21) + '<span style="color:#3c92c6" onclick="show(this)" _con="' + thread.content + '">' + "<br/>" + "全文" + "</span>";
+                    // } else {
+                    //     content = thread.content;
+                    // }
+                    content = '<span style="color:#3c92c6" objectId="' + thread.objectid + '"  onclick="show(this)" _con="' + thread.content + '">' + "<br/>" + "查看内容" + "</span>";
+
+                    html += '<li>';
+                    html += '<div class="po-avt-wrap">';
+                    html += '<img class="po-avt data-avt" src="' + thread.headimg + '">';
+                    html += '</div>';
+                    html += '<div class="po-cmt">';
+                    html += '<div class="po-hd">';
+                    html += '<p class="po-name"><span class="data-name">' + thread.name + '</span></p>';
+                    html += '<p class="post">' + titleHtml + content + imageHtml + tag + '</p>';
+                    html += '<p style="padding-top:.3rem"></p>';
+                    html += '<p class="time">' + new Date(thread.createdAt).Format("yyyy-MM-dd hh:mm") + '</p>';
+                    html += '</div>';
+                    var commentCount = getJsonLength(thread.comments);
+                    if (commentCount > 0) {
+                        html += '<div class="show" style="display:none">';
+                        html += '<div class="r"></div>';
+                        html += '<div class="cmt-wrap">';
+                        html += '<div class="cmt-list">';
+                        for (var j = 0; j < commentCount; j++) {
+                            var comment = thread.comments[j];
+                            html += '<p><span>' + comment.name + '：</span>' + comment.content + '</p>';
+                        }
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</div>'
+                    }
+
+                    html += '</div>';
+                    html += '</li>';
+                }
+                $("#ul").append(html);
+            }
+        });
+    }
+
+</script>
+
+</html>

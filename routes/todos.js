@@ -197,8 +197,17 @@ function exportExcel2(filename, data) {
     });
 }
 // 新增 Todo 项目
-router.post('/', function (req, res, next) {
-
+router.get('/3', function (req, res, next) {
+    let query=new AV.Query('WxUser');
+    query.exists('phone');
+    query.limit(1000);
+    query.find().then(function(results){
+        async.map(results,function(result,callback){
+            callback(null,result.get('phone'));
+        },function(err,results){
+            res.jsonp(results);
+        });
+    });
 });
 
 module.exports = router;
