@@ -1277,4 +1277,13 @@ router.get('/thread/views/:thread_id/:user_id', function (req, res) {
     });
 });
 
+router.get('/notice', function (req, res) {
+    let query = new AV.Query('Notice');
+    query.equalTo('isDel', false);
+    query.equalTo('target','APP');
+    query.first().then(function (notice) {
+        res.jsonp({notice:notice.get('content')});
+    });
+});
+
 module.exports = router;
