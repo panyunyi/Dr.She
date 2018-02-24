@@ -113,7 +113,7 @@ router.post('/wx/login', function (req, res) {
     userQuery.first().then(function (user) {
         if (typeof (user) != "undefined") {
             let query2 = new AV.Query('Business');
-            query2.equalTo('user', data);
+            query2.equalTo('user', user);
             query2.equalTo('isDel', false);
             query2.count().then(function (count2) {
                 res.jsonp({ objectid: user.id, flag: count2 });
