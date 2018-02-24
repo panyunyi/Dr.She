@@ -63,7 +63,12 @@ router.post('/user/login', function (req, res) {
             query.count().then(function (count) {
                 if (count == 1) {
                     query.first().then(function (data) {
-                        res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id });
+                        let query2=new AV.Query('Business');
+                        query2.equalTo('user',data);
+                        query2.equalTo('isDel',false);
+                        query2.count().then(function(count2){
+                            res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id,flag:count2 });
+                        });
                     });
                 } else {
                     res.jsonp({ error: 1, msg: "密码不正确" });
@@ -84,8 +89,13 @@ router.post('/user/login2', function (req, res) {
         if(typeof(data)=="undefined"){
             res.jsonp({ error: 1, msg: "该手机未注册" });
         }else{
-            res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id });
-            }
+            let query2=new AV.Query('Business');
+            query2.equalTo('user',data);
+            query2.equalTo('isDel',false);
+            query2.count().then(function(count2){
+                res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id,flag:count2 });
+            });
+        }
     });
 });
 
@@ -1259,6 +1269,16 @@ router.get('/threadtype', function (req, res) {
     query.limit(1000);
     query.find().then(function (types) {
         res.jsonp(types);
+    });
+});
+
+
+router.get('/threaddelete/:thread_id', function (req, res) {
+    let thread_id = req.params.thread_id;
+    let thread = AV.Object.createWithoutData('Thread', thread_id);
+    thread.set('isDel',true);
+    thread.save().then(function(){
+        res.jsonp({error: 0, msg: ""});
     });
 });
 
