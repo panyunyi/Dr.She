@@ -1229,7 +1229,7 @@ router.get('/thread/:user_id', function (req, res) {
         });
 });
 
-router.get('/thread/unread/:user_id', function (req, res) {
+router.get('/threadunread/:user_id', function (req, res) {
     let user_id = req.params.user_id;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     let query = new AV.Query('Thread');
@@ -1253,7 +1253,7 @@ router.get('/thread/unread/:user_id', function (req, res) {
     });
 });
 
-router.get('/thread/comments/:thread_id', function (req, res) {
+router.get('/threadcomments/:thread_id', function (req, res) {
     let thread_id = req.params.thread_id;
     let thread = AV.Object.createWithoutData('Thread', thread_id);
     thread.set('count', 0);
@@ -1284,6 +1284,27 @@ router.get('/threaddelete/:thread_id', function (req, res) {
     thread.set('isDel', true);
     thread.save().then(function () {
         res.jsonp({ error: 0, msg: "" });
+    });
+});
+
+router.get('/threadown/:user_id', function (req, res) {
+    let user_id = req.params.user_id;
+    let user = AV.Object.createWithoutData('WxUser', user_id);
+    let query=new AV.Query('Thread');
+    query.equalTo('isDel',false);
+    query.equalTo('user',user);
+    query.limit(1000);
+    query.find().then(function(threads){
+        async.map(threads, function (thread, callback) {
+            let one = {
+                content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
+                headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [],
+                objectid: thread.id, createdAt: thread.get('createdAt')
+            };
+            callback(null, one);
+        }, function (err, threads) {
+            res.jsonp({ threads: threads, count: threads.length });
+        });
     });
 });
 
