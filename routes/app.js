@@ -63,11 +63,11 @@ router.post('/user/login', function (req, res) {
             query.count().then(function (count) {
                 if (count == 1) {
                     query.first().then(function (data) {
-                        let query2=new AV.Query('Business');
-                        query2.equalTo('user',data);
-                        query2.equalTo('isDel',false);
-                        query2.count().then(function(count2){
-                            res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id,flag:count2 });
+                        let query2 = new AV.Query('Business');
+                        query2.equalTo('user', data);
+                        query2.equalTo('isDel', false);
+                        query2.count().then(function (count2) {
+                            res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id, flag: count2 });
                         });
                     });
                 } else {
@@ -85,15 +85,15 @@ router.post('/user/login2', function (req, res) {
     let phone = req.body.phone;
     let query = new AV.Query('WxUser');
     query.equalTo('phone', phone);
-    query.first().then(function(data){
-        if(typeof(data)=="undefined"){
+    query.first().then(function (data) {
+        if (typeof (data) == "undefined") {
             res.jsonp({ error: 1, msg: "该手机未注册" });
-        }else{
-            let query2=new AV.Query('Business');
-            query2.equalTo('user',data);
-            query2.equalTo('isDel',false);
-            query2.count().then(function(count2){
-                res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id,flag:count2 });
+        } else {
+            let query2 = new AV.Query('Business');
+            query2.equalTo('user', data);
+            query2.equalTo('isDel', false);
+            query2.count().then(function (count2) {
+                res.jsonp({ error: 0, msg: "", name: data.get('nickname'), objectid: data.id, flag: count2 });
             });
         }
     });
@@ -112,7 +112,12 @@ router.post('/wx/login', function (req, res) {
     userQuery.equalTo('unionid', openid);
     userQuery.first().then(function (user) {
         if (typeof (user) != "undefined") {
-            res.jsonp({ objectid: user.id });
+            let query2 = new AV.Query('Business');
+            query2.equalTo('user', data);
+            query2.equalTo('isDel', false);
+            query2.count().then(function (count2) {
+                res.jsonp({ objectid: user.id, flag: count2 });
+            });
         } else {
             let newuser = new WxUser();
             newuser.set('unionid', openid);
@@ -124,7 +129,7 @@ router.post('/wx/login', function (req, res) {
             newuser.set('country', country);
             newuser.set('points', 2);
             newuser.save().then(function (data) {
-                res.jsonp({ objectid: data.id });
+                res.jsonp({ objectid: data.id, flag: 0 });
             });
         }
     });
@@ -1276,9 +1281,9 @@ router.get('/threadtype', function (req, res) {
 router.get('/threaddelete/:thread_id', function (req, res) {
     let thread_id = req.params.thread_id;
     let thread = AV.Object.createWithoutData('Thread', thread_id);
-    thread.set('isDel',true);
-    thread.save().then(function(){
-        res.jsonp({error: 0, msg: ""});
+    thread.set('isDel', true);
+    thread.save().then(function () {
+        res.jsonp({ error: 0, msg: "" });
     });
 });
 
@@ -1288,21 +1293,21 @@ router.get('/thread/views/:thread_id/:user_id', function (req, res) {
     let user_id = req.params.user_id;
     let user = AV.Object.createWithoutData('WxUser', user_id);
     thread.increment('views', 1);
-    let threadViewsMap=new ThreadViewsMap();
-    threadViewsMap.set('user',user);
-    threadViewsMap.set('thread',thread);
-    threadViewsMap.set('isDel',false);
-    threadViewsMap.save().then(function(){
-        res.jsonp({error: 0, msg: ""});
+    let threadViewsMap = new ThreadViewsMap();
+    threadViewsMap.set('user', user);
+    threadViewsMap.set('thread', thread);
+    threadViewsMap.set('isDel', false);
+    threadViewsMap.save().then(function () {
+        res.jsonp({ error: 0, msg: "" });
     });
 });
 
 router.get('/notice', function (req, res) {
     let query = new AV.Query('Notice');
     query.equalTo('isDel', false);
-    query.equalTo('target','APP');
+    query.equalTo('target', 'APP');
     query.first().then(function (notice) {
-        res.jsonp({notice:notice.get('content')});
+        res.jsonp({ notice: notice.get('content') });
     });
 });
 
