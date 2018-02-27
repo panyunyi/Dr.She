@@ -1243,7 +1243,7 @@ router.get('/threadunread/:user_id', function (req, res) {
         async.map(threads, function (thread, callback) {
             let one = {
                 content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [],
+                headimg: thread.get('user').get('headimgurl'), title: thread.get('title') ? thread.get('title') : '',comments: thread.get('comments') ? thread.get('comments') : [],
                 objectid: thread.id, createdAt: thread.get('createdAt')
             };
             callback(null, one);
@@ -1262,8 +1262,8 @@ router.get('/threadcomments/:thread_id', function (req, res) {
     }).then(function () {
         res.jsonp({
             content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-            headimg: thread.get('user').get('headimgurl'), objectid: thread.id, createdAt: thread.get('createdAt'),
-            comments: thread.get('comments')
+            headimg: thread.get('user').get('headimgurl'),title: thread.get('title') ? thread.get('title') : '', objectid: thread.id, createdAt: thread.get('createdAt'),
+            comments: thread.get('comments'),
         });
     });
 });
@@ -1298,7 +1298,7 @@ router.get('/threadown/:user_id', function (req, res) {
         async.map(threads, function (thread, callback) {
             let one = {
                 content: thread.get('content'), images: thread.get('images'), name: thread.get('user').get('nickname'),
-                headimg: thread.get('user').get('headimgurl'), comments: thread.get('comments') ? thread.get('comments') : [],
+                headimg: thread.get('user').get('headimgurl'),title: thread.get('title') ? thread.get('title') : '', comments: thread.get('comments') ? thread.get('comments') : [],
                 objectid: thread.id, createdAt: thread.get('createdAt')
             };
             callback(null, one);
