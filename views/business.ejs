@@ -42,7 +42,7 @@
 
 <body>
     <div>
-        <img src="../33.png" id="fengjing">
+        <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.drshe"><img src="../33.jpg" id="fengjing"></a>
     </div>
 
 
@@ -194,14 +194,14 @@
 
                     html += '<li>';
                     html += '<div class="po-avt-wrap">';
-                    html += '<img class="po-avt data-avt" src="' + thread.headimg + '">';
+                    //html += '<img class="po-avt data-avt" src="' + thread.headimg + '">';
                     html += '</div>';
                     html += '<div class="po-cmt">';
                     html += '<div class="po-hd">';
-                    html += '<p class="po-name"><span class="data-name">' + thread.name + '</span></p>';
+                    //html += '<p class="po-name"><span class="data-name">' + thread.name + '</span></p>';
                     html += '<p class="post">' + titleHtml + content + imageHtml + tag + '</p>';
                     html += '<p style="padding-top:.3rem"></p>';
-                    html += '<p class="time">' + new Date(thread.createdAt).Format("yyyy-MM-dd hh:mm") + '</p>';
+                    html += '<p class="time">'+thread.name+' ' + new Date(thread.createdAt).Format("yyyy-MM-dd hh:mm") + '</p>';
                     html += '</div>';
                     var commentCount = getJsonLength(thread.comments);
                     if (commentCount > 0) {
